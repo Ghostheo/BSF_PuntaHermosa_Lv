@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status BSF Punta Hermosa</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>body{background-color:#f3f4f6;font-family:ui-sans-serif,system-ui,sans-serif;}</style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-7xl mx-auto bg-white shadow-xl rounded-lg overflow-hidden border-gray-200">
+        <div class="bg-black text-white text-center py-4 px-6">
+            <h1 class="text-2xl font-bold tracking-wide">STATUS BSF PUNTA HERMOSA</h1>
+            <p id="fecha-actualizacion" class="text-xs text-gray-400 mt-1 font-medium"></p>			
+        </div>
+        <div class="p-6 space-y-8">
+            <div>
+                <h2 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Por Tipo</h2>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div class="bg-[#E3F0FF] border-[#1E4DB7]/20 rounded-lg p-4 text-center"><span class="block text-xs font-bold text-[#1E4DB7] uppercase">Recepción</span><span id="count-recepcion" class="block text-2xl font-black text-[#1E4DB7] mt-1">0</span></div>
+                    <div class="bg-[#E6F4E5] border-[#2E7D32]/20 rounded-lg p-4 text-center"><span class="block text-xs font-bold text-[#2E7D32] uppercase">Despacho</span><span id="count-despacho" class="block text-2xl font-black text-[#2E7D32] mt-1">0</span></div>
+                    <div class="bg-[#FFF3E0] border-[#8D6E00]/20 rounded-lg p-4 text-center"><span class="block text-xs font-bold text-[#8D6E00] uppercase">Traslado</span><span id="count-traslado" class="block text-2xl font-black text-[#8D6E00] mt-1">0</span></div>
+                    <div class="bg-[#EDE7F6] border-[#5E35B1]/20 rounded-lg p-4 text-center"><span class="block text-xs font-bold text-[#5E35B1] uppercase">Rece/Desp</span><span id="count-recedesp" class="block text-2xl font-black text-[#5E35B1] mt-1">0</span></div>
+                </div>
+            </div>
+            <div>
+                <h2 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Por Estatus</h2>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div class="bg-black border-black rounded-lg p-4 text-center text-white"><span class="block text-xs font-bold uppercase">Total</span><span id="count-total" class="block text-2xl font-black mt-1">0</span></div>
+                    <div class="bg-[#C62828] border-[#C62828] rounded-lg p-4 text-center text-white"><span class="block text-xs font-bold uppercase">Pendiente</span><span id="count-pendiente" class="block text-2xl font-black mt-1">0</span></div>
+                    <div class="bg-[#FFEBEE] border-[#C62828]/20 rounded-lg p-4 text-center"><span class="block text-xs font-bold text-[#C62828] uppercase">En Proceso</span><span id="count-enproceso" class="block text-2xl font-black text-[#C62828] mt-1">0</span></div>
+                    <div class="bg-[#FB8C00] border-[#FB8C00] rounded-lg p-4 text-center text-white"><span class="block text-xs font-bold uppercase">Pend. Factura</span><span id="count-pendfactura" class="block text-2xl font-black mt-1">0</span></div>
+                    <div class="bg-[#E8F5E9] border-[#2E7D32]/20 rounded-lg p-4 text-center"><span class="block text-xs font-bold text-[#2E7D32] uppercase">Cargado/Fact.</span><span id="count-cargadofact" class="block text-2xl font-black text-[#2E7D32] mt-1">0</span></div>
+                    <div class="bg-[#2E7D32] border-[#2E7D32] rounded-lg p-4 text-center text-white"><span class="block text-xs font-bold uppercase">Atendido</span><span id="count-atendido" class="block text-2xl font-black mt-1">0</span></div>
+                    <div class="bg-[#EEEEEE] border-gray-300 rounded-lg p-4 text-center"><span class="block text-xs font-bold text-gray-600 uppercase">No en CD</span><span id="count-noencd" class="block text-2xl font-black text-gray-700 mt-1">0</span></div>
+                    <div class="bg-[#29B6F6] border-[#003C5A]/20 rounded-lg p-4 text-center"><span class="block text-xs font-bold text-[#003C5A] uppercase">Pernoctando</span><span id="count-pernoctando" class="block text-2xl font-black text-[#003C5A] mt-1">0</span></div>
+                </div>
+            </div>
+            <div>
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                    <h2 class="text-sm font-bold text-gray-800 uppercase tracking-wide">Panel de Control de Unidades</h2>
+                    <div class="flex items-center gap-2">
+                        <button id="btn-clear" class="cursor-pointer bg-red-700 hover:bg-red-800 text-white text-xs font-bold px-4 py-2.5 rounded-lg">LIMPIAR</button>
+                        <button id="btn-add" class="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg">+ Agregar Unidad</button>
+                        <button id="btn-export" class="cursor-pointer bg-[#2E7D32] hover:bg-[#236127] text-white text-xs font-bold px-4 py-2.5 rounded-lg">📥 Exportar a Excel</button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto border-gray-200 rounded-lg">
+                    <table class="min-w-full divide-y divide-gray-200 text-center text-xs">
+                        <thead class="bg-[#F0EFE9] text-gray-600 font-bold">
+                            <tr><th class="px-3 py-3 border-r">PRIORIDAD</th><th class="px-3 py-3 border-r">PLACA</th><th class="px-3 py-3 border-r">N° TRANS.</th><th class="px-3 py-3 border-r">PROCEDENCIA</th><th class="px-3 py-3 border-r">TIPO</th><th class="px-3 py-3 border-r">HORA DE LLEGADA</th><th class="px-3 py-3 border-r">ESTATUS</th><th class="px-3 py-3">ACCIONES</th></tr>
+                        </thead>
+                        <tbody id="table-body" class="bg-white divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="text-right text-gray-400 italic text-[11px] pt-4 border-t border-gray-100">Desarrollado por Luis Vallejo - Operaciones Lavora</div>
+        </div>
+    </div>
+
+    <div id="modal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white w-full max-w-md rounded-xl shadow-2xl p-4">
+            <div class="bg-gray-900 text-white p-4 font-bold text-sm" id="modal-title">Agregar Nueva Unidad</div>
+            <form id="unit-form" class="p-4 space-y-4 text-xs">
+                <input type="hidden" id="edit-idx">
+                <input type="number" id="form-prioridad" required placeholder="Prioridad" class="w-full border-gray-300 rounded-lg p-2">
+                <input type="text" id="form-placa" required placeholder="Placa Ej. F1U789" class="w-full border-gray-300 rounded-lg p-2 uppercase">
+                <input type="text" id="form-trans" required placeholder="N° Transporte" class="w-full border-gray-300 rounded-lg p-2">
+                <input type="text" id="form-procedencia" required placeholder="Procedencia" class="w-full border-gray-300 rounded-lg p-2 uppercase">
+                <select id="form-tipo" class="w-full border-gray-300 rounded-lg p-2"><option>Recepcion</option><option>Despacho</option><option>Traslado</option><option>Rece/Desp</option></select>
+                <input type="text" id="form-hora" required placeholder="Hora Ej. 14:00" class="w-full border-gray-300 rounded-lg p-2">
+                <select id="form-estatus" class="w-full border-gray-300 rounded-lg p-2"><option>Pendiente</option><option>En Proceso</option><option>Pend.Factura</option><option>Cargado/Fact.</option><option>Atendido</option><option>No en CD</option><option>Pernoctando</option></select>
+                <div class="flex justify-end gap-2"><button type="button" id="btn-close" class="bg-gray-200 px-4 py-2 rounded-lg font-bold">Cancelar</button><button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold">Guardar</button></div>
+            </form>
+        </div>
+    </div>
+
+<script>
+const defaultData = [
+    { prioridad: 1, placa: "F1U789", trans: "14307041", procedencia: "HUACHIPA", tipo: "Recepcion", hora: "14:00", estatus: "Atendido" },
+    { prioridad: 2, placa: "A6P883", trans: "14307043", procedencia: "HUACHIPA", tipo: "Recepcion", hora: "14:05", estatus: "Atendido" },
+    { prioridad: 3, placa: "B3H868", trans: "14307042", procedencia: "HUACHIPA", tipo: "Recepcion", hora: "17:55", estatus: "Atendido" },
+    { prioridad: 4, placa: "V3L765", trans: "14307044", procedencia: "HUACHIPA", tipo: "Recepcion", hora: "18:05", estatus: "Atendido" }
+];
+let database = JSON.parse(localStorage.getItem('bsf_dashboard_db')) || defaultData;
+
+// FECHA Y HORA EN TIEMPO REAL
+function actualizarFecha() {
+    const ahora = new Date();
+    const fechaStr = ahora.toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric' });
+    let horaStr = ahora.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit', hour12: true });
+    horaStr = horaStr.toLowerCase();
+    document.getElementById('fecha-actualizacion').innerText = `${fechaStr} | ${horaStr}`;
+}
+actualizarFecha();
+setInterval(actualizarFecha, 1000);
+
+const tableBody = document.getElementById('table-body');
+const modal = document.getElementById('modal');
+const unitForm = document.getElementById('unit-form');
+const btnAdd = document.getElementById('btn-add');
+const btnClose = document.getElementById('btn-close');
+const btnExport = document.getElementById('btn-export');
+const btnClear = document.getElementById('btn-clear');
+const modalTitle = document.getElementById('modal-title');
+const editIdx = document.getElementById('edit-idx');
+
+function updateDashboard() {
+    localStorage.setItem('bsf_dashboard_db', JSON.stringify(database));
+    const counts = { recepcion:0, despacho:0, traslado:0, recedesp:0, total:database.length, pendiente:0, enproceso:0, pendfactura:0, cargadofact:0, atendido:0, noencd:0, pernoctando:0 };
+    tableBody.innerHTML = '';
+    database.forEach((row, index) => {
+        if (row.tipo === 'Recepcion') counts.recepcion++; else if (row.tipo === 'Despacho') counts.despacho++; else if (row.tipo === 'Traslado') counts.traslado++; else if (row.tipo === 'Rece/Desp') counts.recedesp++;
+        if (row.estatus === 'Pendiente') counts.pendiente++; else if (row.estatus === 'En Proceso') counts.enproceso++; else if (row.estatus === 'Pend.Factura') counts.pendfactura++; else if (row.estatus === 'Cargado/Fact.') counts.cargadofact++; else if (row.estatus === 'Atendido') counts.atendido++; else if (row.estatus === 'No en CD') counts.noencd++; else if (row.estatus === 'Pernoctando') counts.pernoctando++;
+        let tipoClass = "font-bold text-gray-700";
+        if (row.tipo === 'Recepcion') tipoClass = "bg-[#E3F0FF] text-[#1E4DB7] font-bold px-2 py-0.5 rounded";
+        else if (row.tipo === 'Despacho') tipoClass = "bg-[#E6F4E5] text-[#2E7D32] font-bold px-2 py-0.5 rounded";
+        let estatusClass = "font-medium text-gray-700";
+        if (row.estatus === 'Atendido') estatusClass = "bg-[#2E7D32] text-white font-bold px-2 py-1 rounded block text-center uppercase";
+        else if (row.estatus === 'Pendiente') estatusClass = "bg-[#C62828] text-white font-bold px-2 py-1 rounded block text-center uppercase";
+        else if (row.estatus === 'En Proceso') estatusClass = "bg-[#FFEBEE] text-[#C62828] font-bold px-2 py-1 rounded block text-center uppercase";
+        else if (row.estatus === 'Pend.Factura') estatusClass = "bg-[#FB8C00] text-white font-bold px-2 py-1 rounded block text-center uppercase";
+        const rowBg = index % 2 === 0 ? 'bg-white' : 'bg-[#FAF9F6]';
+        const tr = document.createElement('tr');
+        tr.className = `${rowBg} hover:bg-gray-100`;
+        tr.innerHTML = `<td class="px-3 py-3 border-r border-gray-100">${row.prioridad}</td><td class="px-3 py-3 border-r font-bold uppercase">${row.placa}</td><td class="px-3 py-3 border-r">${row.trans}</td><td class="px-3 py-3 border-r uppercase">${row.procedencia}</td><td class="px-3 py-3 border-r"><span class="${tipoClass}">${row.tipo}</span></td><td class="px-3 py-3 border-r font-mono">${row.hora}</td><td class="px-3 py-3 border-r px-4"><span class="${estatusClass}">${row.estatus}</span></td><td class="px-3 py-3 flex justify-center gap-1.5"><button onclick="editRow(${index})" class="bg-amber-500 text-white text-[10px] font-bold px-2 py-1 rounded">Editar</button><button onclick="deleteRow(${index})" class="bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded">Eliminar</button></td>`;
+        tableBody.appendChild(tr);
+    });
+    document.getElementById('count-recepcion').innerText = counts.recepcion;
+    document.getElementById('count-despacho').innerText = counts.despacho;
+    document.getElementById('count-traslado').innerText = counts.traslado;
+    document.getElementById('count-recedesp').innerText = counts.recedesp;
+    document.getElementById('count-total').innerText = counts.total;
+    document.getElementById('count-pendiente').innerText = counts.pendiente;
+    document.getElementById('count-enproceso').innerText = counts.enproceso;
+    document.getElementById('count-pendfactura').innerText = counts.pendfactura;
+    document.getElementById('count-cargadofact').innerText = counts.cargadofact;
+    document.getElementById('count-atendido').innerText = counts.atendido;
+    document.getElementById('count-noencd').innerText = counts.noencd;
+    document.getElementById('count-pernoctando').innerText = counts.pernoctando;
+}
+
+btnAdd.addEventListener('click', () => { modalTitle.innerText = "Agregar Nueva Unidad"; editIdx.value = ""; unitForm.reset(); document.getElementById('form-prioridad').value = database.length + 1; modal.classList.remove('hidden'); });
+btnClose.addEventListener('click', () => modal.classList.add('hidden'));
+unitForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const idx = editIdx.value;
+    const newData = { prioridad: parseInt(document.getElementById('form-prioridad').value), placa: document.getElementById('form-placa').value.toUpperCase().trim(), trans: document.getElementById('form-trans').value.trim(), procedencia: document.getElementById('form-procedencia').value.toUpperCase().trim(), tipo: document.getElementById('form-tipo').value, hora: document.getElementById('form-hora').value.trim(), estatus: document.getElementById('form-estatus').value };
+    if (idx === "") database.push(newData); else database[parseInt(idx)] = newData;
+    modal.classList.add('hidden'); updateDashboard();
+});
+window.editRow = function(index) {
+    const data = database[index]; modalTitle.innerText = "Editar Unidad"; editIdx.value = index;
+    document.getElementById('form-prioridad').value = data.prioridad; document.getElementById('form-placa').value = data.placa; document.getElementById('form-trans').value = data.trans; document.getElementById('form-procedencia').value = data.procedencia; document.getElementById('form-tipo').value = data.tipo; document.getElementById('form-hora').value = data.hora; document.getElementById('form-estatus').value = data.estatus; modal.classList.remove('hidden');
+};
+window.deleteRow = function(index) { if (confirm('¿Eliminar registro?')) { database.splice(index, 1); updateDashboard(); } };
+
+// BOTÓN LIMPIAR - BORRA TODA LA LISTA
+btnClear.addEventListener('click', () => {
+    if (database.length === 0) return;
+    if (confirm('¿Estás seguro? Se eliminarán TODAS las unidades de la lista.')) {
+        database = [];
+        updateDashboard();
+    }
+});
+
+// EXPORTAR 100% FUNCIONAL - CON FECHA REAL
+btnExport.addEventListener('click', () => {
+    try {
+        const counts = {
+            recepcion: database.filter(r=>r.tipo==='Recepcion').length,
+            despacho: database.filter(r=>r.tipo==='Despacho').length,
+            traslado: database.filter(r=>r.tipo==='Traslado').length,
+            recedesp: database.filter(r=>r.tipo==='Rece/Desp').length,
+            total: database.length,
+            pendiente: database.filter(r=>r.estatus==='Pendiente').length,
+            enproceso: database.filter(r=>r.estatus==='En Proceso').length,
+            pendfactura: database.filter(r=>r.estatus==='Pend.Factura').length,
+            cargadofact: database.filter(r=>r.estatus==='Cargado/Fact.').length,
+            atendido: database.filter(r=>r.estatus==='Atendido').length,
+            noencd: database.filter(r=>r.estatus==='No en CD').length,
+            pernoctando: database.filter(r=>r.estatus==='Pernoctando').length
+        };
+
+        const fechaTexto = document.getElementById('fecha-actualizacion').innerText;
+
+        let html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8"></head><body>`;
+        html += `<table border="1" cellspacing="0" cellpadding="5" style="border-collapse:collapse;font-family:Calibri;">`;
+        html += `<tr><td colspan="9" style="background:#000;color:#fff;font-size:16px;font-weight:bold;text-align:center;">STATUS BSF PUNTA HERMOSA</td></tr>`;
+        html += `<tr><td colspan="9" style="background:#000;color:#BBBBBB;text-align:center;">${fechaTexto}</td></tr><tr><td colspan="9"></td></tr>`;
+
+        html += `<tr style="font-weight:bold;text-align:center;">
+            <td style="background:#000;color:#fff;">Total ${counts.total}</td>
+            <td style="background:#C62828;color:#fff;">Pendiente ${counts.pendiente}</td>
+            <td style="background:#FFEBEE;color:#C62828;">En Proceso ${counts.enproceso}</td>
+            <td style="background:#FB8C00;color:#fff;">Pend. Factura ${counts.pendfactura}</td>
+            <td style="background:#E8F5E9;color:#2E7D32;">Cargado/Fact. ${counts.cargadofact}</td>
+            <td style="background:#2E7D32;color:#fff;">Atendido ${counts.atendido}</td>
+            <td style="background:#EEEEEE;">No en CD ${counts.noencd}</td>
+            <td style="background:#29B6F6;color:#003C5A;">Pernoctando ${counts.pernoctando}</td>
+            <td></td></tr>`;
+        html += `<tr style="font-weight:bold;text-align:center;">
+            <td style="background:#E3F0FF;color:#1E4DB7;">Recepcion ${counts.recepcion}</td>
+            <td style="background:#E6F4E5;color:#2E7D32;">Despacho ${counts.despacho}</td>
+            <td style="background:#FFF3E0;color:#8D6E00;">Traslado ${counts.traslado}</td>
+            <td style="background:#EDE7F6;color:#5E35B1;">Rece/Desp ${counts.recedesp}</td>
+            <td colspan="5"></td></tr><tr><td colspan="9"></td></tr>`;
+
+        html += `<tr style="background:#F0EFE9;font-weight:bold;text-align:center;">
+            <td style="width:60px;">Prioridad</td><td style="width:80px;">Placa</td><td style="width:110px;">N° Trans.</td><td style="width:110px;">Procedencia</td><td style="width:80px;">Tipo</td><td style="width:110px;">Hora de llegada</td><td style="width:90px;">Estatus</td><td style="width:70px;">Tiempo</td><td style="width:70px;">Estado</td></tr>`;
+
+        database.forEach((d,i)=>{
+            const [hh, mm] = d.hora.split(':').map(Number);
+            const ahora = new Date(); const llegada = new Date(); llegada.setHours(hh,mm,0,0);
+            let diff = ahora - llegada; if(diff<0) diff=0;
+            const tH = String(Math.floor(diff/3600000)).padStart(2,'0');
+            const tM = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+            const bg = i%2===0 ? '#FFFFFF' : '#FAF9F6';
+            let tipoStyle = '';
+            if(d.tipo==='Recepcion') tipoStyle = 'background:#E3F0FF;color:#1E4DB7;font-weight:bold;';
+            else if(d.tipo==='Despacho') tipoStyle = 'background:#E6F4E5;color:#2E7D32;font-weight:bold;';
+            let estStyle = '';
+            if(d.estatus==='Atendido') estStyle = 'background:#2E7D32;color:#fff;font-weight:bold;';
+            else if(d.estatus==='Pendiente') estStyle = 'background:#C62828;color:#fff;font-weight:bold;';
+            html += `<tr style="text-align:center;background:${bg}"><td>${d.prioridad}</td><td><b>${d.placa}</b></td><td>${d.trans}</td><td>${d.procedencia}</td><td style="${tipoStyle}">${d.tipo}</td><td>${d.hora}</td><td style="${estStyle}">${d.estatus}</td><td>${tH}:${tM}</td><td>Leadtime</td></tr>`;
+        });
+
+        html += `</table><br><div style="text-align:right;font-style:italic;color:#888;font-size:11px;">Desarrollado por Luis Vallejo - Operaciones Lavora</div></body></html>`;
+
+        const blob = new Blob(['\ufeff' + html], { type: 'application/vnd.ms-excel' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "status_BSF_PUNTA_HERMOSA_formateado.xls";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    } catch(e) {
+        alert("Error al exportar: " + e.message);
+        console.error(e);
+    }
+});
+
+updateDashboard();
+</script>
+</body>
+</html>
