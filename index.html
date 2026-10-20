@@ -82,7 +82,23 @@ const defaultData = [
     { prioridad: 3, placa: "B3H868", trans: "14307042", procedencia: "HUACHIPA", tipo: "Recepcion", hora: "17:55", estatus: "Atendido" },
     { prioridad: 4, placa: "V3L765", trans: "14307044", procedencia: "HUACHIPA", tipo: "Recepcion", hora: "18:05", estatus: "Atendido" }
 ];
-let database = JSON.parse(localStorage.getItem('bsf_dashboard_db')) || defaultData;
+const API_URL = "https://script.google.com/macros/s/AKfycbyITyfU1XyvGmHwhVpsBE-z72rTs2dTRP_Wz6CPVGz_SM5DvPfIIthPgyX1-AJwaOFs/exec";
+let database = [];
+async function cargarDatos() {
+  try {
+    const res = await fetch(API_URL);
+    const remoto = await res.json();
+    if (Array.isArray(remoto) && remoto.length > 0) { database = remoto; }
+    else { database = JSON.parse(localStorage.getItem('bsf_dashboard_db')) || defaultData; }
+  } catch(e) {
+    database = JSON.parse(localStorage.getItem('bsf_dashboard_db')) || defaultData;
+  }
+  updateDashboard();
+}
+function guardarDatos() {
+  localStorage.setItem('bsf_dashboard_db', JSON.stringify(database));
+  fetch(API_URL, {method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify(database)});
+}
 
 // FECHA Y HORA EN TIEMPO REAL
 function actualizarFecha() {
@@ -240,7 +256,7 @@ btnExport.addEventListener('click', () => {
     }
 });
 
-updateDashboard();
+cargarDatos();
 </script>
 </body>
 </html>
