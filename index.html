@@ -14,7 +14,7 @@
 <body class="p-4 md:p-8">
     <div class="max-w-7xl mx-auto bg-white shadow-xl rounded-lg overflow-hidden border-gray-200">
         <div class="bg-white px-6 py-4 border-b border-gray-200">
-            <img src="lavora.png" alt="Lavora" class="h-8 object-contain mb-2">
+            <img src="lavoro.png" alt="Lavoro" class="h-8 object-contain mb-2">
             <h1 class="text-lg font-bold text-gray-900">Status BSF PUNTA HERMOSA</h1>
             <p id="fecha-actualizacion" class="text-xs text-gray-500 mt-1"></p>
             <p class="text-xs text-gray-600 mt-1 flex items-center"><span class="inline-block w-2 h-2 bg-green-500 rounded-full mr-1"></span> Sincronizado en vivo</p>
@@ -45,7 +45,8 @@
             <div>
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
                     <h2 class="text-sm font-bold text-gray-800 uppercase tracking-wide">Panel de Control de Unidades</h2>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <input type="text" id="search-input" placeholder="Buscar por placa, N° trans, procedencia..." class="border-gray-300 rounded-lg p-2.5 text-xs w-full sm:w-72">
                         <button id="btn-clear" class="cursor-pointer bg-red-700 hover:bg-red-800 text-white text-xs font-bold px-4 py-2.5 rounded-lg">LIMPIAR</button>
                         <button id="btn-add" class="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg">+ Agregar Unidad</button>
                         <button id="btn-export" class="cursor-pointer bg-[#2E7D32] hover:bg-[#236127] text-white text-xs font-bold px-4 py-2.5 rounded-lg">Exportar a Excel</button>
@@ -74,7 +75,7 @@
         <div class="mt-2">
             <img src="almacen.jpg" alt="Almacen BSF Punta Hermosa" class="w-full h-48 object-cover block">
         </div>
-        <div class="text-right text-gray-400 italic text-[11px] px-6 py-3 border-t border-gray-100">Desarrollado por Luis Vallejo - Operaciones Lavora</div>
+        <div class="text-right text-gray-400 italic text-[11px] px-6 py-3 border-t border-gray-100">Desarrollado por Luis Vallejo - Operaciones Lavoro</div>
     </div>
 
     <div id="modal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center hidden p-4">
@@ -95,12 +96,7 @@
     </div>
 
 <script>
-const defaultData = [
-    { prioridad: 1, placa: "F1U789", trans: "14307041", procedencia: "HUACHIPA", tipo: "Recepcion", hora: "14:00", estatus: "Atendido" },
-    { prioridad: 2, placa: "A6P883", trans: "14307043", procedencia: "HUACHIPA", tipo: "Recepcion", hora: "14:05", estatus: "Atendido" },
-    { prioridad: 3, placa: "B3H868", trans: "14307042", procedencia: "HUACHIPA", tipo: "Recepcion", hora: "17:55", estatus: "Atendido" },
-    { prioridad: 4, placa: "V3L765", trans: "14307044", procedencia: "HUACHIPA", tipo: "Recepcion", hora: "18:05", estatus: "Atendido" }
-];
+const defaultData = [];
 const API_URL = "https://script.google.com/macros/s/AKfycbwZ9FyGaCsrxncP_Xs88QQcxzmNes0VOfvsNaGmDPyqWopc3Gr9g665J7kou56_Kt-W-g/exec";
 let database = [];
 async function cargarDatos() {
@@ -160,11 +156,24 @@ const modalTitle = document.getElementById('modal-title');
 const editIdx = document.getElementById('edit-idx');
 function updateDashboard() {
     guardarDatos();
+    const searchInput = document.getElementById('search-input');
+    const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
     const counts = { recepcion:0, despacho:0, traslado:0, recedesp:0, total:database.length, pendiente:0, enproceso:0, pendfactura:0, cargadofact:0, atendido:0, noencd:0, pernoctando:0 };
     tableBody.innerHTML = '';
-    database.forEach((row, index) => {
+    database.forEach((row) => {
         if (row.tipo === 'Recepcion') counts.recepcion++; else if (row.tipo === 'Despacho') counts.despacho++; else if (row.tipo === 'Traslado') counts.traslado++; else if (row.tipo === 'Rece/Desp') counts.recedesp++;
         if (row.estatus === 'Pendiente') counts.pendiente++; else if (row.estatus === 'En Proceso') counts.enproceso++; else if (row.estatus === 'Pend.Factura') counts.pendfactura++; else if (row.estatus === 'Cargado/Fact.') counts.cargadofact++; else if (row.estatus === 'Atendido') counts.atendido++; else if (row.estatus === 'No en CD') counts.noencd++; else if (row.estatus === 'Pernoctando') counts.pernoctando++;
+    });
+    const filtered = database.map((row, idx) => ({row, idx})).filter(({row}) => {
+        if (!searchTerm) return true;
+        return (row.placa && row.placa.toLowerCase().includes(searchTerm)) ||
+               (row.trans && String(row.trans).toLowerCase().includes(searchTerm)) ||
+               (row.procedencia && row.procedencia.toLowerCase().includes(searchTerm)) ||
+               (row.tipo && row.tipo.toLowerCase().includes(searchTerm)) ||
+               (row.estatus && row.estatus.toLowerCase().includes(searchTerm)) ||
+               (String(row.prioridad).includes(searchTerm));
+    });
+    filtered.forEach(({row, idx}, displayIndex) => {
         let tipoClass = "font-bold text-gray-700";
         if (row.tipo === 'Recepcion') tipoClass = "bg-[#E3F0FF] text-[#1E4DB7] font-bold px-2 py-0.5 rounded";
         else if (row.tipo === 'Despacho') tipoClass = "bg-[#E6F4E5] text-[#2E7D32] font-bold px-2 py-0.5 rounded";
@@ -173,14 +182,14 @@ function updateDashboard() {
         else if (row.estatus === 'Pendiente') estatusClass = "bg-[#C62828] text-white font-bold px-2 py-1 rounded block text-center uppercase";
         else if (row.estatus === 'En Proceso') estatusClass = "bg-[#FFEBEE] text-[#C62828] font-bold px-2 py-1 rounded block text-center uppercase";
         else if (row.estatus === 'Pend.Factura') estatusClass = "bg-[#FB8C00] text-white font-bold px-2 py-1 rounded block text-center uppercase";
-        const rowBg = index % 2 === 0 ? 'bg-white' : 'bg-[#FAF9F6]';
+        const rowBg = displayIndex % 2 === 0 ? 'bg-white' : 'bg-[#FAF9F6]';
         const tr = document.createElement('tr');
         tr.className = `${rowBg} hover:bg-gray-100`;
         let tiempoBadge = '<span style="display:inline-block;width:72px"></span>';
         if (row.estatus === 'Atendido') {
             tiempoBadge = `<span class="text-[10px] font-bold text-green-800 bg-green-100 border-green-300 rounded px-1.5 py-0.5" style="display:inline-block;min-width:72px">✓ ${duracionAtendido(row)}</span>`;
         }
-        tr.innerHTML = `<td class="px-2 py-3 border-r border-gray-100">${row.prioridad}</td><td class="px-2 py-3 border-r font-bold uppercase">${row.placa}</td><td class="px-2 py-3 border-r">${row.trans}</td><td class="px-2 py-3 border-r uppercase" style="font-size:11px">${row.procedencia}</td><td class="px-2 py-3 border-r"><span class="${tipoClass}">${row.tipo}</span></td><td class="px-2 py-3 border-r font-mono" style="font-size:11px">${row.hora}</td><td class="px-2 py-3 border-r"><span class="${estatusClass}">${row.estatus}</span></td><td class="px-2 py-3"><div class="flex justify-center items-center gap-1"><button onclick="editRow(${index})" class="bg-amber-500 text-white text-[10px] font-bold px-2 py-1 rounded">Editar</button><button onclick="deleteRow(${index})" class="bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded">Eliminar</button>${tiempoBadge}</div></td>`;
+        tr.innerHTML = `<td class="px-2 py-3 border-r border-gray-100">${row.prioridad}</td><td class="px-2 py-3 border-r font-bold uppercase">${row.placa}</td><td class="px-2 py-3 border-r">${row.trans}</td><td class="px-2 py-3 border-r uppercase" style="font-size:11px">${row.procedencia}</td><td class="px-2 py-3 border-r"><span class="${tipoClass}">${row.tipo}</span></td><td class="px-2 py-3 border-r font-mono" style="font-size:11px">${row.hora}</td><td class="px-2 py-3 border-r"><span class="${estatusClass}">${row.estatus}</span></td><td class="px-2 py-3"><div class="flex justify-center items-center gap-1"><button onclick="editRow(${idx})" class="bg-amber-500 text-white text-[10px] font-bold px-2 py-1 rounded">Editar</button><button onclick="deleteRow(${idx})" class="bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded">Eliminar</button>${tiempoBadge}</div></td>`;
         tableBody.appendChild(tr);
     });
     document.getElementById('count-recepcion').innerText = counts.recepcion;
@@ -196,6 +205,7 @@ function updateDashboard() {
     document.getElementById('count-noencd').innerText = counts.noencd;
     document.getElementById('count-pernoctando').innerText = counts.pernoctando;
 }
+document.getElementById('search-input').addEventListener('input', updateDashboard);
 btnAdd.addEventListener('click', () => { modalTitle.innerText = "Agregar Nueva Unidad"; editIdx.value = ""; unitForm.reset(); document.getElementById('form-prioridad').value = database.length + 1; modal.classList.remove('hidden'); });
 btnClose.addEventListener('click', () => modal.classList.add('hidden'));
 unitForm.addEventListener('submit', (e) => {
@@ -281,7 +291,7 @@ btnExport.addEventListener('click', () => {
             else if(d.estatus==='Pendiente') estStyle = 'background:#C62828;color:#fff;font-weight:bold;';
             html += `<tr style="text-align:center;background:${bg}"><td>${d.prioridad}</td><td><b>${d.placa}</b></td><td>${d.trans}</td><td>${d.procedencia}</td><td style="${tipoStyle}">${d.tipo}</td><td>${d.hora}</td><td style="${estStyle}">${d.estatus}</td><td>${dur || tH+':'+tM}</td><td>Leadtime</td></tr>`;
         });
-        html += `</table><br><div style="text-align:right;font-style:italic;color:#888;font-size:11px;">Desarrollado por Luis Vallejo - Operaciones Lavora</div></body></html>`;
+        html += `</table><br><div style="text-align:right;font-style:italic;color:#888;font-size:11px;">Desarrollado por Luis Vallejo - Operaciones Lavoro</div></body></html>`;
         const blob = new Blob(['\ufeff' + html], { type: 'application/vnd.ms-excel' });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
