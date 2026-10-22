@@ -3,287 +3,289 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Status BSF Punta Hermosa - Lavoro</title>
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-<style>body{font-family:Inter,system-ui,sans-serif;background:#f3f4f6}</style>
+<title>Status BSF PUNTA HERMOSA</title>
+<script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="p-2 md:p-4">
-<div class="max-w-7xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
-  <div class="bg-white border-b border-gray-200 px-4 md:px-6 pt-4 pb-3">
-    <img src="logo.png" alt="Lavoro" class="h-8 object-contain">
-    <h1 class="text-[15px] md:text-[17px] font-extrabold tracking-tight mt-2">Status BSF PUNTA HERMOSA</h1>
-    <p id="fecha-actual" class="text-[11px] text-gray-500 mt-0.5">22 de octubre de 2026 | 01:35 p.m.</p>
-    <p class="text-[11px] text-green-600 font-semibold flex items-center gap-1 mt-0.5"><span class="w-2 h-2 bg-green-500 rounded-full inline-block animate-pulse"></span> Sincronizado en vivo</p>
+<body class="bg-gray-100 p-2 md:p-6">
+<div class="max-w-7xl mx-auto bg-white rounded-xl shadow overflow-hidden">
+
+  <div class="p-4 md:p-6 border-b">
+    <div class="text-blue-800 font-extrabold text-2xl">Lav<span class="text-green-600">o</span>ro</div>
+    <h1 class="text-xl md:text-2xl font-bold mt-2">Status BSF PUNTA HERMOSA</h1>
+    <p id="fecha" class="text-xs text-gray-500 mt-1"></p>
+    <p class="text-xs text-green-600 font-bold mt-1">● Sincronizado en vivo</p>
   </div>
+
   <div class="p-4 md:p-6">
-    <p class="text-[11px] font-bold tracking-widest text-gray-500 mb-2">POR TIPO</p>
+    <p class="text-xs font-bold tracking-widest text-gray-500 mb-2">POR TIPO</p>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
-      <div class="bg-[#E3F2FD] rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-[#1565C0]">RECEPCIÓN</p><p id="count-recepcion" class="text-xl font-extrabold text-[#1565C0]">0</p></div>
-      <div class="bg-[#E8F5E9] rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-[#2E7D32]">DESPACHO</p><p id="count-despacho" class="text-xl font-extrabold text-[#2E7D32]">0</p></div>
-      <div class="bg-[#FFF8E1] rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-[#F9A825]">TRASLADO</p><p id="count-traslado" class="text-xl font-extrabold text-[#F9A825]">0</p></div>
-      <div class="bg-[#F3E5F5] rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-[#7B1FA2]">RECE/DESP</p><p id="count-rece-desp" class="text-xl font-extrabold text-[#7B1FA2]">0</p></div>
+      <div class="bg-sky-100 rounded-lg p-3 text-center">
+        <p class="text-[11px] font-bold text-sky-700">RECEPCIÓN</p>
+        <p id="tipo-recepcion" class="text-2xl font-bold text-sky-700">0</p>
+      </div>
+      <div class="bg-green-100 rounded-lg p-3 text-center">
+        <p class="text-[11px] font-bold text-green-700">DESPACHO</p>
+        <p id="tipo-despacho" class="text-2xl font-bold text-green-700">0</p>
+      </div>
+      <div class="bg-yellow-100 rounded-lg p-3 text-center">
+        <p class="text-[11px] font-bold text-yellow-700">TRASLADO</p>
+        <p id="tipo-traslado" class="text-2xl font-bold text-yellow-700">0</p>
+      </div>
+      <div class="bg-purple-100 rounded-lg p-3 text-center">
+        <p class="text-[11px] font-bold text-purple-700">RECE/DESP</p>
+        <p id="tipo-rece-desp" class="text-2xl font-bold text-purple-700">0</p>
+      </div>
     </div>
-    <p class="text-[11px] font-bold tracking-widest text-gray-500 mb-2">POR ESTATUS</p>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-      <div class="bg-black rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-white">TOTAL</p><p id="count-total" class="text-xl font-extrabold text-white">0</p></div>
-      <div class="bg-[#C62828] rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-white">PENDIENTE</p><p id="count-pendiente" class="text-xl font-extrabold text-white">0</p></div>
-      <div class="bg-[#FFEBEE] rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-[#C62828]">EN PROCESO</p><p id="count-en-proceso" class="text-xl font-extrabold text-[#C62828]">0</p></div>
-      <div class="bg-[#FB8C00] rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-white">PEND. FACTURA</p><p id="count-pend-factura" class="text-xl font-extrabold text-white">0</p></div>
-      <div class="bg-[#E8F5E9] rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-[#2E7D32]">CARGADO/FACT.</p><p id="count-cargado" class="text-xl font-extrabold text-[#2E7D32]">0</p></div>
-      <div class="bg-[#2E7D32] rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-white">ATENDIDO</p><p id="count-atendido" class="text-xl font-extrabold text-white">0</p></div>
-      <div class="bg-[#ECEFF1] rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-gray-500">NO EN CD</p><p id="count-no-cd" class="text-xl font-extrabold text-gray-700">0</p></div>
-      <div class="bg-[#29B6F6] rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-white">PERNOCTANDO</p><p id="count-pernoctando" class="text-xl font-extrabold text-white">0</p></div>
+
+    <p class="text-xs font-bold tracking-widest text-gray-500 mb-2">POR ESTATUS</p>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+      <div class="bg-black text-white rounded-lg p-3 text-center">
+        <p class="text-[11px] font-bold">TOTAL</p>
+        <p id="count-total" class="text-2xl font-bold">0</p>
+      </div>
+      <div onclick="setFiltro('PENDIENTE')" class="cursor-pointer bg-[#C62828] text-white rounded-lg p-3 text-center hover:opacity-90">
+        <p class="text-[11px] font-bold">PENDIENTE</p>
+        <p id="count-pendiente" class="text-2xl font-bold">0</p>
+      </div>
+      <div onclick="setFiltro('EN PROCESO')" class="cursor-pointer bg-red-100 rounded-lg p-3 text-center hover:opacity-90">
+        <p class="text-[11px] font-bold text-red-700">EN PROCESO</p>
+        <p id="count-proceso" class="text-2xl font-bold text-red-700">0</p>
+      </div>
+      <div onclick="setFiltro('PEND. FACTURA')" class="cursor-pointer bg-orange-500 text-white rounded-lg p-3 text-center hover:opacity-90">
+        <p class="text-[11px] font-bold">PEND. FACTURA</p>
+        <p id="count-factura" class="text-2xl font-bold">0</p>
+      </div>
+      <div onclick="setFiltro('CARGADO/FACT.')" class="cursor-pointer bg-green-100 rounded-lg p-3 text-center hover:opacity-90">
+        <p class="text-[11px] font-bold text-green-700">CARGADO/FACT.</p>
+        <p id="count-cargado" class="text-2xl font-bold text-green-700">0</p>
+      </div>
+      <div onclick="setFiltro('ATENDIDO')" class="cursor-pointer bg-green-700 text-white rounded-lg p-3 text-center hover:opacity-90">
+        <p class="text-[11px] font-bold">ATENDIDO</p>
+        <p id="count-atendido" class="text-2xl font-bold">0</p>
+      </div>
+      <div onclick="setFiltro('NO EN CD')" class="cursor-pointer bg-gray-200 rounded-lg p-3 text-center hover:opacity-90">
+        <p class="text-[11px] font-bold text-gray-700">NO EN CD</p>
+        <p id="count-noencd" class="text-2xl font-bold text-gray-700">0</p>
+      </div>
+      <div onclick="setFiltro('PERNOCTANDO')" class="cursor-pointer bg-sky-500 text-white rounded-lg p-3 text-center hover:opacity-90">
+        <p class="text-[11px] font-bold">PERNOCTANDO</p>
+        <p id="count-pernoctando" class="text-2xl font-bold">0</p>
+      </div>
     </div>
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-3">
-      <h2 class="text-[13px] font-extrabold">PANEL DE CONTROL DE UNIDADES</h2>
+
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-3">
+      <h2 class="font-bold text-sm">PANEL DE CONTROL DE UNIDADES</h2>
       <div class="flex flex-col md:flex-row gap-2 md:items-center w-full md:w-auto">
-        <input id="search-input" type="text" placeholder="Buscar por placa, N° trans, procedencia..." class="border border-gray-300 rounded-md px-3 py-1.5 text-xs w-full md:w-72 focus:outline-none focus:ring-2 focus:ring-blue-400">
+        <input id="search-input" type="text" placeholder="Buscar por placa, N° trans, procedencia..." class="border rounded-md px-3 py-2 text-xs w-full md:w-80">
         <div class="flex gap-2">
           <button id="btn-clear" type="button" onclick="if(confirm('¿Limpiar la búsqueda?')){document.getElementById('search-input').value=''; updateDashboard(true);}" class="bg-[#C62828] text-white text-xs font-bold px-4 py-2 rounded-md hover:bg-red-700">LIMPIAR</button>
-          <button id="btn-add" type="button" class="bg-[#1565C0] text-white text-xs font-bold px-4 py-2 rounded-md hover:bg-blue-700">+ Agregar Unidad</button>
-          <button id="btn-export" type="button" class="bg-[#2E7D32] text-white text-xs font-bold px-4 py-2 rounded-md hover:bg-green-700">Exportar a Excel</button>
+          <button id="btn-add" type="button" class="bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-md hover:bg-blue-800">+ Agregar Unidad</button>
+          <button id="btn-export" type="button" class="bg-green-700 text-white text-xs font-bold px-4 py-2 rounded-md hover:bg-green-800">Exportar a Excel</button>
         </div>
       </div>
     </div>
-    <div class="overflow-x-auto rounded-lg border-gray-200">
+
+    <div class="overflow-x-auto">
       <table class="w-full text-xs">
-        <thead class="bg-gray-50 text-gray-600">
-          <tr>
-            <th class="px-2 py-2 text-left font-bold">PRIORIDAD</th>
-            <th class="px-2 py-2 text-left font-bold">PLACA</th>
-            <th class="px-2 py-2 text-left font-bold">N° TRANS.</th>
-            <th class="px-2 py-2 text-left font-bold">PROCEDENCIA</th>
-            <th class="px-2 py-2 text-left font-bold">TIPO</th>
-            <th class="px-2 py-2 text-left font-bold">HORA DE LLEGADA</th>
-            <th class="px-2 py-2 text-left font-bold">ESTATUS</th>
-            <th class="px-2 py-2 text-left font-bold">ACCIONES</th>
+        <thead>
+          <tr class="bg-gray-50 text-gray-500">
+            <th class="text-left p-2 font-bold">PRIORIDAD</th>
+            <th class="text-left p-2 font-bold">PLACA</th>
+            <th class="text-left p-2 font-bold">N° TRANS.</th>
+            <th class="text-left p-2 font-bold">PROCEDENCIA</th>
+            <th class="text-left p-2 font-bold">TIPO</th>
+            <th class="text-left p-2 font-bold">HORA DE LLEGADA</th>
+            <th class="text-left p-2 font-bold">ESTATUS</th>
+            <th class="text-left p-2 font-bold">ACCIONES</th>
           </tr>
         </thead>
-        <tbody id="tabla-cuerpo" class="divide-y divide-gray-100"></tbody>
+        <tbody id="tabla-body"></tbody>
       </table>
     </div>
   </div>
-  <div class="mt-2">
-    <img src="almacen.jpg" alt="Almacén" class="w-full h-40 md:h-56 object-cover">
-    <p class="text-right text-[10px] italic text-gray-400 pr-4 py-2">Desarrollado por Luis Vallejo - Operaciones Lavoro</p>
-  </div>
+
+  <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1200" class="w-full h-48 object-cover">
+  <p class="text-right text-[10px] text-gray-400 italic p-2">Desarrollado por Luis Vallejo - Operaciones Lavora</p>
 </div>
 
 <div id="modal" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-50 p-4">
-  <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-5">
-    <h3 id="modal-title" class="font-bold text-sm mb-3">Agregar Unidad</h3>
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-lg p-5">
+    <h3 id="modal-title" class="font-bold mb-3">Agregar Unidad</h3>
     <div class="grid grid-cols-2 gap-3">
-      <div><label class="text-[11px] font-bold">Prioridad</label><input id="f-prioridad" type="number" min="1" class="w-full border rounded-md px-2 py-1.5 text-xs mt-1"></div>
-      <div><label class="text-[11px] font-bold">Placa</label><input id="f-placa" type="text" class="w-full border rounded-md px-2 py-1.5 text-xs mt-1 uppercase"></div>
-      <div><label class="text-[11px] font-bold">N° Trans.</label><input id="f-trans" type="text" class="w-full border rounded-md px-2 py-1.5 text-xs mt-1"></div>
-      <div><label class="text-[11px] font-bold">Procedencia</label><input id="f-procedencia" type="text" class="w-full border rounded-md px-2 py-1.5 text-xs mt-1 uppercase"></div>
-      <div><label class="text-[11px] font-bold">Tipo</label><select id="f-tipo" class="w-full border rounded-md px-2 py-1.5 text-xs mt-1"><option>Recepcion</option><option>Despacho</option><option>Traslado</option><option>Rece/Desp</option></select></div>
-      <div><label class="text-[11px] font-bold">Hora Llegada</label><input id="f-hora" type="time" class="w-full border rounded-md px-2 py-1.5 text-xs mt-1"></div>
-      <div class="col-span-2"><label class="text-[11px] font-bold">Estatus</label><select id="f-estatus" class="w-full border rounded-md px-2 py-1.5 text-xs mt-1"><option>Pendiente</option><option>En Proceso</option><option>Pend. Factura</option><option>Cargado/Fact.</option><option>Atendido</option><option>No en CD</option><option>Pernoctando</option></select></div>
+      <input id="f-placa" placeholder="Placa" class="border rounded-md px-3 py-2 text-xs">
+      <input id="f-trans" placeholder="N° Trans" class="border rounded-md px-3 py-2 text-xs">
+      <input id="f-proc" placeholder="Procedencia" class="border rounded-md px-3 py-2 text-xs">
+      <select id="f-tipo" class="border rounded-md px-3 py-2 text-xs">
+        <option>Recepción</option>
+        <option>Despacho</option>
+        <option>Traslado</option>
+        <option>Rece/Desp</option>
+      </select>
+      <input id="f-hora" type="time" class="border rounded-md px-3 py-2 text-xs">
+      <select id="f-estatus" class="border rounded-md px-3 py-2 text-xs">
+        <option>PENDIENTE</option>
+        <option>EN PROCESO</option>
+        <option>PEND. FACTURA</option>
+        <option>CARGADO/FACT.</option>
+        <option>ATENDIDO</option>
+        <option>NO EN CD</option>
+        <option>PERNOCTANDO</option>
+      </select>
     </div>
     <div class="flex justify-end gap-2 mt-4">
-      <button id="btn-cancel" type="button" class="bg-gray-200 text-gray-700 text-xs font-bold px-4 py-2 rounded-md">Cancelar</button>
-      <button id="btn-save" type="button" class="bg-[#1565C0] text-white text-xs font-bold px-4 py-2 rounded-md">Guardar</button>
+      <button id="btn-cancel" type="button" class="bg-gray-200 text-xs font-bold px-4 py-2 rounded-md">Cancelar</button>
+      <button id="btn-save" type="button" class="bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-md">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-[60] p-4">
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-sm p-5 text-center">
+    <p id="confirm-text" class="font-bold text-sm mb-4">¿Eliminar esta unidad?</p>
+    <div class="flex justify-center gap-3">
+      <button id="btn-confirm-no" type="button" class="bg-gray-200 text-gray-700 text-xs font-bold px-5 py-2 rounded-md">Cancelar</button>
+      <button id="btn-confirm-yes" type="button" class="bg-[#C62828] text-white text-xs font-bold px-5 py-2 rounded-md">Sí, Eliminar</button>
     </div>
   </div>
 </div>
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwZ9FyGaCsrxncP_Xs88QQcxzmNes0VOfvsNaGmDPyqWopc3Gr9g665J7kou56_Kt-W-g/exec";
-let database = [];
+let database = JSON.parse(localStorage.getItem('bsf_data') || '[]');
 let editIndex = -1;
-let lastIds = new Set();
+let deleteIndex = -1;
+let filtroEstatus = null;
 
-function getLeadtime(row){
-  if(!row.hora || !row.hora.includes(':')) return {text:"--:--", ms:0};
-  const [h,m] = row.hora.split(':').map(Number);
-  const now = new Date();
-  let llegada = new Date(now);
-  llegada.setHours(h||0, m||0, 0, 0);
-  if(llegada.getTime() > now.getTime()) llegada.setDate(llegada.getDate()-1);
-  let fin = now.getTime();
-  if(row.estatus === 'Atendido' && row.atendidoEn) fin = row.atendidoEn;
-  let diff = Math.max(0, fin - llegada.getTime());
-  const hh = String(Math.floor(diff/3600000)).padStart(2,'0');
-  const mm = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
-  const ss = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
-  return {text: hh+":"+mm+":"+ss, ms: diff};
+function save(){ localStorage.setItem('bsf_data', JSON.stringify(database)); }
+function setFiltro(estatus){
+  filtroEstatus = (filtroEstatus === estatus) ? null : estatus;
+  updateDashboard(true);
 }
-function duracionAtendido(row){
-  if(!row.atendidoEn || !row.hora) return "";
-  const [h,m] = row.hora.split(':').map(Number);
-  let llegada = new Date(row.atendidoEn);
-  llegada.setHours(h||0,m||0,0,0);
-  let diff = Math.max(0, row.atendidoEn - llegada.getTime());
-  const hh = String(Math.floor(diff/3600000)).padStart(2,'0');
-  const mm = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
-  const ss = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
-  return hh+":"+mm+":"+ss;
-}
-function leadtimeBadge(row, idx){
-  const r = getLeadtime(row);
-  if(row.estatus === 'Atendido') return '<span class="text-[10px] font-bold text-green-800 bg-green-100 rounded px-1.5 py-0.5">✓ '+duracionAtendido(row)+'</span>';
-  let cls = "bg-gray-200 text-gray-700";
-  if(r.ms >= 4*3600000) cls = "bg-[#C62828] text-white";
-  else if(r.ms >= 2*3600000) cls = "bg-[#FB8C00] text-white";
-  return '<span data-idx="'+idx+'" class="text-[10px] font-bold rounded px-1.5 py-0.5 '+cls+'">⏱ '+r.text+'</span>';
-}
-function actualizarBadgesTiempo(){
-  document.querySelectorAll('span[data-idx]').forEach(el=>{
-    const row = database[parseInt(el.getAttribute('data-idx'))];
-    if(!row || row.estatus === 'Atendido') return;
-    const r = getLeadtime(row);
-    el.textContent = '⏱ '+r.text;
-    if(r.ms >= 4*3600000) el.className = "text-[10px] font-bold rounded px-1.5 py-0.5 bg-[#C62828] text-white";
-    else if(r.ms >= 2*3600000) el.className = "text-[10px] font-bold rounded px-1.5 py-0.5 bg-[#FB8C00] text-white";
-    else el.className = "text-[10px] font-bold rounded px-1.5 py-0.5 bg-gray-200 text-gray-700";
-  });
+function getBadgeTiempo(horaLlegada){
+  if(!horaLlegada) return "";
+  const ahora = new Date();
+  const [h,m] = horaLlegada.split(':').map(Number);
+  const llegada = new Date();
+  llegada.setHours(h,m,0,0);
+  let diffMin = Math.floor((ahora - llegada)/60000);
+  if(diffMin < 0) diffMin += 24*60;
+  const hh = String(Math.floor(diffMin/60)).padStart(2,'0');
+  const mm = String(diffMin%60).padStart(2,'0');
+  const ss = String(ahora.getSeconds()).padStart(2,'0');
+  const tiempo = `${hh}:${mm}:${ss}`;
+  if(diffMin >= 120) return `<span class="bg-red-600 text-white text-[11px] font-bold px-2 py-1 rounded-md animate-pulse">⏱ ${tiempo}</span>`;
+  if(diffMin >= 60) return `<span class="bg-orange-500 text-white text-[11px] font-bold px-2 py-1 rounded-md">⏱ ${tiempo}</span>`;
+  return `<span class="bg-green-600 text-white text-[11px] font-bold px-2 py-1 rounded-md">⏱ ${tiempo}</span>`;
 }
 function updateDashboard(skipSave){
-  const search = (document.getElementById('search-input').value || "").toLowerCase();
-  const cTipo = {Recepcion:0, Despacho:0, Traslado:0, 'Rece/Desp':0};
-  const cEst = {Total:database.length, Pendiente:0, 'En Proceso':0, 'Pend. Factura':0, 'Cargado/Fact.':0, Atendido:0, 'No en CD':0, Pernoctando:0};
-  database.forEach(r=>{ if(cTipo[r.tipo]!==undefined) cTipo[r.tipo]++; if(cEst[r.estatus]!==undefined) cEst[r.estatus]++; });
-  document.getElementById('count-recepcion').textContent = cTipo.Recepcion;
-  document.getElementById('count-despacho').textContent = cTipo.Despacho;
-  document.getElementById('count-traslado').textContent = cTipo.Traslado;
-  document.getElementById('count-rece-desp').textContent = cTipo['Rece/Desp'];
-  document.getElementById('count-total').textContent = cEst.Total;
-  document.getElementById('count-pendiente').textContent = cEst.Pendiente;
-  document.getElementById('count-en-proceso').textContent = cEst['En Proceso'];
-  document.getElementById('count-pend-factura').textContent = cEst['Pend. Factura'];
-  document.getElementById('count-cargado').textContent = cEst['Cargado/Fact.'];
-  document.getElementById('count-atendido').textContent = cEst.Atendido;
-  document.getElementById('count-no-cd').textContent = cEst['No en CD'];
-  document.getElementById('count-pernoctando').textContent = cEst.Pernoctando;
-  const tbody = document.getElementById('tabla-cuerpo');
-  tbody.innerHTML = "";
-  database.forEach((row, idx)=>{
-    const txt = (row.prioridad+" "+row.placa+" "+row.trans+" "+row.procedencia+" "+row.tipo+" "+row.hora+" "+row.estatus).toLowerCase();
-    if(search && txt.indexOf(search)===-1) return;
-    let tipoBadge = row.tipo;
-    if(row.tipo === 'Recepcion') tipoBadge = '<span class="text-blue-600 font-bold">Recepcion</span>';
-    if(row.tipo === 'Despacho') tipoBadge = '<span class="text-green-700 font-bold">Despacho</span>';
-    if(row.tipo === 'Traslado') tipoBadge = '<span class="text-yellow-700 font-bold">Traslado</span>';
-    if(row.tipo === 'Rece/Desp') tipoBadge = '<span class="text-purple-700 font-bold">Rece/Desp</span>';
-    let estatusBadge = row.estatus;
-    if(row.estatus === 'Atendido') estatusBadge = '<span class="bg-[#2E7D32] text-white text-[10px] font-bold px-2 py-1 rounded">ATENDIDO</span>';
-    else if(row.estatus === 'Pendiente') estatusBadge = '<span class="bg-[#C62828] text-white text-[10px] font-bold px-2 py-1 rounded">PENDIENTE</span>';
-    else if(row.estatus === 'En Proceso') estatusBadge = '<span class="bg-[#FFEBEE] text-[#C62828] text-[10px] font-bold px-2 py-1 rounded">EN PROCESO</span>';
-    else if(row.estatus === 'Pend. Factura') estatusBadge = '<span class="bg-[#FB8C00] text-white text-[10px] font-bold px-2 py-1 rounded">PEND. FACTURA</span>';
-    else if(row.estatus === 'Cargado/Fact.') estatusBadge = '<span class="bg-[#E8F5E9] text-[#2E7D32] text-[10px] font-bold px-2 py-1 rounded">CARGADO/FACT.</span>';
-    else if(row.estatus === 'Pernoctando') estatusBadge = '<span class="bg-[#29B6F6] text-white text-[10px] font-bold px-2 py-1 rounded">PERNOCTANDO</span>';
-    else if(row.estatus === 'No en CD') estatusBadge = '<span class="bg-[#ECEFF1] text-gray-700 text-[10px] font-bold px-2 py-1 rounded">NO EN CD</span>';
-    let tiempoAccion = leadtimeBadge(row, idx);
-    if(row.estatus === 'Atendido') tiempoAccion = '<span class="text-[10px] font-bold text-green-800 bg-green-100 rounded px-1.5 py-0.5">✓ '+duracionAtendido(row)+'</span>';
+  if(!skipSave) save();
+  const hoy = new Date();
+  document.getElementById('fecha').textContent = hoy.toLocaleDateString('es-PE', {day:'numeric', month:'long', year:'numeric'}) + ' | ' + hoy.toLocaleTimeString('es-PE', {hour:'2-digit', minute:'2-digit'});
+  const search = document.getElementById('search-input').value.toLowerCase();
+  let filtered = [...database];
+  if(filtroEstatus){ filtered = filtered.filter(u => u.estatus === filtroEstatus); }
+  if(search){ filtered = filtered.filter(u => (u.placa+u.trans+u.procedencia).toLowerCase().includes(search)); }
+
+  document.getElementById('count-total').textContent = database.length;
+  document.getElementById('count-pendiente').textContent = database.filter(u=>u.estatus==='PENDIENTE').length;
+  document.getElementById('count-proceso').textContent = database.filter(u=>u.estatus==='EN PROCESO').length;
+  document.getElementById('count-factura').textContent = database.filter(u=>u.estatus==='PEND. FACTURA').length;
+  document.getElementById('count-cargado').textContent = database.filter(u=>u.estatus==='CARGADO/FACT.').length;
+  document.getElementById('count-atendido').textContent = database.filter(u=>u.estatus==='ATENDIDO').length;
+  document.getElementById('count-noencd').textContent = database.filter(u=>u.estatus==='NO EN CD').length;
+  document.getElementById('count-pernoctando').textContent = database.filter(u=>u.estatus==='PERNOCTANDO').length;
+  document.getElementById('tipo-recepcion').textContent = database.filter(u=>u.tipo==='Recepción').length;
+  document.getElementById('tipo-despacho').textContent = database.filter(u=>u.tipo==='Despacho').length;
+  document.getElementById('tipo-traslado').textContent = database.filter(u=>u.tipo==='Traslado').length;
+  document.getElementById('tipo-rece-desp').textContent = database.filter(u=>u.tipo==='Rece/Desp').length;
+
+  const tbody = document.getElementById('tabla-body');
+  tbody.innerHTML = '';
+  filtered.forEach((u) => {
+    const realIndex = database.indexOf(u);
     const tr = document.createElement('tr');
-    tr.innerHTML = '<td class="px-2 py-2 font-bold">'+row.prioridad+'</td><td class="px-2 py-2 font-bold">'+row.placa+'</td><td class="px-2 py-2">'+row.trans+'</td><td class="px-2 py-2">'+row.procedencia+'</td><td class="px-2 py-2">'+tipoBadge+'</td><td class="px-2 py-2">'+row.hora+'</td><td class="px-2 py-2">'+estatusBadge+'</td><td class="px-2 py-2"><button onclick="abrirEditar('+idx+')" class="bg-[#FB8C00] text-white text-[10px] font-bold px-2 py-1 rounded">Editar</button> <button onclick="eliminarFila('+idx+')" class="bg-[#C62828] text-white text-[10px] font-bold px-2 py-1 rounded">Eliminar</button> '+tiempoAccion+'</td>';
+    tr.className = 'border-t';
+    tr.innerHTML = `
+      <td class="p-2">${realIndex+1}</td>
+      <td class="p-2 font-bold">${u.placa}</td>
+      <td class="p-2">${u.trans}</td>
+      <td class="p-2">${u.procedencia}</td>
+      <td class="p-2 text-green-700 font-bold">${u.tipo}</td>
+      <td class="p-2">${u.hora}</td>
+      <td class="p-2"><span class="bg-red-100 text-red-700 text-[10px] font-bold px-2 py-1 rounded-full">${u.estatus}</span></td>
+      <td class="p-2 flex gap-1">
+        <button onclick="editarFila(${realIndex})" class="bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-md">Editar</button>
+        <button onclick="eliminarFila(${realIndex})" class="bg-[#C62828] text-white text-[10px] font-bold px-2 py-1 rounded-md">Eliminar</button>
+        ${getBadgeTiempo(u.hora)}
+      </td>`;
     tbody.appendChild(tr);
   });
-  if(!skipSave) guardarDatos();
 }
-async function guardarDatos(){
-  try{ await fetch(API_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body: JSON.stringify(database)}); }catch(e){}
-}
-async function cargarDatos(){
-  try{
-    const res = await fetch(API_URL);
-    const texto = await res.text();
-    if(texto && texto.trim() !== "[]" && texto.trim() !== ""){
-      database = JSON.parse(texto);
-      lastIds = new Set(database.map(r => r.placa+"|"+r.trans+"|"+r.hora));
-      updateDashboard(true);
-    }
-  }catch(e){}
-}
-function playAlert(){
-  try{
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    [0,0.35,0.7].forEach(d=>{
-      const o = ctx.createOscillator(); const g = ctx.createGain();
-      o.connect(g); g.connect(ctx.destination); o.type='sine'; o.frequency.value=880;
-      g.gain.setValueAtTime(0.3, ctx.currentTime + d);
-      g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + d + 0.3);
-      o.start(ctx.currentTime + d); o.stop(ctx.currentTime + d + 0.35);
-    });
-  }catch(e){}
-}
-document.getElementById('btn-export').addEventListener('click', ()=>{
-  const hoy = new Date().toISOString().slice(0,10);
-  let tabla = '<table border="1" style="border-collapse:collapse;font-family:Arial"><tr style="background:#1565C0;color:white"><td colspan="9" style="font-size:14px;font-weight:bold">LAVORO - Status BSF PUNTA HERMOSA - '+hoy+'</td></tr><tr style="background:#000;color:white;font-weight:bold"><th>PRIORIDAD</th><th>PLACA</th><th>N° TRANS.</th><th>PROCEDENCIA</th><th>TIPO</th><th>HORA LLEGADA</th><th>TIEMPO</th><th>ESTATUS</th><th>ATENDIDO EN</th></tr>';
-  database.forEach(row=>{ tabla += '<tr><td>'+row.prioridad+'</td><td>'+row.placa+'</td><td>'+row.trans+'</td><td>'+row.procedencia+'</td><td>'+row.tipo+'</td><td>'+row.hora+'</td><td>'+getLeadtime(row).text+'</td><td>'+row.estatus+'</td><td>'+(row.atendidoEn?new Date(row.atendidoEn).toLocaleString():'')+'</td></tr>'; });
-  tabla += '</table><br><p style="font-style:italic;font-size:10px;color:#888">Desarrollado por Luis Vallejo - Operaciones Lavoro</p>';
-  const blob = new Blob(['\ufeff'+tabla], {type:'application/vnd.ms-excel'});
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = 'status_BSF_PUNTA_HERMOSA_'+hoy+'.xls';
-  link.click();
+window.eliminarFila = function(idx){
+  deleteIndex = idx;
+  document.getElementById('confirm-text').textContent = "¿Eliminar esta unidad?";
+  const m = document.getElementById('confirm-modal');
+  m.classList.remove('hidden'); m.classList.add('flex');
+};
+window.editarFila = function(idx){
+  editIndex = idx;
+  const u = database[idx];
+  document.getElementById('f-placa').value = u.placa;
+  document.getElementById('f-trans').value = u.trans;
+  document.getElementById('f-proc').value = u.procedencia;
+  document.getElementById('f-tipo').value = u.tipo;
+  document.getElementById('f-hora').value = u.hora;
+  document.getElementById('f-estatus').value = u.estatus;
+  document.getElementById('modal-title').textContent = "Editar Unidad";
+  const m = document.getElementById('modal');
+  m.classList.remove('hidden'); m.classList.add('flex');
+};
+document.getElementById('btn-confirm-no').addEventListener('click', ()=>{
+  deleteIndex = -1;
+  const m = document.getElementById('confirm-modal');
+  m.classList.add('hidden'); m.classList.remove('flex');
 });
-document.getElementById('search-input').addEventListener('input', ()=> updateDashboard(true));
-document.getElementById('btn-clear').addEventListener('click', ()=>{ document.getElementById('search-input').value=""; updateDashboard(true); });
-function abrirModal(){ const m=document.getElementById('modal'); m.classList.remove('hidden'); m.classList.add('flex'); }
-function cerrarModal(){ const m=document.getElementById('modal'); m.classList.add('hidden'); m.classList.remove('flex'); editIndex=-1; }
+document.getElementById('btn-confirm-yes').addEventListener('click', ()=>{
+  if(deleteIndex >= 0){ database.splice(deleteIndex,1); deleteIndex = -1; updateDashboard(); }
+  const m = document.getElementById('confirm-modal');
+  m.classList.add('hidden'); m.classList.remove('flex');
+});
 document.getElementById('btn-add').addEventListener('click', ()=>{
-  document.getElementById('modal-title').textContent="Agregar Unidad";
-  ['f-prioridad','f-placa','f-trans','f-procedencia','f-hora'].forEach(id=>document.getElementById(id).value="");
-  document.getElementById('f-tipo').value="Recepcion";
-  document.getElementById('f-estatus').value="Pendiente";
-  abrirModal();
+  editIndex = -1;
+  document.getElementById('modal-title').textContent = "Agregar Unidad";
+  ['f-placa','f-trans','f-proc','f-hora'].forEach(id=>document.getElementById(id).value='');
+  const m = document.getElementById('modal');
+  m.classList.remove('hidden'); m.classList.add('flex');
 });
-document.getElementById('btn-cancel').addEventListener('click', cerrarModal);
+document.getElementById('btn-cancel').addEventListener('click', ()=>{
+  const m = document.getElementById('modal');
+  m.classList.add('hidden'); m.classList.remove('flex');
+});
 document.getElementById('btn-save').addEventListener('click', ()=>{
-  const nueva = {
-    prioridad: document.getElementById('f-prioridad').value || 1,
-    placa: document.getElementById('f-placa').value.toUpperCase(),
-    trans: document.getElementById('f-trans').value,
-    procedencia: document.getElementById('f-procedencia').value.toUpperCase(),
+  const unidad = {
+    placa: document.getElementById('f-placa').value.trim(),
+    trans: document.getElementById('f-trans').value.trim(),
+    procedencia: document.getElementById('f-proc').value.trim(),
     tipo: document.getElementById('f-tipo').value,
     hora: document.getElementById('f-hora').value,
-    estatus: document.getElementById('f-estatus').value,
-    atendidoEn: document.getElementById('f-estatus').value === 'Atendido' ? Date.now() : null
+    estatus: document.getElementById('f-estatus').value
   };
-  if(editIndex >= 0){ database[editIndex] = Object.assign(database[editIndex], nueva); }
-  else { database.push(nueva); if(parseInt(nueva.prioridad)===1) playAlert(); }
-  cerrarModal(); updateDashboard();
+  if(!unidad.placa) return alert('Ingresa la placa');
+  if(editIndex >= 0){ database[editIndex] = unidad; } else { database.push(unidad); }
+  updateDashboard();
+  const m = document.getElementById('modal');
+  m.classList.add('hidden'); m.classList.remove('flex');
 });
-window.abrirEditar = function(idx){
-  editIndex = idx; const r = database[idx];
-  document.getElementById('modal-title').textContent="Editar Unidad";
-  document.getElementById('f-prioridad').value=r.prioridad;
-  document.getElementById('f-placa').value=r.placa;
-  document.getElementById('f-trans').value=r.trans;
-  document.getElementById('f-procedencia').value=r.procedencia;
-  document.getElementById('f-tipo').value=r.tipo;
-  document.getElementById('f-hora').value=r.hora;
-  document.getElementById('f-estatus').value=r.estatus;
-  abrirModal();
-};
-window.eliminarFila = function(idx){
-  if(confirm("¿Eliminar esta unidad?")){ database.splice(idx,1); updateDashboard(); }
-};
-function actualizarFecha(){
-  const now = new Date();
-  const meses = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
-  let h = now.getHours(); const m = String(now.getMinutes()).padStart(2,'0'); const ampm = h >= 12 ? 'p.m.' : 'a.m.';
-  h = h % 12 || 12;
-  document.getElementById('fecha-actual').textContent = now.getDate()+" de "+meses[now.getMonth()]+" de "+now.getFullYear()+" | "+String(h).padStart(2,'0')+":"+m+" "+ampm;
-}
-actualizarFecha();
-setInterval(actualizarFecha, 60000);
-setInterval(actualizarBadgesTiempo, 1000);
-setInterval(async ()=>{
-  try{
-    const res = await fetch(API_URL);
-    const texto = await res.text();
-    if(texto && texto.trim() !== "[]"){
-      const nuevo = JSON.parse(texto);
-      const nuevoIds = new Set(nuevo.map(r => r.placa+"|"+r.trans+"|"+r.hora));
-      const llegoPrio1 = nuevo.some(r => !lastIds.has(r.placa+"|"+r.trans+"|"+r.hora) && parseInt(r.prioridad)===1);
-      if(llegoPrio1) playAlert();
-      database = nuevo; lastIds = nuevoIds; updateDashboard(true);
-    }
-  }catch(e){}
-}, 30000);
-cargarDatos();
+document.getElementById('search-input').addEventListener('input', ()=> updateDashboard(true));
+document.getElementById('btn-export').addEventListener('click', ()=>{
+  let csv = "Prioridad,Placa,N Trans,Procedencia,Tipo,Hora,Estatus\n";
+  database.forEach((u,i)=>{ csv += `${i+1},${u.placa},${u.trans},${u.procedencia},${u.tipo},${u.hora},${u.estatus}\n`; });
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = "BSF_PUNTA_HERMOSA.csv";
+  a.click();
+});
+setInterval(()=> updateDashboard(true), 1000);
+updateDashboard(true);
 </script>
 </body>
 </html>
