@@ -156,7 +156,7 @@ function actualizarBadgesTiempo(){
   });
 }
 setInterval(actualizarBadgesTiempo, 1000);
-<script>
+
 function duracionAtendido(row){
   if(!row.atendidoEn || !row.hora) return "";
   const [h,m] = row.hora.split(':').map(Number);
