@@ -10,7 +10,7 @@
 <div class="max-w-7xl mx-auto bg-white rounded-xl shadow overflow-hidden">
 
   <div class="p-4 md:p-6 border-b">
-    <div class="text-blue-800 font-extrabold text-2xl">Lav<span class="text-green-600">o</span>ro</div>
+    <img src="logo.png" alt="Lavora" class="h-10 md:h-12 object-contain mb-2">
     <h1 class="text-xl md:text-2xl font-bold mt-2">Status BSF PUNTA HERMOSA</h1>
     <p id="fecha" class="text-xs text-gray-500 mt-1"></p>
     <p class="text-xs text-green-600 font-bold mt-1">● Sincronizado en vivo</p>
@@ -104,7 +104,7 @@
     </div>
   </div>
 
-  <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1200" class="w-full h-48 object-cover">
+  <img src="almacen.jpg" class="w-full h-48 object-cover">
   <p class="text-right text-[10px] text-gray-400 italic p-2">Desarrollado por Luis Vallejo - Operaciones Lavora</p>
 </div>
 
@@ -153,7 +153,6 @@ let database = JSON.parse(localStorage.getItem('bsf_data') || '[]');
 let editIndex = -1;
 let deleteIndex = -1;
 let filtroEstatus = null;
-
 function save(){ localStorage.setItem('bsf_data', JSON.stringify(database)); }
 function setFiltro(estatus){
   filtroEstatus = (filtroEstatus === estatus) ? null : estatus;
@@ -183,7 +182,6 @@ function updateDashboard(skipSave){
   let filtered = [...database];
   if(filtroEstatus){ filtered = filtered.filter(u => u.estatus === filtroEstatus); }
   if(search){ filtered = filtered.filter(u => (u.placa+u.trans+u.procedencia).toLowerCase().includes(search)); }
-
   document.getElementById('count-total').textContent = database.length;
   document.getElementById('count-pendiente').textContent = database.filter(u=>u.estatus==='PENDIENTE').length;
   document.getElementById('count-proceso').textContent = database.filter(u=>u.estatus==='EN PROCESO').length;
@@ -196,7 +194,6 @@ function updateDashboard(skipSave){
   document.getElementById('tipo-despacho').textContent = database.filter(u=>u.tipo==='Despacho').length;
   document.getElementById('tipo-traslado').textContent = database.filter(u=>u.tipo==='Traslado').length;
   document.getElementById('tipo-rece-desp').textContent = database.filter(u=>u.tipo==='Rece/Desp').length;
-
   const tbody = document.getElementById('tabla-body');
   tbody.innerHTML = '';
   filtered.forEach((u) => {
