@@ -8,8 +8,7 @@
     <style>
       body{background-color:#f3f4f6;font-family:ui-sans-serif,system-ui,sans-serif;}
       table { table-layout: auto !important; width: 100% !important; }
-      th, td { padding: 8px 4px !important; font-size: 12px !important; white-space: nowrap; }
-      .tiempo-live { font-family: monospace; }
+      th, td { padding: 7px 3px !important; font-size: 12px !important; white-space: nowrap; }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -47,20 +46,20 @@
                     <div class="flex items-center gap-2">
                         <button id="btn-clear" class="cursor-pointer bg-red-700 hover:bg-red-800 text-white text-xs font-bold px-4 py-2.5 rounded-lg">LIMPIAR</button>
                         <button id="btn-add" class="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg">+ Agregar Unidad</button>
-                        <button id="btn-export" class="cursor-pointer bg-[#2E7D32] hover:bg-[#236127] text-white text-xs font-bold px-4 py-2.5 rounded-lg">📥 Exportar a Excel</button>
+                        <button id="btn-export" class="cursor-pointer bg-[#2E7D32] hover:bg-[#236127] text-white text-xs font-bold px-4 py-2.5 rounded-lg">Exportar a Excel</button>
                     </div>
                 </div>
                 <div class="overflow-x-auto border-gray-200 rounded-lg">
                     <table class="min-w-full divide-y divide-gray-200 text-center text-xs">
                         <colgroup>
-                            <col style="width:60px">
-                            <col style="width:90px">
+                            <col style="width:50px">
+                            <col style="width:85px">
+                            <col style="width:95px">
                             <col style="width:100px">
-                            <col style="width:120px">
-                            <col style="width:90px">
-                            <col style="width:110px">
-                            <col style="width:110px">
-                            <col style="width:170px">
+                            <col style="width:85px">
+                            <col style="width:95px">
+                            <col style="width:105px">
+                            <col style="width:200px">
                         </colgroup>
                         <thead class="bg-[#F0EFE9] text-gray-600 font-bold">
                             <tr><th class="px-2 py-3 border-r">PRIORIDAD</th><th class="px-2 py-3 border-r">PLACA</th><th class="px-2 py-3 border-r">N° TRANS.</th><th class="px-2 py-3 border-r">PROCEDENCIA</th><th class="px-2 py-3 border-r">TIPO</th><th class="px-2 py-3 border-r">HORA DE LLEGADA</th><th class="px-2 py-3 border-r">ESTATUS</th><th class="px-2 py-3">ACCIONES</th></tr>
@@ -117,20 +116,24 @@ function guardarDatos() {
   localStorage.setItem('bsf_dashboard_db', JSON.stringify(database));
   fetch(API_URL, {method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify(database)});
 }
-function tiempoTranscurrido(horaStr) {
-  if(!horaStr || !horaStr.includes(':')) return "00:00:00";
-  const partes = horaStr.split(':');
+function formatearDuracion(ms) {
+  if(ms < 0) ms = 0;
+  const h = Math.floor(ms/3600000);
+  const m = Math.floor((ms % 3600000)/60000);
+  const s = Math.floor((ms % 60000)/1000);
+  return String(h).padStart(2,'0') + ":" + String(m).padStart(2,'0') + ":" + String(s).padStart(2,'0');
+}
+function duracionAtendido(row) {
+  if(!row.hora || !row.hora.includes(':')) return "00:00:00";
+  const partes = row.hora.split(':');
   const h = parseInt(partes[0]) || 0;
   const m = parseInt(partes[1]) || 0;
-  const now = new Date();
-  const llegada = new Date();
+  const fin = row.atendidoEn ? row.atendidoEn : Date.now();
+  const llegada = new Date(fin);
   llegada.setHours(h, m, 0, 0);
-  let diff = now - llegada;
-  if(diff < 0) diff = 0;
-  const hrs = Math.floor(diff/3600000);
-  const mins = Math.floor((diff % 3600000)/60000);
-  const segs = Math.floor((diff % 60000)/1000);
-  return String(hrs).padStart(2,'0') + ":" + String(mins).padStart(2,'0') + ":" + String(segs).padStart(2,'0');
+  let diff = fin - llegada.getTime();
+  if(diff < 0) diff += 86400000;
+  return formatearDuracion(diff);
 }
 function actualizarFecha() {
     const ahora = new Date();
@@ -170,9 +173,9 @@ function updateDashboard() {
         tr.className = `${rowBg} hover:bg-gray-100`;
         let tiempoHtml = '';
         if (row.estatus === 'Atendido') {
-            tiempoHtml = `<div class="mt-1 text-[10px] font-bold text-green-800 bg-green-100 border-green-300 rounded px-1 py-0.5">⏱ <span class="tiempo-live" data-hora="${row.hora}">${tiempoTranscurrido(row.hora)}</span></div>`;
+            tiempoHtml = `<div class="mt-1 text-[10px] font-bold text-green-800 bg-green-100 border-green-300 rounded px-1 py-0.5">✓ ${duracionAtendido(row)}</div>`;
         }
-        tr.innerHTML = `<td class="px-2 py-3 border-r border-gray-100">${row.prioridad}</td><td class="px-2 py-3 border-r font-bold uppercase">${row.placa}</td><td class="px-2 py-3 border-r">${row.trans}</td><td class="px-2 py-3 border-r uppercase">${row.procedencia}</td><td class="px-2 py-3 border-r"><span class="${tipoClass}">${row.tipo}</span></td><td class="px-2 py-3 border-r font-mono">${row.hora}</td><td class="px-2 py-3 border-r"><span class="${estatusClass}">${row.estatus}</span></td><td class="px-2 py-3"><div class="flex justify-center gap-1.5"><button onclick="editRow(${index})" class="bg-amber-500 text-white text-[10px] font-bold px-2 py-1 rounded">Editar</button><button onclick="deleteRow(${index})" class="bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded">Eliminar</button></div>${tiempoHtml}</td>`;
+        tr.innerHTML = `<td class="px-2 py-3 border-r border-gray-100">${row.prioridad}</td><td class="px-2 py-3 border-r font-bold uppercase">${row.placa}</td><td class="px-2 py-3 border-r">${row.trans}</td><td class="px-2 py-3 border-r uppercase" style="font-size:11px">${row.procedencia}</td><td class="px-2 py-3 border-r"><span class="${tipoClass}">${row.tipo}</span></td><td class="px-2 py-3 border-r font-mono" style="font-size:11px">${row.hora}</td><td class="px-2 py-3 border-r"><span class="${estatusClass}">${row.estatus}</span></td><td class="px-2 py-3"><div class="flex justify-center gap-1"><button onclick="editRow(${index})" class="bg-amber-500 text-white text-[10px] font-bold px-2 py-1 rounded">Editar</button><button onclick="deleteRow(${index})" class="bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded">Eliminar</button></div>${tiempoHtml}</td>`;
         tableBody.appendChild(tr);
     });
     document.getElementById('count-recepcion').innerText = counts.recepcion;
@@ -188,17 +191,21 @@ function updateDashboard() {
     document.getElementById('count-noencd').innerText = counts.noencd;
     document.getElementById('count-pernoctando').innerText = counts.pernoctando;
 }
-setInterval(() => {
-  document.querySelectorAll('.tiempo-live').forEach(el => {
-    el.textContent = tiempoTranscurrido(el.getAttribute('data-hora'));
-  });
-}, 1000);
 btnAdd.addEventListener('click', () => { modalTitle.innerText = "Agregar Nueva Unidad"; editIdx.value = ""; unitForm.reset(); document.getElementById('form-prioridad').value = database.length + 1; modal.classList.remove('hidden'); });
 btnClose.addEventListener('click', () => modal.classList.add('hidden'));
 unitForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const idx = editIdx.value;
     const newData = { prioridad: parseInt(document.getElementById('form-prioridad').value), placa: document.getElementById('form-placa').value.toUpperCase().trim(), trans: document.getElementById('form-trans').value.trim(), procedencia: document.getElementById('form-procedencia').value.toUpperCase().trim(), tipo: document.getElementById('form-tipo').value, hora: document.getElementById('form-hora').value.trim(), estatus: document.getElementById('form-estatus').value };
+    if (newData.estatus === 'Atendido') {
+        if (idx !== "" && database[parseInt(idx)] && database[parseInt(idx)].estatus === 'Atendido' && database[parseInt(idx)].atendidoEn) {
+            newData.atendidoEn = database[parseInt(idx)].atendidoEn;
+        } else {
+            newData.atendidoEn = Date.now();
+        }
+    } else {
+        newData.atendidoEn = null;
+    }
     if (idx === "") database.push(newData); else database[parseInt(idx)] = newData;
     modal.classList.add('hidden'); updateDashboard();
 });
@@ -254,6 +261,7 @@ btnExport.addEventListener('click', () => {
         html += `<tr style="background:#F0EFE9;font-weight:bold;text-align:center;">
             <td style="width:60px;">Prioridad</td><td style="width:80px;">Placa</td><td style="width:110px;">N° Trans.</td><td style="width:110px;">Procedencia</td><td style="width:80px;">Tipo</td><td style="width:110px;">Hora de llegada</td><td style="width:90px;">Estatus</td><td style="width:70px;">Tiempo</td><td style="width:70px;">Estado</td></tr>`;
         database.forEach((d,i)=>{
+            const dur = (d.estatus==='Atendido') ? duracionAtendido(d) : '';
             const [hh, mm] = d.hora.split(':').map(Number);
             const ahora = new Date(); const llegada = new Date(); llegada.setHours(hh,mm,0,0);
             let diff = ahora - llegada; if(diff<0) diff=0;
@@ -266,7 +274,7 @@ btnExport.addEventListener('click', () => {
             let estStyle = '';
             if(d.estatus==='Atendido') estStyle = 'background:#2E7D32;color:#fff;font-weight:bold;';
             else if(d.estatus==='Pendiente') estStyle = 'background:#C62828;color:#fff;font-weight:bold;';
-            html += `<tr style="text-align:center;background:${bg}"><td>${d.prioridad}</td><td><b>${d.placa}</b></td><td>${d.trans}</td><td>${d.procedencia}</td><td style="${tipoStyle}">${d.tipo}</td><td>${d.hora}</td><td style="${estStyle}">${d.estatus}</td><td>${tH}:${tM}</td><td>Leadtime</td></tr>`;
+            html += `<tr style="text-align:center;background:${bg}"><td>${d.prioridad}</td><td><b>${d.placa}</b></td><td>${d.trans}</td><td>${d.procedencia}</td><td style="${tipoStyle}">${d.tipo}</td><td>${d.hora}</td><td style="${estStyle}">${d.estatus}</td><td>${dur || tH+':'+tM}</td><td>Leadtime</td></tr>`;
         });
         html += `</table><br><div style="text-align:right;font-style:italic;color:#888;font-size:11px;">Desarrollado por Luis Vallejo - Operaciones Lavora</div></body></html>`;
         const blob = new Blob(['\ufeff' + html], { type: 'application/vnd.ms-excel' });
