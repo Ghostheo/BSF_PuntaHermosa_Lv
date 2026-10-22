@@ -1,290 +1,163 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Status BSF Punta Hermosa</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <style>body{background-color:#f3f4f6;font-family:ui-sans-serif,system-ui,sans-serif;}</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Status BSF Punta Hermosa</title>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<style>body{background-color:#f3f4f6;font-family:ui-sans-serif,system-ui,sans-serif;}</style>
 </head>
 <body class="p-4 md:p-8">
-
-    <div id="login-screen" class="fixed inset-0 z-[100] flex items-center justify-center bg-[#f3f4f6] p-4">
-        <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-sm border-gray-200 text-center">
-            <img src="logo.png" alt="Lavóro" class="mx-auto mb-4" style="height:50px; width:auto; object-fit:contain;">
-            <h2 class="text-lg font-bold text-gray-800 mb-1">Status BSF PUNTA HERMOSA</h2>
-            <p class="text-xs text-gray-500 mb-6">Ingresa tus credenciales para continuar</p>
-            <div class="space-y-3 text-left">
-                <input type="text" id="login-user" placeholder="Usuario" class="w-full border-gray-300 rounded-lg p-3 text-sm">
-                <input type="password" id="login-pass" placeholder="Contraseña" class="w-full border-gray-300 rounded-lg p-3 text-sm">
-                <p id="login-error" class="hidden text-red-600 text-xs font-bold text-center">Usuario o contraseña incorrectos</p>
-                <button onclick="doLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg text-sm cursor-pointer">Ingresar</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="app-content" class="hidden">
-        <div class="max-w-7xl mx-auto bg-white shadow-xl rounded-lg overflow-hidden border-gray-200">
-            <div class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <img src="logo.png" alt="Lavóro" style="height:44px; width:auto; object-fit:contain;">
-                    <div>
-                        <div class="font-bold text-gray-900 text-sm leading-tight">Status BSF PUNTA HERMOSA</div>
-                        <p id="fecha-actualizacion" class="text-[11px] text-gray-500 mt-0.5"></p>
-                        <div class="text-[11px] text-green-600 font-semibold">● Sincronizado en vivo</div>
-                    </div>
-                </div>
-                <button onclick="logout()" class="cursor-pointer bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-bold px-4 py-2 rounded-lg">Salir</button>
-            </div>
-            <div class="p-6 space-y-8">
-                <div>
-                    <h2 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Por Tipo</h2>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                        <div class="bg-[#E3F0FF] rounded-lg p-4 text-center"><span class="block text-xs font-bold text-[#1E4DB7] uppercase">Recepción</span><span id="count-recepcion" class="block text-2xl font-black text-[#1E4DB7] mt-1">0</span></div>
-                        <div class="bg-[#E6F4E5] rounded-lg p-4 text-center"><span class="block text-xs font-bold text-[#2E7D32] uppercase">Despacho</span><span id="count-despacho" class="block text-2xl font-black text-[#2E7D32] mt-1">0</span></div>
-                        <div class="bg-[#FFF3E0] rounded-lg p-4 text-center"><span class="block text-xs font-bold text-[#8D6E00] uppercase">Traslado</span><span id="count-traslado" class="block text-2xl font-black text-[#8D6E00] mt-1">0</span></div>
-                        <div class="bg-[#EDE7F6] rounded-lg p-4 text-center"><span class="block text-xs font-bold text-[#5E35B1] uppercase">Rece/Desp</span><span id="count-recedesp" class="block text-2xl font-black text-[#5E35B1] mt-1">0</span></div>
-                    </div>
-                </div>
-                <div>
-                    <h2 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Por Estatus</h2>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                        <div class="bg-black rounded-lg p-4 text-center text-white"><span class="block text-xs font-bold uppercase">Total</span><span id="count-total" class="block text-2xl font-black mt-1">0</span></div>
-                        <div class="bg-[#C62828] rounded-lg p-4 text-center text-white"><span class="block text-xs font-bold uppercase">Pendiente</span><span id="count-pendiente" class="block text-2xl font-black mt-1">0</span></div>
-                        <div class="bg-[#FFEBEE] rounded-lg p-4 text-center"><span class="block text-xs font-bold text-[#C62828] uppercase">En Proceso</span><span id="count-enproceso" class="block text-2xl font-black text-[#C62828] mt-1">0</span></div>
-                        <div class="bg-[#FB8C00] rounded-lg p-4 text-center text-white"><span class="block text-xs font-bold uppercase">Pend. Factura</span><span id="count-pendfactura" class="block text-2xl font-black mt-1">0</span></div>
-                        <div class="bg-[#E8F5E9] rounded-lg p-4 text-center"><span class="block text-xs font-bold text-[#2E7D32] uppercase">Cargado/Fact.</span><span id="count-cargadofact" class="block text-2xl font-black text-[#2E7D32] mt-1">0</span></div>
-                        <div class="bg-[#2E7D32] rounded-lg p-4 text-center text-white"><span class="block text-xs font-bold uppercase">Atendido</span><span id="count-atendido" class="block text-2xl font-black mt-1">0</span></div>
-                        <div class="bg-[#EEEEEE] rounded-lg p-4 text-center"><span class="block text-xs font-bold text-gray-600 uppercase">No en CD</span><span id="count-noencd" class="block text-2xl font-black text-gray-700 mt-1">0</span></div>
-                        <div class="bg-[#29B6F6] rounded-lg p-4 text-center"><span class="block text-xs font-bold text-[#003C5A] uppercase">Pernoctando</span><span id="count-pernoctando" class="block text-2xl font-black text-[#003C5A] mt-1">0</span></div>
-                    </div>
-                </div>
-                                <div>
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-                        <h2 class="text-sm font-bold text-gray-800 uppercase tracking-wide">Panel de Control de Unidades</h2>
-                        <div class="flex items-center gap-2">
-                            <button id="btn-clear" class="cursor-pointer bg-red-700 hover:bg-red-800 text-white text-xs font-bold px-4 py-2.5 rounded-lg">LIMPIAR</button>
-                            <button id="btn-add" class="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg">+ Agregar Unidad</button>
-                            <button id="btn-export" class="cursor-pointer bg-[#2E7D32] hover:bg-[#236127] text-white text-xs font-bold px-4 py-2.5 rounded-lg">📥 Exportar a Excel</button>
-                        </div>
-                    </div>
-                    <div class="overflow-x-auto border-gray-200 rounded-lg">
-                        <table class="min-w-full divide-y divide-gray-200 text-center text-xs">
-                            <thead class="bg-[#F0EFE9] text-gray-600 font-bold">
-                                <tr><th class="px-3 py-3 border-r">PRIORIDAD</th><th class="px-3 py-3 border-r">PLACA</th><th class="px-3 py-3 border-r">N° TRANS.</th><th class="px-3 py-3 border-r">PROCEDENCIA</th><th class="px-3 py-3 border-r">TIPO</th><th class="px-3 py-3 border-r">HORA DE LLEGADA</th><th class="px-3 py-3 border-r">ESTATUS</th><th class="px-3 py-3">ACCIONES</th></tr>
-                            </thead>
-                            <tbody id="table-body" class="bg-white divide-y divide-gray-200"></tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="text-right text-gray-400 italic text-[11px] pt-4 border-t border-gray-100">Desarrollado por Luis Vallejo - Operaciones Lavoro</div>
-            </div>
-        </div>
-        <div class="max-w-7xl mx-auto mt-6 bg-white rounded-lg overflow-hidden shadow-xl border-gray-200">
-          <img src="almacen.jpg" alt="Almacén Punta Hermosa" class="w-full h-64 md:h-96 object-cover">
-        </div>
-    </div>
-
-    <div id="modal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-white w-full max-w-md rounded-xl shadow-2xl p-4">
-            <div class="bg-gray-900 text-white p-4 font-bold text-sm" id="modal-title">Agregar Nueva Unidad</div>
-            <form id="unit-form" class="p-4 space-y-4 text-xs">
-                <input type="hidden" id="edit-idx">
-                <input type="number" id="form-prioridad" required placeholder="Prioridad" class="w-full border-gray-300 rounded-lg p-2">
-                <input type="text" id="form-placa" required placeholder="Placa Ej. F1U789" class="w-full border-gray-300 rounded-lg p-2 uppercase">
-                <input type="text" id="form-trans" required placeholder="N° Transporte" class="w-full border-gray-300 rounded-lg p-2">
-                <input type="text" id="form-procedencia" required placeholder="Procedencia" class="w-full border-gray-300 rounded-lg p-2 uppercase">
-                <select id="form-tipo" class="w-full border-gray-300 rounded-lg p-2"><option>Recepcion</option><option>Despacho</option><option>Traslado</option><option>Rece/Desp</option></select>
-                <input type="text" id="form-hora" required placeholder="Hora Ej. 14:00" class="w-full border-gray-300 rounded-lg p-2">
-                <select id="form-estatus" class="w-full border-gray-300 rounded-lg p-2"><option>Pendiente</option><option>En Proceso</option><option>Pend.Factura</option><option>Cargado/Fact.</option><option>Atendido</option><option>No en CD</option><option>Pernoctando</option></select>
-                <div class="flex justify-end gap-2"><button type="button" id="btn-close" class="bg-gray-200 px-4 py-2 rounded-lg font-bold cursor-pointer">Cancelar</button><button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold cursor-pointer">Guardar</button></div>
-            </form>
-        </div>
-    </div>
-    <script>
+<div id="login-screen" class="fixed inset-0 z-[100] flex items-center justify-center bg-[#f3f4f6] p-4">
+<div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-sm border-gray-200 text-center">
+<img src="logo.png" alt="Lavóro" class="mx-auto mb-4" style="height:50px; width:auto; object-fit:contain;">
+<h2 class="text-lg font-bold text-gray-800 mb-1">Status BSF PUNTA HERMOSA</h2>
+<p class="text-xs text-gray-500 mb-6">Ingresa tus credenciales para continuar</p>
+<div class="space-y-3 text-left">
+<input type="text" id="login-user" placeholder="Usuario" class="w-full border-gray-300 rounded-lg p-3 text-sm">
+<input type="password" id="login-pass" placeholder="Contraseña" class="w-full border-gray-300 rounded-lg p-3 text-sm">
+<p id="login-error" class="hidden text-red-600 text-xs font-bold text-center">Usuario o contraseña incorrectos</p>
+<button onclick="doLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg text-sm cursor-pointer">Ingresar</button>
+</div>
+</div>
+</div>
+<div id="app-content" class="hidden">
+<div class="max-w-7xl mx-auto bg-white shadow-xl rounded-lg overflow-hidden border-gray-200">
+<div class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<img src="logo.png" alt="Lavóro" style="height:44px; width:auto; object-fit:contain;">
+<div>
+<div class="font-bold text-gray-900 text-sm leading-tight">Status BSF PUNTA HERMOSA</div>
+<p id="fecha-actualizacion" class="text-[11px] text-gray-500 mt-0.5"></p>
+<div class="text-[11px] text-green-600 font-semibold">● Sincronizado en vivo</div>
+</div>
+</div>
+<button onclick="logout()" class="cursor-pointer bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-bold px-4 py-2 rounded-lg">Salir</button>
+</div>
+<div class="p-6 space-y-8">
+<div>
+<h2 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Por Tipo</h2>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+<div class="bg-[#E3F0FF] rounded-lg p-4 text-center"><span class="block text-xs font-bold text-[#1E4DB7] uppercase">Recepción</span><span id="count-recepcion" class="block text-2xl font-black text-[#1E4DB7] mt-1">0</span></div>
+<div class="bg-[#E6F4E5] rounded-lg p-4 text-center"><span class="block text-xs font-bold text-[#2E7D32] uppercase">Despacho</span><span id="count-despacho" class="block text-2xl font-black text-[#2E7D32] mt-1">0</span></div>
+<div class="bg-[#FFF3E0] rounded-lg p-4 text-center"><span class="block text-xs font-bold text-[#8D6E00] uppercase">Traslado</span><span id="count-traslado" class="block text-2xl font-black text-[#8D6E00] mt-1">0</span></div>
+<div class="bg-[#EDE7F6] rounded-lg p-4 text-center"><span class="block text-xs font-bold text-[#5E35B1] uppercase">Rece/Desp</span><span id="count-recedesp" class="block text-2xl font-black text-[#5E35B1] mt-1">0</span></div>
+</div>
+</div>
+<div>
+<h2 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Por Estatus</h2>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+<div class="bg-black rounded-lg p-4 text-center text-white"><span class="block text-xs font-bold uppercase">Total</span><span id="count-total" class="block text-2xl font-black mt-1">0</span></div>
+<div class="bg-[#C62828] rounded-lg p-4 text-center text-white"><span class="block text-xs font-bold uppercase">Pendiente</span><span id="count-pendiente" class="block text-2xl font-black mt-1">0</span></div>
+<div class="bg-[#FFEBEE] rounded-lg p-4 text-center"><span class="block text-xs font-bold text-[#C62828] uppercase">En Proceso</span><span id="count-enproceso" class="block text-2xl font-black text-[#C62828] mt-1">0</span></div>
+ont-black text-[#C62828] mt-1">0</span></div>
+<div class="bg-[#FB8C00] rounded-lg p-4 text-center text-white"><span class="block text-xs font-bold uppercase">Pend. Factura</span><span id="count-pendfactura" class="block text-2xl font-black mt-1">0</span></div>
+<div class="bg-[#E8F5E9] rounded-lg p-4 text-center"><span class="block text-xs font-bold text-[#2E7D32] uppercase">Cargado/Fact.</span><span id="count-cargadofact" class="block text-2xl font-black text-[#2E7D32] mt-1">0</span></div>
+<div class="bg-[#2E7D32] rounded-lg p-4 text-center text-white"><span class="block text-xs font-bold uppercase">Atendido</span><span id="count-atendido" class="block text-2xl font-black mt-1">0</span></div>
+<div class="bg-[#EEEEEE] rounded-lg p-4 text-center"><span class="block text-xs font-bold text-gray-600 uppercase">No en CD</span><span id="count-noencd" class="block text-2xl font-black text-gray-700 mt-1">0</span></div>
+<div class="bg-[#29B6F6] rounded-lg p-4 text-center"><span class="block text-xs font-bold text-[#003C5A] uppercase">Pernoctando</span><span id="count-pernoctando" class="block text-2xl font-black text-[#003C5A] mt-1">0</span></div>
+</div>
+</div>
+<div>
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+<h2 class="text-sm font-bold text-gray-800 uppercase tracking-wide">Panel de Control de Unidades</h2>
+<div class="flex items-center gap-2">
+<button id="btn-clear" class="cursor-pointer bg-red-700 hover:bg-red-800 text-white text-xs font-bold px-4 py-2.5 rounded-lg">LIMPIAR</button>
+<button id="btn-add" class="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg">+ Agregar Unidad</button>
+<button id="btn-export" class="cursor-pointer bg-[#2E7D32] hover:bg-[#236127] text-white text-xs font-bold px-4 py-2.5 rounded-lg">📥 Exportar a Excel</button>
+</div>
+</div>
+<div class="overflow-x-auto border-gray-200 rounded-lg">
+<table class="min-w-full divide-y divide-gray-200 text-center text-xs">
+<thead class="bg-[#F0EFE9] text-gray-600 font-bold">
+<tr><th class="px-3 py-3 border-r">PRIORIDAD</th><th class="px-3 py-3 border-r">PLACA</th><th class="px-3 py-3 border-r">N° TRANS.</th><th class="px-3 py-3 border-r">PROCEDENCIA</th><th class="px-3 py-3 border-r">TIPO</th><th class="px-3 py-3 border-r">HORA DE LLEGADA</th><th class="px-3 py-3 border-r">ESTATUS</th><th class="px-3 py-3 border-r">TIEMPO</th><th class="px-3 py-3">ACCIONES</th></tr>
+</thead>
+<tbody id="table-body" class="bg-white divide-y divide-gray-200"></tbody>
+</table>
+</div>
+</div>
+<div class="text-right text-gray-400 italic text-[11px] pt-4 border-t border-gray-100">Desarrollado por Luis Vallejo - Operaciones Lavoro</div>
+</div>
+</div>
+<div class="max-w-7xl mx-auto mt-6 bg-white rounded-lg overflow-hidden shadow-xl border-gray-200">
+<img src="almacen.jpg" alt="Almacén Punta Hermosa" class="w-full h-64 md:h-96 object-cover">
+</div>
+</div>
+<div id="modal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center hidden p-4">
+<div class="bg-white w-full max-w-md rounded-xl shadow-2xl p-4">
+<div class="bg-gray-900 text-white p-4 font-bold text-sm" id="modal-title">Agregar Nueva Unidad</div>
+<form id="unit-form" class="p-4 space-y-4 text-xs">
+<input type="hidden" id="edit-idx">
+<input type="number" id="form-prioridad" required placeholder="Prioridad" class="w-full border-gray-300 rounded-lg p-2">
+<input type="text" id="form-placa" required placeholder="Placa Ej. F1U789" class="w-full border-gray-300 rounded-lg p-2 uppercase">
+<input type="text" id="form-trans" required placeholder="N° Transporte" class="w-full border-gray-300 rounded-lg p-2">
+<input type="text" id="form-procedencia" required placeholder="Procedencia" class="w-full border-gray-300 rounded-lg p-2 uppercase">
+<select id="form-tipo" class="w-full border-gray-300 rounded-lg p-2"><option>Recepcion</option><option>Despacho</option><option>Traslado</option><option>Rece/Desp</option></select>
+<input type="text" id="form-hora" requ
+ired placeholder="Hora Ej. 14:00" class="w-full border-gray-300 rounded-lg p-2">
+<select id="form-estatus" class="w-full border-gray-300 rounded-lg p-2"><option>Pendiente</option><option>En Proceso</option><option>Pend.Factura</option><option>Cargado/Fact.</option><option>Atendido</option><option>No en CD</option><option>Pernoctando</option></select>
+<div class="flex justify-end gap-2"><button type="button" id="btn-close" class="bg-gray-200 px-4 py-2 rounded-lg font-bold cursor-pointer">Cancelar</button><button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold cursor-pointer">Guardar</button></div>
+</form>
+</div>
+</div>
+<script>
 const API_URL = "https://script.google.com/macros/s/AKfycbxO608Tif2cNtlBmQ4FkWzWB-dPuXu_vdVeBLPgHz-PBglFl2nzX-vrHHbKK_eNnq53Zg/exec";
 const defaultData = [
-    { prioridad: 1, placa: "F1U789", trans: "14307041", procedencia: "HUACHIPA", tipo: "Recepcion", hora: "14:00", estatus: "Atendido" },
-    { prioridad: 2, placa: "A6P883", trans: "14307043", procedencia: "HUACHIPA", tipo: "Recepcion", hora: "14:05", estatus: "Atendido" },
-    { prioridad: 3, placa: "B3H868", trans: "14307042", procedencia: "HUACHIPA", tipo: "Recepcion", hora: "17:55", estatus: "Atendido" },
-    { prioridad: 4, placa: "V3L765", trans: "14307044", procedencia: "HUACHIPA", tipo: "Recepcion", hora: "18:05", estatus: "Atendido" }
+{ prioridad: 1, placa: "F1U789", trans: "14307041", procedencia: "HUACHIPA", tipo: "Recepcion", hora: "14:00", estatus: "Atendido" },
+{ prioridad: 2, placa: "A6P883", trans: "14307043", procedencia: "HUACHIPA", tipo: "Recepcion", hora: "14:05", estatus: "Atendido" },
+{ prioridad: 3, placa: "B3H868", trans: "14307042", procedencia: "HUACHIPA", tipo: "Recepcion", hora: "17:55", estatus: "Atendido" },
+{ prioridad: 4, placa: "V3L765", trans: "14307044", procedencia: "HUACHIPA", tipo: "Recepcion", hora: "18:05", estatus: "Atendido" }
 ];
 let database = [];
-function logout() {
-    sessionStorage.removeItem('auth');
-    sessionStorage.removeItem('token');
-    document.getElementById('app-content').classList.add('hidden');
-    document.getElementById('login-screen').classList.remove('hidden');
-}
-async function doLogin() {
-    const u = document.getElementById('login-user').value.trim();
-    const p = document.getElementById('login-pass').value;
-    document.getElementById('login-error').classList.add('hidden');
-    try {
-        const res = await fetch(API_URL, {method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({action:'login', user:u, pass:p})});
-        const j = await res.json();
-        if (j.ok) {
-            sessionStorage.setItem('auth','1');
-            sessionStorage.setItem('token', j.token);
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('app-content').classList.remove('hidden');
-            cargarDatos();
-        } else {
-            document.getElementById('login-error').classList.remove('hidden');
-        }
-    } catch(e) {
-        document.getElementById('login-error').innerText = "Error de conexión con el servidor";
-        document.getElementById('login-error').classList.remove('hidden');
-    }
-}
-document.getElementById('login-pass').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
-async function cargarDatos() {
-  try {
-    const token = sessionStorage.getItem('token');
-    const res = await fetch(API_URL, {method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({action:'get', token:token})});
-    const j = await res.json();
-    if (j.ok) {
-      database = JSON.parse(j.data);
-      if (!Array.isArray(database) || database.length === 0) database = defaultData;
-    } else {
-      database = defaultData;
-    }
-  } catch(e) {
-    database = defaultData;
-  }
-  updateDashboard();
-}
-function guardarDatos() {
-  localStorage.setItem('bsf_dashboard_db', JSON.stringify(database));
-  const token = sessionStorage.getItem('token');
-  fetch(API_URL, {method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({action:'save', token:token, data:database})});
-}
-function actualizarFecha() {
-    const ahora = new Date();
-    const fechaStr = ahora.toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric' });
-    let horaStr = ahora.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit', hour12: true });
-    horaStr = horaStr.toLowerCase();
-    const el = document.getElementById('fecha-actualizacion');
-    if(el) el.innerText = `${fechaStr} | ${horaStr}`;
-}
-actualizarFecha();
-setInterval(actualizarFecha, 1000);
-const tableBody = document.getElementById('table-body');
-const modal = document.getElementById('modal');
-const unitForm = document.getElementById('unit-form');
-const btnAdd = document.getElementById('btn-add');
-const btnClose = document.getElementById('btn-close');
-const btnExport = document.getElementById('btn-export');
-const btnClear = document.getElementById('btn-clear');
-const modalTitle = document.getElementById('modal-title');
-const editIdx = document.getElementById('edit-idx');
-function updateDashboard() {
-    guardarDatos();
-    const counts = { recepcion:0, despacho:0, traslado:0, recedesp:0, total:database.length, pendiente:0, enproceso:0, pendfactura:0, cargadofact:0, atendido:0, noencd:0, pernoctando:0 };
-    tableBody.innerHTML = '';
-    database.forEach((row, index) => {
-        if (row.tipo === 'Recepcion') counts.recepcion++; else if (row.tipo === 'Despacho') counts.despacho++; else if (row.tipo === 'Traslado') counts.traslado++; else if (row.tipo === 'Rece/Desp') counts.recedesp++;
-        if (row.estatus === 'Pendiente') counts.pendiente++; else if (row.estatus === 'En Proceso') counts.enproceso++; else if (row.estatus === 'Pend.Factura') counts.pendfactura++; else if (row.estatus === 'Cargado/Fact.') counts.cargadofact++; else if (row.estatus === 'Atendido') counts.atendido++; else if (row.estatus === 'No en CD') counts.noencd++; else if (row.estatus === 'Pernoctando') counts.pernoctando++;
-        let tipoClass = "font-bold text-gray-700";
-        if (row.tipo === 'Recepcion') tipoClass = "bg-[#E3F0FF] text-[#1E4DB7] font-bold px-2 py-0.5 rounded";
-        else if (row.tipo === 'Despacho') tipoClass = "bg-[#E6F4E5] text-[#2E7D32] font-bold px-2 py-0.5 rounded";
-        let estatusClass = "font-medium text-gray-700";
-        if (row.estatus === 'Atendido') estatusClass = "bg-[#2E7D32] text-white font-bold px-2 py-1 rounded block text-center uppercase";
-        else if (row.estatus === 'Pendiente') estatusClass = "bg-[#C62828] text-white font-bold px-2 py-1 rounded block text-center uppercase";
-        else if (row.estatus === 'En Proceso') estatusClass = "bg-[#FFEBEE] text-[#C62828] font-bold px-2 py-1 rounded block text-center uppercase";
-        else if (row.estatus === 'Pend.Factura') estatusClass = "bg-[#FB8C00] text-white font-bold px-2 py-1 rounded block text-center uppercase";
-        const rowBg = index % 2 === 0 ? 'bg-white' : 'bg-[#FAF9F6]';
-        const tr = document.createElement('tr');
-        tr.className = `${rowBg} hover:bg-gray-100`;
-        tr.innerHTML = `<td class="px-3 py-3 border-r border-gray-100">${row.prioridad}</td><td class="px-3 py-3 border-r font-bold uppercase">${row.placa}</td><td class="px-3 py-3 border-r">${row.trans}</td><td class="px-3 py-3 border-r uppercase">${row.procedencia}</td><td class="px-3 py-3 border-r"><span class="${tipoClass}">${row.tipo}</span></td><td class="px-3 py-3 border-r font-mono">${row.hora}</td><td class="px-3 py-3 border-r px-4"><span class="${estatusClass}">${row.estatus}</span></td><td class="px-3 py-3 flex justify-center gap-1.5"><button onclick="editRow(${index})" class="bg-amber-500 text-white text-[10px] font-bold px-2 py-1 rounded cursor-pointer">Editar</button><button onclick="deleteRow(${index})" class="bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded cursor-pointer">Eliminar</button></td>`;
-        tableBody.appendChild(tr);
-    });
-    document.getElementById('count-recepcion').innerText = counts.recepcion;
-    document.getElementById('count-despacho').innerText = counts.despacho;
-    document.getElementById('count-traslado').innerText = counts.traslado;
-    document.getElementById('count-recedesp').innerText = counts.recedesp;
-    document.getElementById('count-total').innerText = counts.total;
-    document.getElementById('count-pendiente').innerText = counts.pendiente;
-    document.getElementById('count-enproceso').innerText = counts.enproceso;
-    document.getElementById('count-pendfactura').innerText = counts.pendfactura;
-    document.getElementById('count-cargadofact').innerText = counts.cargadofact;
-    document.getElementById('count-atendido').innerText = counts.atendido;
-    document.getElementById('count-noencd').innerText = counts.noencd;
-    document.getElementById('count-pernoctando').innerText = counts.pernoctando;
-}
-btnAdd.addEventListener('click', () => { modalTitle.innerText = "Agregar Nueva Unidad"; editIdx.value = ""; unitForm.reset(); document.getElementById('form-prioridad').value = database.length + 1; modal.classList.remove('hidden'); });
-btnClose.addEventListener('click', () => modal.classList.add('hidden'));
-unitForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const idx = editIdx.value;
-    const newData = { prioridad: parseInt(document.getElementById('form-prioridad').value), placa: document.getElementById('form-placa').value.toUpperCase().trim(), trans: document.getElementById('form-trans').value.trim(), procedencia: document.getElementById('form-procedencia').value.toUpperCase().trim(), tipo: document.getElementById('form-tipo').value, hora: document.getElementById('form-hora').value.trim(), estatus: document.getElementById('form-estatus').value };
-    if (idx === "") database.push(newData); else database[parseInt(idx)] = newData;
-    modal.classList.add('hidden'); updateDashboard();
-});
-window.editRow = function(index) {
-    const data = database[index]; modalTitle.innerText = "Editar Unidad"; editIdx.value = index;
-    document.getElementById('form-prioridad').value = data.prioridad; document.getElementById('form-placa').value = data.placa; document.getElementById('form-trans').value = data.trans; document.getElementById('form-procedencia').value = data.procedencia; document.getElementById('form-tipo').value = data.tipo; document.getElementById('form-hora').value = data.hora; document.getElementById('form-estatus').value = data.estatus; modal.classList.remove('hidden');
-};
-window.deleteRow = function(index) { if (confirm('¿Eliminar registro?')) { database.splice(index, 1); updateDashboard(); } };
-btnClear.addEventListener('click', () => {
-    if (database.length === 0) return;
-    if (confirm('¿Estás seguro? Se eliminarán TODAS las unidades de la lista.')) {
-        database = [];
-        updateDashboard();
-    }
-});
-btnExport.addEventListener('click', () => {
-    const counts = {
-        recepcion: database.filter(r=>r.tipo==='Recepcion').length,
-        despacho: database.filter(r=>r.tipo==='Despacho').length,
-        traslado: database.filter(r=>r.tipo==='Traslado').length,
-        recedesp: database.filter(r=>r.tipo==='Rece/Desp').length,
-        total: database.length,
-        pendiente: database.filter(r=>r.estatus==='Pendiente').length,
-        enproceso: database.filter(r=>r.estatus==='En Proceso').length,
-        pendfactura: database.filter(r=>r.estatus==='Pend.Factura').length,
-        cargadofact: database.filter(r=>r.estatus==='Cargado/Fact.').length,
-        atendido: database.filter(r=>r.estatus==='Atendido').length,
-        noencd: database.filter(r=>r.estatus==='No en CD').length,
-        pernoctando: database.filter(r=>r.estatus==='Pernoctando').length
-    };
-    const fechaTexto = document.getElementById('fecha-actualizacion').innerText;
-    let html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8"></head><body>`;
-    html += `<table border="1" cellspacing="0" cellpadding="5" style="border-collapse:collapse;font-family:Calibri;">`;
-    html += `<tr><td colspan="9" style="background:#000;color:#fff;font-size:16px;font-weight:bold;text-align:center;">STATUS BSF PUNTA HERMOSA</td></tr>`;
-    html += `<tr><td colspan="9" style="background:#000;color:#BBBBBB;text-align:center;">${fechaTexto}</td></tr><tr><td colspan="9"></td></tr>`;
-    html += `<tr style="font-weight:bold;text-align:center;"><td style="background:#000;color:#fff;">Total ${counts.total}</td><td style="background:#C62828;color:#fff;">Pendiente ${counts.pendiente}</td><td style="background:#FFEBEE;color:#C62828;">En Proceso ${counts.enproceso}</td><td style="background:#FB8C00;color:#fff;">Pend. Factura ${counts.pendfactura}</td><td style="background:#E8F5E9;color:#2E7D32;">Cargado/Fact. ${counts.cargadofact}</td><td style="background:#2E7D32;color:#fff;">Atendido ${counts.atendido}</td><td style="background:#EEEEEE;">No en CD ${counts.noencd}</td><td style="background:#29B6F6;color:#003C5A;">Pernoctando ${counts.pernoctando}</td><td></td></tr>`;
-    html += `<tr style="font-weight:bold;text-align:center;"><td style="background:#E3F0FF;color:#1E4DB7;">Recepcion ${counts.recepcion}</td><td style="background:#E6F4E5;color:#2E7D32;">Despacho ${counts.despacho}</td><td style="background:#FFF3E0;color:#8D6E00;">Traslado ${counts.traslado}</td><td style="background:#EDE7F6;color:#5E35B1;">Rece/Desp ${counts.recedesp}</td><td colspan="5"></td></tr><tr><td colspan="9"></td></tr>`;
-    html += `<tr style="background:#F0EFE9;font-weight:bold;text-align:center;"><td style="width:60px;">Prioridad</td><td style="width:80px;">Placa</td><td style="width:110px;">N° Trans.</td><td style="width:110px;">Procedencia</td><td style="width:80px;">Tipo</td><td style="width:110px;">Hora de llegada</td><td style="width:90px;">Estatus</td><td style="width:70px;">Tiempo</td><td style="width:70px;">Estado</td></tr>`;
-    database.forEach((d,i)=>{
-        const [hh, mm] = d.hora.split(':').map(Number);
-        const ahora = new Date(); const llegada = new Date(); llegada.setHours(hh,mm,0,0);
-        let diff = ahora - llegada; if(diff<0) diff=0;
-        const tH = String(Math.floor(diff/3600000)).padStart(2,'0');
-        const tM = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
-        const bg = i%2===0 ? '#FFFFFF' : '#FAF9F6';
-        let tipoStyle = '';
-        if(d.tipo==='Recepcion') tipoStyle = 'background:#E3F0FF;color:#1E4DB7;font-weight:bold;';
-        else if(d.tipo==='Despacho') tipoStyle = 'background:#E6F4E5;color:#2E7D32;font-weight:bold;';
-        let estStyle = '';
-        if(d.estatus==='Atendido') estStyle = 'background:#2E7D32;color:#fff;font-weight:bold;';
-        else if(d.estatus==='Pendiente') estStyle = 'background:#C62828;color:#fff;font-weight:bold;';
-        html += `<tr style="text-align:center;background:${bg}"><td>${d.prioridad}</td><td><b>${d.placa}</b></td><td>${d.trans}</td><td>${d.procedencia}</td><td style="${tipoStyle}">${d.tipo}</td><td>${d.hora}</td><td style="${estStyle}">${d.estatus}</td><td>${tH}:${tM}</td><td>Leadtime</td></tr>`;
-    });
-    html += `</table><br><div style="text-align:right;font-style:italic;color:#888;font-size:11px;">Desarrollado por Luis Vallejo - Operaciones Lavoro</div></body></html>`;
-    const blob = new Blob(['\ufeff' + html], { type: 'application/vnd.ms-excel' });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "status_BSF_PUNTA_HERMOSA_formateado.xls";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-});
-if (sessionStorage.getItem('auth') === '1') {
-    document.getElementById('login-screen').classList.add('hidden');
-    document.getElementById('app-content').classList.remove('hidden');
-    cargarDatos();
-}
+function logout(){sessionStorage.removeItem('auth');sessionStorage.removeItem('token');document.getElementById('app-content').classList.add('hidden');document.getElementById('login-screen').classList.remove('hidden');}
+async function doLogin(){const u=document.getElementById('login-user').value.trim();const p=document.getElementById('login-pass').value;document.getElementById('login-error').classList.add('hidden');try{const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'login',user:u,pass:p})});const j=await res.json();if(j.ok){sessionStorage.setItem('auth','1');sessionStorage.setItem('token',j.token);document.getElementById('login-screen').classList.add('hidden');document.getElementById('app-content').classList.remove('hidden');cargarDatos();}else{document.getElementById('login-error').classList.remove('hidden');}}catch(e){document.getElementById('login-error').innerText="Error de conexión con el servidor";document.getElementById('login-error').classList.remove('hidden');}}
+document.getElementById('login-pass').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
+async function cargarDatos(){try{const token=sessionStorage.getItem('token');const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'get',token:token})});const j=await res.json();if(j.ok){database=JSON.parse(j.data);if(!Array.isArray(database)||database.length===0)database=defaultData;}else{database=defaultData;}}catch(e){database=defaultData;}updateDashboard();}
+function guardarDatos(){localStorage.setItem('bsf_dashboard_db',JSON.stringify(database));const token=sessionStorage.getItem('token');fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'save',token:token,data:database})});}
+function actualizarFecha(){const ahora=new Date();const fechaStr=ahora.toLocaleDateString('es-PE',{day:'numeric',month:'long',year:'numeric'});let horaStr=ahora.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit',hour12:true});horaStr=horaStr.toLowerCase();const el=document.getElementById('fecha-actualizacion');if(el)el.innerText=`${fechaStr} | ${horaStr}`;}
+actualizarFecha();setInterval(actualizarFecha,1000);
+function horaLlegadaDate(horaStr){if(!horaStr||!horaStr.includes(':'))return new Date();const parts=horaStr.split(':');const hh=parseInt(parts[0],10);const mm=parseInt(parts[1],10);const ahora=new Date();const llegada=new Date(ahora);llegada.setHours(hh,mm,0,0);if(llegada>ahora)llegada.setDate(llegada.getDate()-1);return llegada;}
+function diffMsFila(r
+ow){const llegada=horaLlegadaDate(row.hora);let fin;if(row.estatus==='Atendido'){if(row.horaAtendido)fin=new Date(row.horaAtendido);else if(row.tiempoFinalMs)fin=new Date(llegada.getTime()+row.tiempoFinalMs);else fin=new Date();}else{fin=new Date();}let diff=fin-llegada;if(diff<0)diff=0;return diff;}
+function formatoDuracion(ms){const totalMin=Math.floor(ms/60000);const h=Math.floor(totalMin/60);const m=totalMin%60;if(h===0)return m+' min';return h+'h '+String(m).padStart(2,'0')+'m';}
+function estiloTiempo(diff,estatus){if(estatus==='Atendido')return 'bg-gray-800 text-white font-bold px-2 py-1 rounded block text-center text-[11px]';if(diff>=3600000)return 'bg-[#C62828] text-white font-bold px-2 py-1 rounded block text-center text-[11px]';if(diff>=1800000)return 'bg-[#FB8C00] text-white font-bold px-2 py-1 rounded block text-center text-[11px]';return 'bg-[#2E7D32] text-white font-bold px-2 py-1 rounded block text-center text-[11px]';}
+function actualizarTiempos(){database.forEach((row,index)=>{const diff=diffMsFila(row);const txt=formatoDuracion(diff);const pref=row.estatus==='Atendido'?'✓ ':' ';const el=document.querySelector('[data-tiempo-idx="'+index+'"]');if(el){el.innerText=pref+txt;el.className=estiloTiempo(diff,row.estatus);}});}
+setInterval(actualizarTiempos,30000);
+const tableBody=document.getElementById('table-body');
+const modal=document.getElementById('modal');
+const unitForm=document.getElementById('unit-form');
+const btnAdd=document.getElementById('btn-add');
+const btnClose=document.getElementById('btn-close');
+const btnExport=document.getElementById('btn-export');
+const btnClear=document.getElementById('btn-clear');
+const modalTitle=document.getElementById('modal-title');
+const editIdx=document.getElementById('edit-idx');
+ow){const llegada=horaLlegadaDate(row.hora);let fin;if(row.estatus==='Atendido'){if(row.horaAtendido)fin=new Date(row.horaAtendido);else if(row.tiempoFinalMs)fin=new Date(llegada.getTime()+row.tiempoFinalMs);else fin=new Date();}else{fin=new Date();}let diff=fin-llegada;if(diff<0)diff=0;return diff;}
+function formatoDuracion(ms){const totalMin=Math.floor(ms/60000);const h=Math.floor(totalMin/60);const m=totalMin%60;if(h===0)return m+' min';return h+'h '+String(m).padStart(2,'0')+'m';}
+function estiloTiempo(diff,estatus){if(estatus==='Atendido')return 'bg-gray-800 text-white font-bold px-2 py-1 rounded block text-center text-[11px]';if(diff>=3600000)return 'bg-[#C62828] text-white font-bold px-2 py-1 rounded block text-center text-[11px]';if(diff>=1800000)return 'bg-[#FB8C00] text-white font-bold px-2 py-1 rounded block text-center text-[11px]';return 'bg-[#2E7D32] text-white font-bold px-2 py-1 rounded block text-center text-[11px]';}
+function actualizarTiempos(){database.forEach((row,index)=>{const diff=diffMsFila(row);const txt=formatoDuracion(diff);const pref=row.estatus==='Atendido'?'✓ ':' ';const el=document.querySelector('[data-tiempo-idx="'+index+'"]');if(el){el.innerText=pref+txt;el.className=estiloTiempo(diff,row.estatus);}});}
+setInterval(actualizarTiempos,30000);
+const tableBody=document.getElementById('table-body');
+const modal=document.getElementById('modal');
+const unitForm=document.getElementById('unit-form');
+const btnAdd=document.getElementById('btn-add');
+const btnClose=document.getElementById('btn-close');
+const btnExport=document.getElementById('btn-export');
+const btnClear=document.getElementById('btn-clear');
+const modalTitle=document.getElementById('modal-title');
+const editIdx=document.getElementById('edit-idx');
+function updateDashboard(){guardarDatos();const counts={recepcion:0,despacho:0,traslado:0,recedesp:0,total:database.length,pendiente:0,enproceso:0,pendfactura:0,cargadofact:0,atendido:0,noencd:0,pernoctando:0};tableBody.innerHTML='';database.forEach((row,index)=>{if(row.tipo==='Recepcion')counts.recepcion++;else if(row.tipo==='Despacho')counts.despacho++;else if(row.tipo==='Traslado')counts.traslado++;else if(row.tipo==='Rece/Desp')counts.recedesp++;if(row.estatus==='Pendiente')counts.pendiente++;else if(row.estatus==='En Proceso')counts.enproceso++;else if(row.estatus==='Pend.Factura')counts.pendfactura++;else if(row.estatus==='Cargado/Fact.')counts.cargadofact++;else if(row.estatus==='Atendido')counts.atendido++;else if(row.estatus==='No en CD')counts.noencd++;else if(row.estatus==='Pernoctando')counts.pernoctando++;let tipoClass="font-bold text-gray-700";if(row.tipo==='Recepcion')tipoClass="bg-[#E3F0FF] text-[#1E4DB7] font-bold px-2 py-0.5 rounded";else if(row.tipo==='Despacho')tipoClass="bg-[#E6F4E5] text-[#2E7D32] font-bold px-2 py-0.5 rounded";let estatusClass="font-medium text-gray-700";if(row.estatus==='Atendido')estatusClass="bg-[#2E7D32] text-white font-bold px-2 py-1 rounded block text-center uppercase";else if(row.estatus==='Pendiente')estatusClass="bg-[#C62828] text-white font-bold px-2 py-1 rounded block text-center uppercase";else if(row.estatus==='En Proceso')estatusClass="bg-[#FFEBEE] text-[#C62828] font-bold px-2 py-1 rounded block text-center uppercase";else if(row.estatus==='Pend.Factura')estatusClass="bg-[#FB8C00] text-white font-bold px-2 py-1 rounded block text-center uppercase";const diff=diffMsFila(row);const txtTiempo=formatoDuracion(diff);const prefTiempo=row.estatus==='Atendido'?'✓ ':' ';const tClass=estiloTiempo(diff,row.estatus);const rowBg=index%2===0?'bg-white':'bg-[#FAF9F6]';const tr=document.createElement('tr');tr.className=`${rowBg} hover:bg-gray-100`;tr.innerHTML=`<td class="px-3 py-3 border-r border-gray-100">${row.prioridad}</td><td class="px-3 py-3 border-r font-bold uppercase">${row.placa}</td><td class="px-3 py-3 border-r">${row.trans}</td><td class="px-3 py-3 border-r uppercase">${row.procedencia}</td><td class="px-3 py-3 border-r"><span class="${tipoCl
+ass}">${row.tipo}</span></td><td class="px-3 py-3 border-r font-mono">${row.hora}</td><td class="px-3 py-3 border-r px-4"><span class="${estatusClass}">${row.estatus}</span></td><td class="px-3 py-3 border-r"><span data-tiempo-idx="${index}" class="${tClass}">${prefTiempo}${txtTiempo}</span></td><td class="px-3 py-3 flex justify-center gap-1.5"><button onclick="editRow(${index})" class="bg-amber-500 text-white text-[10px] font-bold px-2 py-1 rounded cursor-pointer">Editar</button><button onclick="deleteRow(${index})" class="bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded cursor-pointer">Eliminar</button></td>`;tableBody.appendChild(tr);});document.getElementById('count-recepcion').innerText=counts.recepcion;document.getElementById('count-despacho').innerText=counts.despacho;document.getElementById('count-traslado').innerText=counts.traslado;document.getElementById('count-recedesp').innerText=counts.recedesp;document.getElementById('count-total').innerText=counts.total;document.getElementById('count-pendiente').innerText=counts.pendiente;document.getElementById('count-enproceso').innerText=counts.enproceso;document.getElementById('count-pendfactura').innerText=counts.pendfactura;document.getElementById('count-cargadofact').innerText=counts.cargadofact;document.getElementById('count-atendido').innerText=counts.atendido;document.getElementById('count-noencd').innerText=counts.noencd;document.getElementById('count-pernoctando').innerText=counts.pernoctando;}
+btnAdd.addEventListener('click',()=>{modalTitle.innerText="Agregar Nueva Unidad";editIdx.value="";unitForm.reset();document.getElementById('form-prioridad').value=database.length+1;modal.classList.remove('hidden');});
+btnClose.addEventListener('click',()=>modal.classList.add('hidden'));
+unitForm.addEventListener('submit',(e)=>{e.preventDefault();const idx=editIdx.value;const prev=idx===""?null:database[parseInt(idx)];const estatusNuevo=document.getElementById('form-estatus').value;const newData={prioridad:parseInt(document.getElementById('form-prioridad').value),placa:document.getElementById('form-placa').value.toUpperCase().trim(),trans:document.getElementById('form-trans').value.trim(),procedencia:document.getElementById('form-procedencia').value.toUpperCase().trim(),tipo:document.getElementById('form-tipo').value,hora:document.getElementById('form-hora').value.trim(),estatus:estatusNuevo};if(estatusNuevo==='Atendido'){if(prev&&prev.estatus==='Atendido'&&prev.horaAtendido){newData.horaAtendido=prev.horaAtendido;newData.tiempoFinalMs=prev.tiempoFinalMs;newData.tiempoFinal=prev.tiempoFinal;}else{const llegada=horaLlegadaDate(newData.hora);const ahora=new Date();newData.horaAtendido=ahora.toISOString();newData.tiempoFinalMs=Math.max(0,ahora-llegada);newData.tiempoFinal=formatoDuracion(newData.tiempoFinalMs);}}if(idx==="" )database.push(newData);else database[parseInt(idx)]=newData;modal.classList.add('hidden');updateDashboard();});
+window.editRow=function(index){const data=database[index];modalTitle.innerText="Editar Unidad";editIdx.value=index;document.getElementById('form-prioridad').value=data.prioridad;document.getElementById('form-placa').value=data.placa;document.getElementById('form-trans').value=data.trans;document.getElementById('form-procedencia').value=data.procedencia;document.getElementById('form-tipo').value=data.tipo;document.getElementById('form-hora').value=data.hora;document.getElementById('form-estatus').value=data.estatus;modal.classList.remove('hidden');};
+window.deleteRow=function(index){if(confirm('¿Eliminar registro?')){database.splice(index,1);updateDashboard();}};
+btnClear.addEventListener('click',()=>{if(database.length===0)return;if(confirm('¿Estás seguro? Se eliminarán TODAS las unidades de la lista.')){database=[];updateDashboard();}});
+btnExport.addEventListener('click',()=>{const counts={recepcion:database.filter(r=>r.tipo==='Recepcion').length,despacho:database.filter(r=>r.tipo==='Despacho').length,traslado:database.filter(r=>r.tipo
+==='Traslado').length,recedesp:database.filter(r=>r.tipo==='Rece/Desp').length,total:database.length,pendiente:database.filter(r=>r.estatus==='Pendiente').length,enproceso:database.filter(r=>r.estatus==='En Proceso').length,pendfactura:database.filter(r=>r.estatus==='Pend.Factura').length,cargadofact:database.filter(r=>r.estatus==='Cargado/Fact.').length,atendido:database.filter(r=>r.estatus==='Atendido').length,noencd:database.filter(r=>r.estatus==='No en CD').length,pernoctando:database.filter(r=>r.estatus==='Pernoctando').length};const fechaTexto=document.getElementById('fecha-actualizacion').innerText;let html=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8"></head><body>`;html+=`<table border="1" cellspacing="0" cellpadding="5" style="border-collapse:collapse;font-family:Calibri;">`;html+=`<tr><td colspan="9" style="background:#000;color:#fff;font-size:16px;font-weight:bold;text-align:center;">STATUS BSF PUNTA HERMOSA</td></tr>`;html+=`<tr><td colspan="9" style="background:#000;color:#BBBBBB;text-align:center;">${fechaTexto}</td></tr><tr><td colspan="9"></td></tr>`;html+=`<tr style="font-weight:bold;text-align:center;"><td style="background:#000;color:#fff;">Total ${counts.total}</td><td style="background:#C62828;color:#fff;">Pendiente ${counts.pendiente}</td><td style="background:#FFEBEE;color:#C62828;">En Proceso ${counts.enproceso}</td><td style="background:#FB8C00;color:#fff;">Pend. Factura ${counts.pendfactura}</td><td style="background:#E8F5E9;color:#2E7D32;">Cargado/Fact. ${counts.cargadofact}</td><td style="background:#2E7D32;color:#fff;">Atendido ${counts.atendido}</td><td style="background:#EEEEEE;">No en CD ${counts.noencd}</td><td style="background:#29B6F6;color:#003C5A;">Pernoctando ${counts.pernoctando}</td><td></td></tr>`;html+=`<tr style="font-weight:bold;text-align:center;"><td style="background:#E3F0FF;color:#1E4DB7;">Recepcion ${counts.recepcion}</td><td style="background:#E6F4E5;color:#2E7D32;">Despacho ${counts.despacho}</td><td style="background:#FFF3E0;color:#8D6E00;">Traslado ${counts.traslado}</td><td style="background:#EDE7F6;color:#5E35B1;">Rece/Desp ${counts.recedesp}</td><td colspan="5"></td></tr><tr><td colspan="9"></td></tr>`;html+=`<tr style="background:#F0EFE9;font-weight:bold;text-align:center;"><td style="width:60px;">Prioridad</td><td style="width:80px;">Placa</td><td style="width:110px;">N° Trans.</td><td style="width:110px;">Procedencia</td><td style="width:80px;">Tipo</td><td style="width:110px;">Hora de llegada</td><td style="width:90px;">Estatus</td><td style="width:70px;">Tiempo</td><td style="width:70px;">Estado</td></tr>`;database.forEach((d,i)=>{const diff=diffMsFila(d);const txtTiempo=formatoDuracion(diff);const bg=i%2===0?'#FFFFFF':'#FAF9F6';let tipoStyle='';if(d.tipo==='Recepcion')tipoStyle='background:#E3F0FF;color:#1E4DB7;font-weight:bold;';else if(d.tipo==='Despacho')tipoStyle='background:#E6F4E5;color:#2E7D32;font-weight:bold;';let estStyle='';if(d.estatus==='Atendido')estStyle='background:#2E7D32;color:#fff;font-weight:bold;';else if(d.estatus==='Pendiente')estStyle='background:#C62828;color:#fff;font-weight:bold;';html+=`<tr style="text-align:center;background:${bg}"><td>${d.prioridad}</td><td><b>${d.placa}</b></td><td>${d.trans}</td><td>${d.procedencia}</td><td style="${tipoStyle}">${d.tipo}</td><td>${d.hora}</td><td style="${estStyle}">${d.estatus}</td><td>${txtTiempo}</td><td>Leadtime</td></tr>`;});html+=`</table><br><div style="text-align:right;font-style:italic;color:#888;font-size:11px;">Desarrollado por Luis Vallejo - Operaciones Lavoro</div></body></html>`;const blob=new Blob(['\ufeff'+html],{type:'application/vnd.ms-excel'});const link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download="status_BSF_PUNTA_HERMOSA_formateado.xls";document.body.appendChild(link);link.click();document.body.removeChild(link);});
+if(sessionStorage.getItem('auth')==='1'){doc
+ument.getElementById('login-screen').classList.add('hidden');document.getElementById('app-content').classList.remove('hidden');cargarDatos();}
 </script>
 </body>
-</html>
+</html>                                        
