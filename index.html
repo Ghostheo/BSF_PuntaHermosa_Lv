@@ -5,116 +5,78 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Status BSF Punta Hermosa - Lavoro</title>
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-<style>
-  body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background:#f3f4f6; }
-  .card-num { font-size: 1.4rem; font-weight: 800; }
-  .leadtime-badge { display:inline-block; min-width:78px; text-align:center; }
-</style>
 </head>
-<body class="p-2 md:p-4">
+<body class="p-2 md:p-4" style="background:#f3f4f6;font-family:system-ui">
 <div class="max-w-7xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
-
-  <!-- HEADER -->
   <div class="bg-white border-b border-gray-200 px-4 md:px-6 pt-4 pb-3">
-    <div class="flex items-center gap-2">
-      <img src="logo.png" alt="Lavoro" class="h-8 object-contain">
-    </div>
-    <h1 class="text-[15px] md:text-[17px] font-extrabold tracking-tight mt-2">Status BSF PUNTA HERMOSA</h1>
-    <p id="fecha-actual" class="text-[11px] text-gray-500 mt-0.5">22 de octubre de 2026 | 01:31 p.m.</p>
-    <p class="text-[11px] text-green-600 font-semibold flex items-center gap-1 mt-0.5">
-      <span class="w-2 h-2 bg-green-500 rounded-full inline-block animate-pulse"></span> Sincronizado en vivo
-    </p>
+    <img src="logo.png" alt="Lavoro" style="height:32px">
+    <h1 class="font-extrabold mt-2">Status BSF PUNTA HERMOSA</h1>
+    <p id="fecha-actual" class="text-xs text-gray-500"></p>
+    <p class="text-xs text-green-600 font-semibold">● Sincronizado en vivo</p>
   </div>
-
   <div class="p-4 md:p-6">
-    <!-- POR TIPO -->
-    <p class="text-[11px] font-bold tracking-widest text-gray-500 mb-2">POR TIPO</p>
+    <p class="text-xs font-bold text-gray-500">POR TIPO</p>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
-      <div class="bg-[#E3F2FD] rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-[#1565C0]">RECEPCIÓN</p><p id="count-recepcion" class="card-num text-[#1565C0]">0</p></div>
-      <div class="bg-[#E8F5E9] rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-[#2E7D32]">DESPACHO</p><p id="count-despacho" class="card-num text-[#2E7D32]">0</p></div>
-      <div class="bg-[#FFF8E1] rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-[#F9A825]">TRASLADO</p><p id="count-traslado" class="card-num text-[#F9A825]">0</p></div>
-      <div class="bg-[#F3E5F5] rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-[#7B1FA2]">RECE/DESP</p><p id="count-rece-desp" class="card-num text-[#7B1FA2]">0</p></div>
+      <div class="bg-[#E3F2FD] rounded-lg p-3 text-center"><p>RECEPCIÓN</p><p id="count-recepcion">0</p></div>
+      <div class="bg-[#E8F5E9] rounded-lg p-3 text-center"><p>DESPACHO</p><p id="count-despacho">0</p></div>
+      <div class="bg-[#FFF8E1] rounded-lg p-3 text-center"><p>TRASLADO</p><p id="count-traslado">0</p></div>
+      <div class="bg-[#F3E5F5] rounded-lg p-3 text-center"><p>RECE/DESP</p><p id="count-rece-desp">0</p></div>
     </div>
-
-    <!-- POR ESTATUS -->
-    <p class="text-[11px] font-bold tracking-widest text-gray-500 mb-2">POR ESTATUS</p>
+    <p class="text-xs font-bold text-gray-500">POR ESTATUS</p>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-      <div class="bg-black rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-white">TOTAL</p><p id="count-total" class="card-num text-white">0</p></div>
-      <div class="bg-[#C62828] rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-white">PENDIENTE</p><p id="count-pendiente" class="card-num text-white">0</p></div>
-      <div class="bg-[#FFEBEE] rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-[#C62828]">EN PROCESO</p><p id="count-en-proceso" class="card-num text-[#C62828]">0</p></div>
-      <div class="bg-[#FB8C00] rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-white">PEND. FACTURA</p><p id="count-pend-factura" class="card-num text-white">0</p></div>
-      <div class="bg-[#E8F5E9] rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-[#2E7D32]">CARGADO/FACT.</p><p id="count-cargado" class="card-num text-[#2E7D32]">0</p></div>
-      <div class="bg-[#2E7D32] rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-white">ATENDIDO</p><p id="count-atendido" class="card-num text-white">0</p></div>
-      <div class="bg-[#ECEFF1] rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-gray-500">NO EN CD</p><p id="count-no-cd" class="card-num text-gray-700">0</p></div>
-      <div class="bg-[#29B6F6] rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-white">PERNOCTANDO</p><p id="count-pernoctando" class="card-num text-white">0</p></div>
+      <div class="bg-black rounded-lg p-3 text-center text-white"><p>TOTAL</p><p id="count-total">0</p></div>
+      <div class="bg-[#C62828] rounded-lg p-3 text-center text-white"><p>PENDIENTE</p><p id="count-pendiente">0</p></div>
+      <div class="bg-[#FFEBEE] rounded-lg p-3 text-center"><p>EN PROCESO</p><p id="count-en-proceso">0</p></div>
+      <div class="bg-[#FB8C00] rounded-lg p-3 text-center text-white"><p>PEND. FACTURA</p><p id="count-pend-factura">0</p></div>
+      <div class="bg-[#E8F5E9] rounded-lg p-3 text-center"><p>CARGADO/FACT.</p><p id="count-cargado">0</p></div>
+      <div class="bg-[#2E7D32] rounded-lg p-3 text-center text-white"><p>ATENDIDO</p><p id="count-atendido">0</p></div>
+      <div class="bg-[#ECEFF1] rounded-lg p-3 text-center"><p>NO EN CD</p><p id="count-no-cd">0</p></div>
+      <div class="bg-[#29B6F6] rounded-lg p-3 text-center text-white"><p>PERNOCTANDO</p><p id="count-pernoctando">0</p></div>
     </div>
-
-    <!-- PANEL DE CONTROL -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-3">
-      <h2 class="text-[13px] font-extrabold">PANEL DE CONTROL DE UNIDADES</h2>
-      <div class="flex flex-col md:flex-row gap-2 md:items-center w-full md:w-auto">
-        <input id="search-input" type="text" placeholder="Buscar por placa, N° trans, procedencia..." class="border border-gray-300 rounded-md px-3 py-1.5 text-xs w-full md:w-72 focus:outline-none focus:ring-2 focus:ring-blue-400">
-        <div class="flex gap-2">
-          <button id="btn-clear" class="bg-[#C62828] text-white text-xs font-bold px-4 py-2 rounded-md hover:bg-red-700">LIMPIAR</button>
-          <button id="btn-add" class="bg-[#1565C0] text-white text-xs font-bold px-4 py-2 rounded-md hover:bg-blue-700">+ Agregar Unidad</button>
-          <button id="btn-export" class="bg-[#2E7D32] text-white text-xs font-bold px-4 py-2 rounded-md hover:bg-green-700">Exportar a Excel</button>
-        </div>
+    <div class="flex flex-col md:flex-row justify-between gap-2 mb-3">
+      <h2 class="font-extrabold">PANEL DE CONTROL DE UNIDADES</h2>
+      <div class="flex gap-2 flex-wrap">
+        <input id="search-input" type="text" placeholder="Buscar placa, trans, procedencia..." class="border rounded px-2 py-1 text-xs">
+        <button id="btn-clear" type="button" class="bg-[#C62828] text-white text-xs font-bold px-4 py-2 rounded">LIMPIAR</button>
+        <button id="btn-add" type="button" class="bg-[#1565C0] text-white text-xs font-bold px-4 py-2 rounded">+ Agregar Unidad</button>
+        <button id="btn-export" type="button" class="bg-[#2E7D32] text-white text-xs font-bold px-4 py-2 rounded">Exportar a Excel</button>
       </div>
     </div>
-
-    <!-- TABLA -->
-    <div class="overflow-x-auto rounded-lg border-gray-200">
+    <div class="overflow-x-auto">
       <table class="w-full text-xs">
-        <thead class="bg-gray-50 text-gray-600">
-          <tr>
-            <th class="px-2 py-2 text-left font-bold">PRIORIDAD</th>
-            <th class="px-2 py-2 text-left font-bold">PLACA</th>
-            <th class="px-2 py-2 text-left font-bold">N° TRANS.</th>
-            <th class="px-2 py-2 text-left font-bold">PROCEDENCIA</th>
-            <th class="px-2 py-2 text-left font-bold">TIPO</th>
-            <th class="px-2 py-2 text-left font-bold">HORA DE LLEGADA</th>
-            <th class="px-2 py-2 text-left font-bold">ESTATUS</th>
-            <th class="px-2 py-2 text-left font-bold">ACCIONES</th>
-          </tr>
-        </thead>
-        <tbody id="tabla-cuerpo" class="divide-y divide-gray-100"></tbody>
+        <thead><tr><th>PRIORIDAD</th><th>PLACA</th><th>N° TRANS.</th><th>PROCEDENCIA</th><th>TIPO</th><th>HORA</th><th>ESTATUS</th><th>ACCIONES</th></tr></thead>
+        <tbody id="tabla-cuerpo"></tbody>
       </table>
     </div>
   </div>
-<!-- FOOTER IMAGEN -->
-  <div class="mt-2">
-    <img src="almacen.jpg" alt="Almacén Lavoro" class="w-full h-40 md:h-56 object-cover">
-    <p class="text-right text-[10px] italic text-gray-400 pr-4 py-2">Desarrollado por Luis Vallejo - Operaciones Lavoro</p>
-  </div>
+  <img src="almacen.jpg" class="w-full h-40 object-cover">
+  <p class="text-right text-xs italic text-gray-400 pr-4 py-2">Desarrollado por Luis Vallejo - Operaciones Lavoro</p>
 </div>
 
-<!-- MODAL AGREGAR / EDITAR -->
 <div id="modal" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-50 p-4">
   <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-5">
-    <h3 id="modal-title" class="font-bold text-sm mb-3">Agregar Unidad</h3>
+    <h3 id="modal-title" class="font-bold mb-3">Agregar Unidad</h3>
     <div class="grid grid-cols-2 gap-3">
-      <div><label class="text-[11px] font-bold">Prioridad</label><input id="f-prioridad" type="number" min="1" class="w-full border rounded-md px-2 py-1.5 text-xs mt-1"></div>
-      <div><label class="text-[11px] font-bold">Placa</label><input id="f-placa" type="text" class="w-full border rounded-md px-2 py-1.5 text-xs mt-1 uppercase"></div>
-      <div><label class="text-[11px] font-bold">N° Trans.</label><input id="f-trans" type="text" class="w-full border rounded-md px-2 py-1.5 text-xs mt-1"></div>
-      <div><label class="text-[11px] font-bold">Procedencia</label><input id="f-procedencia" type="text" class="w-full border rounded-md px-2 py-1.5 text-xs mt-1 uppercase"></div>
-      <div><label class="text-[11px] font-bold">Tipo</label><select id="f-tipo" class="w-full border rounded-md px-2 py-1.5 text-xs mt-1"><option>Recepcion</option><option>Despacho</option><option>Traslado</option><option>Rece/Desp</option></select></div>
-      <div><label class="text-[11px] font-bold">Hora Llegada</label><input id="f-hora" type="time" class="w-full border rounded-md px-2 py-1.5 text-xs mt-1"></div>
-      <div class="col-span-2"><label class="text-[11px] font-bold">Estatus</label><select id="f-estatus" class="w-full border rounded-md px-2 py-1.5 text-xs mt-1"><option>Pendiente</option><option>En Proceso</option><option>Pend. Factura</option><option>Cargado/Fact.</option><option>Atendido</option><option>No en CD</option><option>Pernoctando</option></select></div>
+      <input id="f-prioridad" type="number" placeholder="Prioridad" class="border rounded px-2 py-1 text-xs">
+      <input id="f-placa" type="text" placeholder="Placa" class="border rounded px-2 py-1 text-xs">
+      <input id="f-trans" type="text" placeholder="N° Trans" class="border rounded px-2 py-1 text-xs">
+      <input id="f-procedencia" type="text" placeholder="Procedencia" class="border rounded px-2 py-1 text-xs">
+      <select id="f-tipo" class="border rounded px-2 py-1 text-xs"><option>Recepcion</option><option>Despacho</option><option>Traslado</option><option>Rece/Desp</option></select>
+      <input id="f-hora" type="time" class="border rounded px-2 py-1 text-xs">
+      <select id="f-estatus" class="border rounded px-2 py-1 text-xs col-span-2"><option>Pendiente</option><option>En Proceso</option><option>Pend. Factura</option><option>Cargado/Fact.</option><option>Atendido</option><option>No en CD</option><option>Pernoctando</option></select>
     </div>
     <div class="flex justify-end gap-2 mt-4">
-      <button id="btn-cancel" class="bg-gray-200 text-gray-700 text-xs font-bold px-4 py-2 rounded-md">Cancelar</button>
-      <button id="btn-save" class="bg-[#1565C0] text-white text-xs font-bold px-4 py-2 rounded-md">Guardar</button>
+      <button id="btn-cancel" type="button" class="bg-gray-200 px-4 py-2 rounded text-xs font-bold">Cancelar</button>
+      <button id="btn-save" type="button" class="bg-[#1565C0] text-white px-4 py-2 rounded text-xs font-bold">Guardar</button>
     </div>
   </div>
 </div>
-
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbwZ9FyGaCsrxncP_Xs88QQcxzmNes0VOfvsNaGmDPyqWopc3Gr9g665J7kou56_Kt-W-g/exec";
 let database = [];
 let editIndex = -1;
 let lastIds = new Set();
 
-// 1. TIEMPO EN VIVO POR UNIDAD
 function getLeadtime(row){
   if(!row.hora || !row.hora.includes(':')) return {text:"--:--", ms:0};
   const [h,m] = row.hora.split(':').map(Number);
@@ -128,58 +90,43 @@ function getLeadtime(row){
   const hh = String(Math.floor(diff/3600000)).padStart(2,'0');
   const mm = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
   const ss = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
-  return {text: `${hh}:${mm}:${ss}`, ms: diff};
+  return {text: hh+":"+mm+":"+ss, ms: diff};
 }
-
-function leadtimeBadge(row, idx){
-  const {text, ms} = getLeadtime(row);
-  if(row.estatus === 'Atendido'){
-    return `<span class="leadtime-badge text-[10px] font-bold text-green-800 bg-green-100 border-green-300 rounded px-1.5 py-0.5">✓ ${text}</span>`;
-  }
-  let cls = "bg-gray-200 text-gray-700 border-gray-300";
-  if(ms >= 4*3600000) cls = "bg-[#C62828] text-white border-[#C62828]";
-  else if(ms >= 2*3600000) cls = "bg-[#FB8C00] text-white border-[#FB8C00]";
-  return `<span class="leadtime-badge text-[10px] font-bold rounded px-1.5 py-0.5 ${cls}" data-idx="${idx}">⏱ ${text}</span>`;
-}
-
-function actualizarBadgesTiempo(){
-  document.querySelectorAll('.leadtime-badge[data-idx]').forEach(el=>{
-    const idx = parseInt(el.getAttribute('data-idx'));
-    const row = database[idx];
-    if(!row || row.estatus === 'Atendido') return;
-    const {text, ms} = getLeadtime(row);
-    el.textContent = `⏱ ${text}`;
-    let cls = "leadtime-badge text-[10px] font-bold rounded px-1.5 py-0.5 bg-gray-200 text-gray-700 border-gray-300";
-    if(ms >= 4*3600000) cls = "leadtime-badge text-[10px] font-bold rounded px-1.5 py-0.5 bg-[#C62828] text-white border-[#C62828]";
-    else if(ms >= 2*3600000) cls = "leadtime-badge text-[10px] font-bold rounded px-1.5 py-0.5 bg-[#FB8C00] text-white border-[#FB8C00]";
-    el.className = cls;
-  });
-}
-setInterval(actualizarBadgesTiempo, 1000);
-
 function duracionAtendido(row){
   if(!row.atendidoEn || !row.hora) return "";
   const [h,m] = row.hora.split(':').map(Number);
-  const now = new Date(row.atendidoEn);
-  let llegada = new Date(now);
+  let llegada = new Date(row.atendidoEn);
   llegada.setHours(h||0,m||0,0,0);
   let diff = Math.max(0, row.atendidoEn - llegada.getTime());
   const hh = String(Math.floor(diff/3600000)).padStart(2,'0');
   const mm = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
   const ss = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
-  return `${hh}:${mm}:${ss}`;
+  return hh+":"+mm+":"+ss;
 }
-
-function updateDashboard(skipSave=false){
+function leadtimeBadge(row, idx){
+  const r = getLeadtime(row);
+  if(row.estatus === 'Atendido') return '<span style="background:#E8F5E9;color:#2E7D32;font-weight:bold;padding:2px 6px;border-radius:4px">✓ '+duracionAtendido(row)+'</span>';
+  let bg = "#ECEFF1", color="#37474F";
+  if(r.ms >= 4*3600000){ bg="#C62828"; color="#fff"; }
+  else if(r.ms >= 2*3600000){ bg="#FB8C00"; color="#fff"; }
+  return '<span data-idx="'+idx+'" style="background:'+bg+';color:'+color+';font-weight:bold;padding:2px 6px;border-radius:4px">⏱ '+r.text+'</span>';
+}
+function actualizarBadgesTiempo(){
+  document.querySelectorAll('span[data-idx]').forEach(el=>{
+    const row = database[parseInt(el.getAttribute('data-idx'))];
+    if(!row || row.estatus === 'Atendido') return;
+    const r = getLeadtime(row);
+    el.textContent = '⏱ '+r.text;
+    if(r.ms >= 4*3600000){ el.style.background="#C62828"; el.style.color="#fff"; }
+    else if(r.ms >= 2*3600000){ el.style.background="#FB8C00"; el.style.color="#fff"; }
+    else { el.style.background="#ECEFF1"; el.style.color="#37474F"; }
+  });
+}
+function updateDashboard(skipSave){
   const search = (document.getElementById('search-input').value || "").toLowerCase();
-
-  // Contadores
   const cTipo = {Recepcion:0, Despacho:0, Traslado:0, 'Rece/Desp':0};
   const cEst = {Total:database.length, Pendiente:0, 'En Proceso':0, 'Pend. Factura':0, 'Cargado/Fact.':0, Atendido:0, 'No en CD':0, Pernoctando:0};
-  database.forEach(r=>{
-    if(cTipo[r.tipo] !== undefined) cTipo[r.tipo]++;
-    if(cEst[r.estatus] !== undefined) cEst[r.estatus]++;
-  });
+  database.forEach(r=>{ if(cTipo[r.tipo]!==undefined) cTipo[r.tipo]++; if(cEst[r.estatus]!==undefined) cEst[r.estatus]++; });
   document.getElementById('count-recepcion').textContent = cTipo.Recepcion;
   document.getElementById('count-despacho').textContent = cTipo.Despacho;
   document.getElementById('count-traslado').textContent = cTipo.Traslado;
@@ -192,51 +139,17 @@ function updateDashboard(skipSave=false){
   document.getElementById('count-atendido').textContent = cEst.Atendido;
   document.getElementById('count-no-cd').textContent = cEst['No en CD'];
   document.getElementById('count-pernoctando').textContent = cEst.Pernoctando;
-
-  // Tabla
   const tbody = document.getElementById('tabla-cuerpo');
   tbody.innerHTML = "";
   database.forEach((row, idx)=>{
-    const textoFila = `${row.prioridad} ${row.placa} ${row.trans} ${row.procedencia} ${row.tipo} ${row.hora} ${row.estatus}`.toLowerCase();
-    if(search && !textoFila.includes(search)) return;
-    let tipoBadge = row.tipo;
-    if(row.tipo === 'Recepcion') tipoBadge = `<span class="text-blue-600 font-bold">Recepcion</span>`;
-    if(row.tipo === 'Despacho') tipoBadge = `<span class="text-green-700 font-bold">Despacho</span>`;
-    if(row.tipo === 'Traslado') tipoBadge = `<span class="text-yellow-700 font-bold">Traslado</span>`;
-    if(row.tipo === 'Rece/Desp') tipoBadge = `<span class="text-purple-700 font-bold">Rece/Desp</span>`;
-
-    let estatusBadge = row.estatus;
-    if(row.estatus === 'Atendido') estatusBadge = `<span class="bg-[#2E7D32] text-white text-[10px] font-bold px-2 py-1 rounded">ATENDIDO</span>`;
-    else if(row.estatus === 'Pendiente') estatusBadge = `<span class="bg-[#C62828] text-white text-[10px] font-bold px-2 py-1 rounded">PENDIENTE</span>`;
-    else if(row.estatus === 'En Proceso') estatusBadge = `<span class="bg-[#FFEBEE] text-[#C62828] text-[10px] font-bold px-2 py-1 rounded">EN PROCESO</span>`;
-    else if(row.estatus === 'Pend. Factura') estatusBadge = `<span class="bg-[#FB8C00] text-white text-[10px] font-bold px-2 py-1 rounded">PEND. FACTURA</span>`;
-    else if(row.estatus === 'Cargado/Fact.') estatusBadge = `<span class="bg-[#E8F5E9] text-[#2E7D32] text-[10px] font-bold px-2 py-1 rounded">CARGADO/FACT.</span>`;
-    else if(row.estatus === 'Pernoctando') estatusBadge = `<span class="bg-[#29B6F6] text-white text-[10px] font-bold px-2 py-1 rounded">PERNOCTANDO</span>`;
-    else if(row.estatus === 'No en CD') estatusBadge = `<span class="bg-[#ECEFF1] text-gray-700 text-[10px] font-bold px-2 py-1 rounded">NO EN CD</span>`;
-
-    let tiempoAccion = leadtimeBadge(row, idx);
-    if(row.estatus === 'Atendido') tiempoAccion = `<span class="leadtime-badge text-[10px] font-bold text-green-800 bg-green-100 border-green-300 rounded px-1.5 py-0.5">✓ ${duracionAtendido(row)}</span>`;
-
+    const txt = (row.prioridad+" "+row.placa+" "+row.trans+" "+row.procedencia+" "+row.tipo+" "+row.hora+" "+row.estatus).toLowerCase();
+    if(search && txt.indexOf(search)===-1) return;
     const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td class="px-2 py-2 font-bold">${row.prioridad}</td>
-      <td class="px-2 py-2 font-bold">${row.placa}</td>
-      <td class="px-2 py-2">${row.trans}</td>
-      <td class="px-2 py-2">${row.procedencia}</td>
-      <td class="px-2 py-2">${tipoBadge}</td>
-      <td class="px-2 py-2">${row.hora}</td>
-      <td class="px-2 py-2">${estatusBadge}</td>
-      <td class="px-2 py-2 flex-wrap gap-1 items-center">
-        <button onclick="abrirEditar(${idx})" class="bg-[#FB8C00] text-white text-[10px] font-bold px-2 py-1 rounded">Editar</button>
-        <button onclick="eliminarFila(${idx})" class="bg-[#C62828] text-white text-[10px] font-bold px-2 py-1 rounded">Eliminar</button>
-        ${tiempoAccion}
-      </td>`;
+    tr.innerHTML = '<td>'+row.prioridad+'</td><td><b>'+row.placa+'</b></td><td>'+row.trans+'</td><td>'+row.procedencia+'</td><td>'+row.tipo+'</td><td>'+row.hora+'</td><td>'+row.estatus+'</td><td><button onclick="abrirEditar('+idx+')">Editar</button> <button onclick="eliminarFila('+idx+')">Eliminar</button> '+leadtimeBadge(row, idx)+'</td>';
     tbody.appendChild(tr);
   });
-
   if(!skipSave) guardarDatos();
 }
-
 async function guardarDatos(){
   try{ await fetch(API_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body: JSON.stringify(database)}); }catch(e){}
 }
@@ -246,77 +159,43 @@ async function cargarDatos(){
     const texto = await res.text();
     if(texto && texto.trim() !== "[]" && texto.trim() !== ""){
       database = JSON.parse(texto);
-      lastIds = new Set(database.map(r => `${r.placa}|${r.trans}|${r.hora}`));
+      lastIds = new Set(database.map(r => r.placa+"|"+r.trans+"|"+r.hora));
       updateDashboard(true);
     }
   }catch(e){}
 }
-
-// 3. AUTO-REFRESH CADA 30 SEG + ALERTA SONIDO SI LLEGA PRIORIDAD 1
 function playAlert(){
   try{
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    [0, 0.35, 0.7].forEach(d=>{
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.connect(g); g.connect(ctx.destination);
-      o.type = 'sine'; o.frequency.value = 880;
+    [0,0.35,0.7].forEach(d=>{
+      const o = ctx.createOscillator(); const g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination); o.type='sine'; o.frequency.value=880;
       g.gain.setValueAtTime(0.3, ctx.currentTime + d);
       g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + d + 0.3);
-      o.start(ctx.currentTime + d);
-      o.stop(ctx.currentTime + d + 0.35);
+      o.start(ctx.currentTime + d); o.stop(ctx.currentTime + d + 0.35);
     });
   }catch(e){}
 }
-document.addEventListener('click', ()=>{ try{ new (window.AudioContext||window.webkitAudioContext)().resume(); }catch(e){} }, {once:true});
-
-setInterval(async ()=>{
-  try{
-    const res = await fetch(API_URL);
-    const texto = await res.text();
-    if(texto && texto.trim() !== "[]"){
-      const nuevo = JSON.parse(texto);
-      const nuevoIds = new Set(nuevo.map(r => `${r.placa}|${r.trans}|${r.hora}`));
-      const llegoPrio1 = nuevo.some(r => !lastIds.has(`${r.placa}|${r.trans}|${r.hora}`) && parseInt(r.prioridad) === 1);
-      if(llegoPrio1) playAlert();
-      database = nuevo;
-      lastIds = nuevoIds;
-      updateDashboard(true);
-    }
-  }catch(e){}
-}, 30000);
-
-// 4. EXPORTAR A EXCEL MEJORADO (con colores, logo texto y fecha en el nombre)
 document.getElementById('btn-export').addEventListener('click', ()=>{
   const hoy = new Date().toISOString().slice(0,10);
-  let tabla = `<table border="1" style="border-collapse:collapse;font-family:Arial">
-    <tr style="background:#1565C0;color:white"><td colspan="9" style="font-size:14px;font-weight:bold">LAVORO - Status BSF PUNTA HERMOSA - ${hoy}</td></tr>
-    <tr style="background:#000;color:white;font-weight:bold"><th>PRIORIDAD</th><th>PLACA</th><th>N° TRANS.</th><th>PROCEDENCIA</th><th>TIPO</th><th>HORA LLEGADA</th><th>TIEMPO</th><th>ESTATUS</th><th>ATENDIDO EN</th></tr>`;
-  database.forEach(row=>{
-    const t = getLeadtime(row).text;
-    tabla += `<tr><td>${row.prioridad}</td><td>${row.placa}</td><td>${row.trans}</td><td>${row.procedencia}</td><td>${row.tipo}</td><td>${row.hora}</td><td>${t}</td><td>${row.estatus}</td><td>${row.atendidoEn ? new Date(row.atendidoEn).toLocaleString() : ''}</td></tr>`;
-  });
-  tabla += `</table><br><p style="font-style:italic;font-size:10px;color:#888">Desarrollado por Luis Vallejo - Operaciones Lavoro</p>`;
-  const blob = new Blob(['\ufeff' + tabla], {type:'application/vnd.ms-excel'});
+  let tabla = '<table border="1"><tr><td colspan="9"><b>LAVORO - Status BSF PUNTA HERMOSA - '+hoy+'</b></td></tr><tr><th>PRIORIDAD</th><th>PLACA</th><th>N° TRANS.</th><th>PROCEDENCIA</th><th>TIPO</th><th>HORA</th><th>TIEMPO</th><th>ESTATUS</th><th>ATENDIDO EN</th></tr>';
+  database.forEach(row=>{ tabla += '<tr><td>'+row.prioridad+'</td><td>'+row.placa+'</td><td>'+row.trans+'</td><td>'+row.procedencia+'</td><td>'+row.tipo+'</td><td>'+row.hora+'</td><td>'+getLeadtime(row).text+'</td><td>'+row.estatus+'</td><td>'+(row.atendidoEn?new Date(row.atendidoEn).toLocaleString():'')+'</td></tr>'; });
+  tabla += '</table><p>Desarrollado por Luis Vallejo - Operaciones Lavoro</p>';
+  const blob = new Blob(['\ufeff'+tabla], {type:'application/vnd.ms-excel'});
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  link.download = `status_BSF_PUNTA_HERMOSA_${hoy}.xls`;
+  link.download = 'status_BSF_PUNTA_HERMOSA_'+hoy+'.xls';
   link.click();
 });
-
-// BUSCADOR, LIMPIAR, MODAL
 document.getElementById('search-input').addEventListener('input', ()=> updateDashboard(true));
-document.getElementById('btn-clear').addEventListener('click', ()=>{
-  document.getElementById('search-input').value = "";
-  updateDashboard(true);
-});
-function abrirModal(){ document.getElementById('modal').classList.remove('hidden'); document.getElementById('modal').classList.add('flex'); }
-function cerrarModal(){ document.getElementById('modal').classList.add('hidden'); document.getElementById('modal').classList.remove('flex'); editIndex = -1; }
+document.getElementById('btn-clear').addEventListener('click', ()=>{ document.getElementById('search-input').value=""; updateDashboard(true); });
+function abrirModal(){ const m=document.getElementById('modal'); m.classList.remove('hidden'); m.classList.add('flex'); }
+function cerrarModal(){ const m=document.getElementById('modal'); m.classList.add('hidden'); m.classList.remove('flex'); editIndex=-1; }
 document.getElementById('btn-add').addEventListener('click', ()=>{
-  document.getElementById('modal-title').textContent = "Agregar Unidad";
+  document.getElementById('modal-title').textContent="Agregar Unidad";
   ['f-prioridad','f-placa','f-trans','f-procedencia','f-hora'].forEach(id=>document.getElementById(id).value="");
-  document.getElementById('f-tipo').value = "Recepcion";
-  document.getElementById('f-estatus').value = "Pendiente";
+  document.getElementById('f-tipo').value="Recepcion";
+  document.getElementById('f-estatus').value="Pendiente";
   abrirModal();
 });
 document.getElementById('btn-cancel').addEventListener('click', cerrarModal);
@@ -331,38 +210,48 @@ document.getElementById('btn-save').addEventListener('click', ()=>{
     estatus: document.getElementById('f-estatus').value,
     atendidoEn: document.getElementById('f-estatus').value === 'Atendido' ? Date.now() : null
   };
-  if(editIndex >= 0){ database[editIndex] = {...database[editIndex], ...nueva}; }
+  if(editIndex >= 0){ database[editIndex] = Object.assign(database[editIndex], nueva); }
   else { database.push(nueva); if(parseInt(nueva.prioridad)===1) playAlert(); }
-  cerrarModal();
-  updateDashboard();
+  cerrarModal(); updateDashboard();
 });
 window.abrirEditar = function(idx){
-  editIndex = idx;
-  const r = database[idx];
-  document.getElementById('modal-title').textContent = "Editar Unidad";
-  document.getElementById('f-prioridad').value = r.prioridad;
-  document.getElementById('f-placa').value = r.placa;
-  document.getElementById('f-trans').value = r.trans;
-  document.getElementById('f-procedencia').value = r.procedencia;
-  document.getElementById('f-tipo').value = r.tipo;
-  document.getElementById('f-hora').value = r.hora;
-  document.getElementById('f-estatus').value = r.estatus;
+  editIndex = idx; const r = database[idx];
+  document.getElementById('modal-title').textContent="Editar Unidad";
+  document.getElementById('f-prioridad').value=r.prioridad;
+  document.getElementById('f-placa').value=r.placa;
+  document.getElementById('f-trans').value=r.trans;
+  document.getElementById('f-procedencia').value=r.procedencia;
+  document.getElementById('f-tipo').value=r.tipo;
+  document.getElementById('f-hora').value=r.hora;
+  document.getElementById('f-estatus').value=r.estatus;
   abrirModal();
 };
 window.eliminarFila = function(idx){
   if(confirm("¿Eliminar esta unidad?")){ database.splice(idx,1); updateDashboard(); }
 };
-
 function actualizarFecha(){
   const now = new Date();
   const meses = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
   let h = now.getHours(); const m = String(now.getMinutes()).padStart(2,'0'); const ampm = h >= 12 ? 'p.m.' : 'a.m.';
   h = h % 12 || 12;
-  document.getElementById('fecha-actual').textContent = `${now.getDate()} de ${meses[now.getMonth()]} de ${now.getFullYear()} | ${String(h).padStart(2,'0')}:${m} ${ampm}`;
+  document.getElementById('fecha-actual').textContent = now.getDate()+" de "+meses[now.getMonth()]+" de "+now.getFullYear()+" | "+String(h).padStart(2,'0')+":"+m+" "+ampm;
 }
 actualizarFecha();
 setInterval(actualizarFecha, 60000);
-
+setInterval(actualizarBadgesTiempo, 1000);
+setInterval(async ()=>{
+  try{
+    const res = await fetch(API_URL);
+    const texto = await res.text();
+    if(texto && texto.trim() !== "[]"){
+      const nuevo = JSON.parse(texto);
+      const nuevoIds = new Set(nuevo.map(r => r.placa+"|"+r.trans+"|"+r.hora));
+      const llegoPrio1 = nuevo.some(r => !lastIds.has(r.placa+"|"+r.trans+"|"+r.hora) && parseInt(r.prioridad)===1);
+      if(llegoPrio1) playAlert();
+      database = nuevo; lastIds = nuevoIds; updateDashboard(true);
+    }
+  }catch(e){}
+}, 30000);
 cargarDatos();
 </script>
 </body>
