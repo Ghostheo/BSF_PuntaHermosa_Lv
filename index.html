@@ -3,108 +3,102 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>STATUS BSF PUNTA HERMOSA</title>
+<title>Status BSF PUNTA HERMOSA - Lavora</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-.badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700}
-.t-pendiente{background:#C62828;color:#fff}
-.t-enproceso{background:#FFEBEE;color:#C62828}
-.t-pendfactura{background:#FB8C00;color:#fff}
-.t-cargadofact{background:#E8F5E9;color:#2E7D32}
-.t-atendido{background:#2E7D32;color:#fff}
-.t-noencd{background:#EEEEEE;color:#333}
-.t-pernoctando{background:#29B6F6;color:#003C5A}
+  .dot { width:8px; height:8px; background:#22c55e; border-radius:50%; display:inline-block; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:.4 } }
+  .col-prioridad { width:50px; min-width:50px; max-width:50px; text-align:center; }
+  .col-hora { width:85px; min-width:85px; }
+  .col-estatus { width:110px; min-width:110px; }
+  .col-acciones { width:135px; min-width:135px; }
+  .col-extra { width:30px; min-width:30px; }
+  table { table-layout: fixed; width: 100%; }
+  td, th { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 </style>
 </head>
-<body class="bg-gray-100 p-2 md:p-4">
-<div id="login-screen" class="max-w-sm mx-auto mt-20 bg-white p-6 rounded-xl shadow">
-<h1 class="text-xl font-bold mb-4 text-center">STATUS BSF PUNTA HERMOSA</h1>
-<input id="pass-input" type="password" placeholder="Contraseña" class="w-full border p-2 rounded mb-3">
-<button onclick="login()" class="w-full bg-black text-white font-bold py-2 rounded">Ingresar</button>
+<body class="bg-gray-100 font-sans">
+<div class="max-w-[1300px] mx-auto bg-white shadow-lg min-h-screen flex-col">
+  <div class="flex items-center justify-between px-4 py-3 border-b">
+    <div class="text-2xl font-bold text-blue-700">Lavora<span class="text-red-500">.</span></div>
+    <div class="text-center">
+      <div class="font-bold text-gray-700 text-sm">Status BSF PUNTA HERMOSA</div>
+      <div id="fecha" class="text-[11px] text-gray-500">22 de octubre de 2025 08:52 a. m.</div>
+      <div class="text-[11px] text-green-600 flex items-center justify-center gap-1"><span class="dot"></span> Sincronizado en vivo</div>
+    </div>
+    <button class="bg-gray-200 hover:bg-gray-300 px-4 py-1 rounded text-sm">Salir</button>
+  </div>
+
+  <div class="px-4 pt-3">
+    <div class="text-[11px] font-bold text-gray-500 mb-1">POR TIPO</div>
+    <div class="grid grid-cols-4 gap-2">
+      <div class="bg-blue-50 rounded-lg p-3 text-center"><div class="text-[11px] font-bold text-blue-800">RECEPCIÓN</div><div class="text-lg font-bold">0</div></div>
+      <div class="bg-green-50 rounded-lg p-3 text-center"><div class="text-[11px] font-bold text-green-800">DESPACHO</div><div class="text-lg font-bold">3</div></div>
+      <div class="bg-amber-50 rounded-lg p-3 text-center"><div class="text-[11px] font-bold text-amber-800">TRASLADO</div><div class="text-lg font-bold">0</div></div>
+      <div class="bg-purple-50 rounded-lg p-3 text-center"><div class="text-[11px] font-bold text-purple-800">RECE/DESP</div><div class="text-lg font-bold">0</div></div>
+    </div>
+  </div>
+
+  <div class="px-4 pt-3">
+    <div class="text-[11px] font-bold text-gray-500 mb-1">POR ESTATUS</div>
+    <div class="grid grid-cols-4 gap-2 mb-2">
+      <div class="bg-black text-white rounded-lg p-3 text-center"><div class="text-[11px] font-bold">TOTAL</div><div class="text-lg font-bold">3</div></div>
+      <div class="bg-red-600 text-white rounded-lg p-3 text-center"><div class="text-[11px] font-bold">PENDIENTE</div><div class="text-lg font-bold">0</div></div>
+      <div class="bg-red-100 rounded-lg p-3 text-center"><div class="text-[11px] font-bold text-red-700">EN PROCESO</div><div class="text-lg font-bold">0</div></div>
+      <div class="bg-orange-400 text-white rounded-lg p-3 text-center"><div class="text-[11px] font-bold">PEND. FACTURA</div><div class="text-lg font-bold">0</div></div>
+    </div>
+    <div class="grid grid-cols-4 gap-2">
+      <div class="bg-green-100 rounded-lg p-3 text-center"><div class="text-[11px] font-bold text-green-700">CARGADO/FACT</div><div class="text-lg font-bold">0</div></div>
+      <div class="bg-green-700 text-white rounded-lg p-3 text-center"><div class="text-[11px] font-bold">ATENDIDO</div><div class="text-lg font-bold">0</div></div>
+      <div class="bg-gray-200 rounded-lg p-3 text-center"><div class="text-[11px] font-bold text-gray-600">NO EN CD</div><div class="text-lg font-bold">3</div></div>
+      <div class="bg-sky-500 text-white rounded-lg p-3 text-center"><div class="text-[11px] font-bold">PERNOCTANDO</div><div class="text-lg font-bold">0</div></div>
+    </div>
+  </div>
+
+  <div class="px-4 pt-4 flex items-center justify-between">
+    <div class="font-bold text-sm">PANEL DE CONTROL DE UNIDADES</div>
+    <div class="flex gap-2">
+      <button class="bg-red-600 text-white text-xs px-3 py-1.5 rounded">LIMPIAR</button>
+      <button class="bg-violet-700 text-white text-xs px-3 py-1.5 rounded">+ Agregar Unidad</button>
+      <button class="bg-green-600 text-white text-xs px-3 py-1.5 rounded">Exportar a Excel</button>
+    </div>
+  </div>
+
+  <div class="px-4 pt-2 pb-2 overflow-x-auto">
+    <table class="text-xs border-collapse">
+      <thead>
+        <tr class="bg-gray-100 text-gray-600">
+          <th class="col-prioridad py-2 border">PRIORIDAD</th>
+          <th class="py-2 border px-1">PLACA</th>
+          <th class="py-2 border px-1">N° TRANS.</th>
+          <th class="py-2 border px-1">PROCEDENCIA</th>
+          <th class="py-2 border px-1">TIPO</th>
+          <th class="col-hora py-2 border">HORA DE LLEGADA</th>
+          <th class="col-estatus py-2 border">ESTATUS</th>
+          <th class="col-acciones py-2 border">ACCIONES</th>
+          <th class="col-extra py-2 border"></th>
+        </tr>
+      </thead>
+      <tbody class="text-center">
+        <tr class="border">
+          <td class="col-prioridad py-2 border font-bold">1</td>
+          <td class="py-2 border">CBF959</td>
+          <td class="py-2 border">14319153</td>
+          <td class="py-2 border">HUACHIPA</td>
+          <td class="py-2 border"><span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px]">Despacho</span></td>
+          <td class="col-hora py-2 border">17:14</td>
+          <td class="col-estatus py-2 border">No en CD</td>
+          <td class="col-acciones py-2 border"><button class="bg-yellow-400 px-2 py-0.5 rounded text-[10px]">Editar</button> <button class="bg-red-500 text-white px-2 py-0.5 rounded text-[10px]">Eliminar</button></td>
+          <td class="col-extra border"></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="text-right text-[10px] text-gray-400 mt-1">Desarrollado por Luis Veliz - Operaciones Lavora</div>
+  </div>
+
+  <div class="mt-auto">
+    <img src="https://images.unsplash.com/photo-1553413077-190dd305871c?w=1300&q=80" alt="Almacen Lavora" class="w-full h-[220px] object-cover">
+  </div>
 </div>
-<div id="app-content" class="hidden">
-<div class="flex flex-wrap justify-between items-center mb-3 gap-2">
-<h1 class="text-lg font-extrabold">STATUS BSF PUNTA HERMOSA</h1>
-<span id="fecha-actualizacion" class="text-xs text-gray-500"></span>
-<div class="flex gap-2">
-<button id="btn-add" class="bg-blue-600 text-white text-xs font-bold px-3 py-2 rounded">Agregar Unidad</button>
-<button id="btn-export" class="bg-green-600 text-white text-xs font-bold px-3 py-2 rounded">Exportar Excel</button>
-<button id="btn-clear" class="bg-red-600 text-white text-xs font-bold px-3 py-2 rounded">Limpiar Todo</button>
-</div>
-</div>
-<div class="grid grid-cols-4 md:grid-cols-8 gap-2 mb-3 text-center text-xs font-bold">
-<div class="bg-white p-2 rounded shadow">Total<br><span id="count-total">0</span></div>
-<div class="bg-red-700 text-white p-2 rounded shadow">Pendiente<br><span id="count-pendiente">0</span></div>
-<div class="bg-white p-2 rounded shadow text-red-700">En Proceso<br><span id="count-enproceso">0</span></div>
-<div class="bg-orange-500 text-white p-2 rounded shadow">Pend. Factura<br><span id="count-pendfactura">0</span></div>
-<div class="bg-green-100 p-2 rounded shadow text-green-800">Cargado/Fact.<br><span id="count-cargadofact">0</span></div>
-<div class="bg-green-700 text-white p-2 rounded shadow">Atendido<br><span id="count-atendido">0</span></div>
-<div class="bg-gray-200 p-2 rounded shadow">No en CD<br><span id="count-noencd">0</span></div>
-<div class="bg-sky-400 text-white p-2 rounded shadow">Pernoctando<br><span id="count-pernoctando">0</span></div>
-</div>
-<div class="grid grid-cols-4 gap-2 mb-3 text-center text-xs font-bold">
-<div class="bg-blue-100 text-blue-800 p-2 rounded shadow">Recepcion<br><span id="count-recepcion">0</span></div>
-<div class="bg-green-100 text-green-800 p-2 rounded shadow">Despacho<br><span id="count-despacho">0</span></div>
-<div class="bg-amber-100 text-amber-800 p-2 rounded shadow">Traslado<br><span id="count-traslado">0</span></div>
-<div class="bg-violet-100 text-violet-800 p-2 rounded shadow">Rece/Desp<br><span id="count-recedesp">0</span></div>
-</div>
-<div class="bg-white rounded-xl shadow overflow-x-auto">
-<table class="w-full text-[11px] whitespace-nowrap">
-<thead>
-<tr class="bg-[#F0EFE9] text-center text-[10px]"><th style="width:35px; padding:2px 0">PRIORIDAD</th><th class="px-1 py-1">Placa</th><th class="px-1 py-1">N° Trans.</th><th class="px-1 py-1">Procedencia</th><th class="px-1 py-1">Tipo</th><th class="px-1 py-1">Hora de llegada</th><th class="px-1 py-1">Estatus</th><th class="px-1 py-1">Tiempo</th><th class="px-1 py-1">Acciones</th></tr>
-<tr class="bg-[#F0EFE9] text-center"><th style="width:45px; padding:4px">PRIORIDAD</th><th class="px-2 py-2">Placa</th><th class="px-2 py-2">N° Trans.</th><th class="px-2 py-2">Procedencia</th><th class="px-2 py-2">Tipo</th><th class="px-2 py-2">Hora de llegada</th><th class="px-2 py-2">Estatus</th><th class="px-2 py-2">Tiempo</th><th class="px-2 py-2">Acciones</th></tr>
-</tr>
-</thead>
-<tbody id="table-body"></tbody>
-</table>
-</div>
-<div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-<form id="unit-form" class="bg-white p-4 rounded-xl w-full max-w-md">
-<h2 id="modal-title" class="font-bold text-lg mb-3">Agregar Nueva Unidad</h2>
-<input id="edit-idx" type="hidden">
-<label class="block text-xs font-bold">Prioridad<input id="form-prioridad" type="number" class="w-full border p-2 rounded mb-2" required></label>
-<label class="block text-xs font-bold">Placa<input id="form-placa" type="text" class="w-full border p-2 rounded mb-2" required></label>
-<label class="block text-xs font-bold">N° Trans.<input id="form-trans" type="text" class="w-full border p-2 rounded mb-2"></label>
-<label class="block text-xs font-bold">Procedencia<input id="form-procedencia" type="text" class="w-full border p-2 rounded mb-2"></label>
-<label class="block text-xs font-bold">Tipo<select id="form-tipo" class="w-full border p-2 rounded mb-2"><option>Recepcion</option><option>Despacho</option><option>Traslado</option><option>Rece/Desp</option></select></label>
-<label class="block text-xs font-bold">Hora de llegada<input id="form-hora" type="text" placeholder="HH:MM" class="w-full border p-2 rounded mb-2" required></label>
-<label class="block text-xs font-bold">Estatus<select id="form-estatus" class="w-full border p-2 rounded mb-3"><option>Pendiente</option><option>En Proceso</option><option>Pend.Factura</option><option>Cargado/Fact.</option><option>Atendido</option><option>No en CD</option><option>Pernoctando</option></select></label>
-<div class="flex gap-2">
-<button type="submit" class="flex-1 bg-blue-600 text-white font-bold py-2 rounded">Guardar</button>
-<button type="button" id="btn-close" class="flex-1 bg-gray-400 text-white font-bold py-2 rounded">Cancelar</button>
-</div>
-</form>
-</div>
-<div class="text-right text-[10px] italic text-gray-400 mt-2">Desarrollado por Luis Vallejo - Operaciones Lavoro</div>
-<script>
-let database=[];
-function guardarDatos(){localStorage.setItem('bsf_database',JSON.stringify(database));}
-function cargarDatos(){try{database=JSON.parse(localStorage.getItem('bsf_database'))||[];}catch(e){database=[];}updateDashboard();}
-function horaLlegadaDate(horaStr){const now=new Date();const parts=horaStr.split(':');let h=parseInt(parts[0])||0;let m=parseInt(parts[1])||0;let d=new Date(now.getFullYear(),now.getMonth(),now.getDate(),h,m,0);if(d>now){d.setDate(d.getDate()-1);}return d;}
-function diffMsFila(d){if(d.estatus==='Atendido'&&d.tiempoFinalMs!=null){return d.tiempoFinalMs;}const llegada=horaLlegadaDate(d.hora);return Date.now()-llegada.getTime();}
-function formatoDuracion(ms){ms=Math.max(0,ms);const totalMin=Math.floor(ms/60000);const h=Math.floor(totalMin/60);const m=totalMin%60;if(h>0){return h+'h '+m+'m';}return m+'m';}
-function estiloTiempo(diff,estatus){if(estatus==='Atendido')return 'bg-gray-800 text-white px-2 py-0.5 rounded font-bold';const mins=diff/60000;if(mins<30)return 'bg-green-600 text-white px-2 py-0.5 rounded font-bold';if(mins<60)return 'bg-amber-500 text-white px-2 py-0.5 rounded font-bold';return 'bg-red-600 text-white px-2 py-0.5 rounded font-bold';}
-function actualizarTiempos(){document.querySelectorAll('[data-tiempo-idx]').forEach(el=>{const idx=parseInt(el.getAttribute('data-tiempo-idx'));const row=database[idx];if(!row)return;if(row.estatus==='Atendido'&&row.tiempoFinal){el.innerText='✓ '+row.tiempoFinal;el.className='bg-gray-800 text-white px-2 py-0.5 rounded font-bold';return;}const diff=diffMsFila(row);el.innerText=formatoDuracion(diff);el.className=estiloTiempo(diff,row.estatus);});}
-setInterval(actualizarTiempos,30000);
-const tableBody=document.getElementById('table-body');
-const modal=document.getElementById('modal');
-const unitForm=document.getElementById('unit-form');
-const btnAdd=document.getElementById('btn-add');
-const btnClose=document.getElementById('btn-close');
-const btnExport=document.getElementById('btn-export');
-const btnClear=document.getElementById('btn-clear');
-const modalTitle=document.getElementById('modal-title');
-const editIdx=document.getElementById('edit-idx');
-tableBody.innerHTML=database.map((row,idx)=>'<tr class="border-b hover:bg-gray-50"><td class="px-1 py-2 border-r text-center" style="width:45px">'+row.prioridad+'</td><td class="px-2 py-2 border-r font-bold uppercase">'+row.placa+'</td><td class="px-2 py-2 border-r">'+row.trans+'</td><td class="px-2 py-2 border-r">'+row.procedencia+'</td><td class="px-2 py-2 border-r">'+row.tipo+'</td><td class="px-2 py-2 border-r whitespace-nowrap">'+row.hora+'</td><td class="px-2 py-2 border-r">'+row.estatus+'</td><td class="px-2 py-2 border-r text-center" data-tiempo-idx="'+idx+'"></td><td class="px-2 py-2 border-r text-center whitespace-nowrap"><button onclick="editRow('+idx+')" class="bg-yellow-400 px-2 py-1 rounded mr-1">Editar</button><button onclick="deleteRow('+idx+')" class="bg-red-500 text-white px-2 py-1 rounded">Eliminar</button></td></tr>').join('');actualizarTiempos();
-btnAdd.addEventListener('click',()=>{modalTitle.innerText="Agregar Nueva Unidad";editIdx.value="";unitForm.reset();document.getElementById('form-prioridad').value=database.length+1;modal.classList.remove('hidden');});
-btnClose.addEventListener('click',()=>modal.classList.add('hidden'));
-unitForm.addEventListener('submit',(e)=>{e.preventDefault();const idx=editIdx.value;const prev=idx===""?null:database[parseInt(idx)];const estatusNuevo=document.getElementById('form-estatus').value;const newData={prioridad:parseInt(document.getElementById('form-prioridad').value),placa:document.getElementById('form-placa').value.toUpperCase().trim(),trans:document.getElementById('form-trans').value.trim(),procedencia:document.getElementById('form-procedencia').value.toUpperCase().trim(),tipo:document.getElementById('form-tipo').value,hora:document.getElementById('form-hora').value.trim(),estatus:estatusNuevo};if(estatusNuevo==='Atendido'){if(prev&&prev.estatus==='Atendido'&&prev.horaAtendido){newData.horaAtendido=prev.horaAtendido;newData.tiempoFinalMs=prev.tiempoFinalMs;newData.tiempoFinal=prev.tiempoFinal;}else{const llegada=horaLlegadaDate(newData.hora);const ahora=new Date();newData.horaAtendido=ahora.toISOString();newData.tiempoFinalMs=Math.max(0,ahora-llegada);newData.tiempoFinal=formatoDuracion(newData.tiempoFinalMs);}}if(idx==="" )database.push(newData);else database[parseInt(idx)]=newData;modal.classList.add('hidden');updateDashboard();});
-window.editRow=function(index){const data=database[index];modalTitle.innerText="Editar Unidad";editIdx.value=index;document.getElementById('form-prioridad').value=data.prioridad;document.getElementById('form-placa').value=data.placa;document.getElementById('form-trans').value=data.trans;document.getElementById('form-procedencia').value=data.procedencia;document.getElementById('form-tipo').value=data.tipo;document.getElementById('form-hora').value=data.hora;document.getElementById('form-estatus').value=data.estatus;modal.classList.remove('hidden');};
-window.deleteRow=function(index){if(confirm('¿Eliminar registro?')){database.splice(index,1);updateDashboard();}};
-btnClear.addEventListener('click',()=>{if(database.length===0)return;if(confirm('¿Estás seguro? Se eliminarán TODAS las unidades de la lista.')){database=[];updateDashboard();}});
-btnExport.addEventListener('click',()=>{const counts={recepcion:database.filter(r=>r.tipo==='Recepcion').length,despacho:database.filter(r=>r.tipo==='Despacho').length,traslado:database.filter(r=>r.tipo==='Traslado').length,recedesp:database.filter(r=>r.tipo==='Rece/Desp').length,total:database.length,pendiente:database.filter(r=>r.estatus==='Pendiente').length,enproceso:database.filter(r=>r.estatus==='En Proceso').length,pendfactura:database.filter(r=>r.estatus==='Pend.Factura').length,cargadofact:database.filter(r=>r.estatus==='Cargado/Fact.').length,atendido:database.filter(r=>r.estatus==='Atendido').length,noencd:database.filter(r=>r.estatus==='No en CD').length,pernoctando:database.filter(r=>r.estatus==='Pernoctando').length};const fechaTexto=document.getElementById('fecha-actualizacion').innerText;let html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8"></head><body>';html+='<table border="1" cellspacing="0" cellpadding="5" style="border-collapse:collapse;font-family:Calibri;">';html+='<tr><td colspan="9" style="background:#000;color:#fff;font-size:16px;font-weight:bold;text-align:center;">STATUS BSF PUNTA HERMOSA</td></tr>';html+='<tr><td colspan="9" style="background:#000;color:#BBBBBB;text-align:center;">'+fechaTexto+'</td></tr><tr><td colspan="9"></td></tr>';html+='<tr style="font-weight:bold;text-align:center;"><td style="background:#000;color:#fff;">Total '+counts.total+'</td><td style="background:#C62828;color:#fff;">Pendiente '+counts.pendiente+'</td><td style="background:#FFEBEE;color:#C62828;">En Proceso '+counts.enproceso+'</td><td style="background:#FB8C00;color:#fff;">Pend. Factura '+counts.pendfactura+'</td><td style="background:#E8F5E9;color:#2E7D32;">Cargado/Fact. '+counts.cargadofact+'</td><td style="background:#2E7D32;color:#fff;">Atendido '+counts.atendido+'</td><td style="background:#EEEEEE;">No en CD '+counts.noencd+'</td><td style="background:#29B6F6;color:#003C5A;">Pernoctando '+counts.pernoctando+'</td><td></td></tr>';html+='<tr style="font-weight:bold;text-align:center;"><td style="background:#E3F0FF;color:#1E4DB7;">Recepcion '+counts.recepcion+'</td><td style="background:#E6F4E5;color:#2E7D32;">Despacho '+counts.despacho+'</td><td style="background:#FFF3E0;color:#8D6E00;">Traslado '+counts.traslado+'</td><td style="background:#EDE7F6;color:#5E35B1;">Rece/Desp '+counts.recedesp+'</td><td colspan="5"></td></tr><tr><td colspan="9"></td></tr>';html+='<tr style="background:#F0EFE9;font-weight:bold;text-align:center;"><td style="width:60px;">Prioridad</td><td style="width:80px;">Placa</td><td style="width:110px;">N° Trans.</td><td style="width:110px;">Procedencia</td><td style="width:80px;">Tipo</td><td style="width:110px;">Hora de llegada</td><td style="width:90px;">Estatus</td><td style="width:70px;">Tiempo</td><td style="width:70px;">Estado</td></tr>';database.forEach((d,i)=>{const diff=diffMsFila(d);const txtTiempo=formatoDuracion(diff);const bg=i%2===0?'#FFFFFF':'#FAF9F6';let tipoStyle='';if(d.tipo==='Recepcion')tipoStyle='background:#E3F0FF;color:#1E4DB7;font-weight:bold;';else if(d.tipo==='Despacho')tipoStyle='background:#E6F4E5;color:#2E7D32;font-weight:bold;';let estStyle='';if(d.estatus==='Atendido')estStyle='background:#2E7D32;color:#fff;font-weight:bold;';else if(d.estatus==='Pendiente')estStyle='background:#C62828;color:#fff;font-weight:bold;';html+='<tr style="text-align:center;background:'+bg+'"><td>'+d.prioridad+'</td><td><b>'+d.placa+'</b></td><td>'+d.trans+'</td><td>'+d.procedencia+'</td><td style="'+tipoStyle+'">'+d.tipo+'</td><td>'+d.hora+'</td><td style="'+estStyle+'">'+d.estatus+'</td><td>'+txtTiempo+'</td><td>Leadtime</td></tr>';});html+='</table><br><div style="text-align:right;font-style:italic;color:#888;font-size:11px;">Desarrollado por Luis Vallejo - Operaciones Lavoro</div></body></html>';const blob=new Blob(['\ufeff'+html],{type:'application/vnd.ms-excel'});const link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download="status_BSF_PUNTA_HERMOSA_formateado.xls";document.body.appendChild(link);link.click();document.body.removeChild(link);});
-function login(){const val=document.getElementById('pass-input').value;if(val==='lavoro2024'){sessionStorage.setItem('auth','1');document.getElementById('login-screen').classList.add('hidden');document.getElementById('app-content').classList.remove('hidden');cargarDatos();}else{alert('Contraseña incorrecta');}}
-if(sessionStorage.getItem('auth')==='1'){document.getElementById('login-screen').classList.add('hidden');document.getElementById('app-content').classList.remove('hidden');cargarDatos();}
-</script>
 </body>
 </html>
