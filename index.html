@@ -79,7 +79,7 @@
       <div class="flex flex-col md:flex-row gap-2 md:items-center w-full md:w-auto">
         <input id="search-input" type="text" placeholder="Buscar por placa, N° trans, procedencia..." class="border rounded-md px-3 py-2 text-xs w-full md:w-80">
         <div class="flex gap-2">
-          <button id="btn-clear" type="button" class="bg-[#C62828] text-white text-xs font-bold px-4 py-2 rounded-md hover:bg-red-700">LIMPIAR</button>
+          <button id="btn-clear" type="button" onclick="document.getElementById('search-input').value=''; filtroEstatus=null; updateDashboard();" class="bg-[#C62828] text-white text-xs font-bold px-4 py-2 rounded-md hover:bg-red-700">LIMPIAR</button>
           <button id="btn-add" type="button" class="bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-md hover:bg-blue-800">+ Agregar Unidad</button>
           <button id="btn-export" type="button" onclick="exportarExcelTOP()" class="bg-green-700 text-white text-xs font-bold px-4 py-2 rounded-md hover:bg-green-800">Exportar a Excel</button>
         </div>
@@ -162,12 +162,6 @@ let filtroEstatus = null;
 function setFiltro(estatus){
   filtroEstatus = (filtroEstatus === estatus) ? null : estatus;
   updateDashboard(true);
-}
-
-function limpiarBusqueda(){
-  document.getElementById('search-input').value = '';
-  filtroEstatus = null;
-  updateDashboard();
 }
 
 function getBadgeTiempo(horaLlegada, estatus){
@@ -525,14 +519,10 @@ window.exportarExcelTOP = async function(){
     alert('Error al exportar: ' + err.message);
   }
 };
+
 cargarFirebase();
 setInterval(cargarFirebase, 3000);
 updateDashboard();
-document.getElementById('btn-clear').addEventListener('click', () => {
-  document.getElementById('search-input').value = '';
-  filtroEstatus = null;
-  updateDashboard();
-});
 </script>
 </body>
 </html>
