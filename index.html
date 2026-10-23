@@ -132,6 +132,7 @@
         <option>NO EN CD</option>
         <option>PERNOCTANDO</option>
       </select>
+      <input id="f-ubicacion" placeholder="Link Google Maps (ubicación en tiempo real)" class="border rounded-md px-3 py-2 text-xs col-span-2">
     </div>
     <div class="flex justify-end gap-2 mt-4">
       <button id="btn-cancel" type="button" class="bg-gray-200 text-xs font-bold px-4 py-2 rounded-md">Cancelar</button>
@@ -194,6 +195,10 @@ async function cargarFirebase(){
   } catch(e){ console.error("Error Firebase:", e); }
 }
 
+window.sinUbicacion = function(){
+  alert('No hay ubicación registrada para esta unidad. Edítala y pega el link de Google Maps.');
+};
+
 function updateDashboard(){
   const hoy = new Date();
   document.getElementById('fecha').textContent = hoy.toLocaleDateString('es-PE', {day:'numeric', month:'long', year:'numeric'}) + ' | ' + hoy.toLocaleTimeString('es-PE', {hour:'2-digit', minute:'2-digit'});
@@ -222,11 +227,14 @@ function updateDashboard(){
   tbody.innerHTML = '';
   let contador = 1;
   entries.forEach(([id, u]) => {
+    const placaHtml = u.ubicacion
+      ? `<a href="${u.ubicacion}" target="_blank" class="text-blue-700 font-bold underline">${u.placa}</a>`
+      : `<span class="cursor-pointer hover:text-blue-700" onclick="sinUbicacion()">${u.placa}</span>`;
     const tr = document.createElement('tr');
     tr.className = 'border-t';
     tr.innerHTML = `
       <td class="p-2">${contador++}</td>
-      <td class="p-2 font-bold">${u.placa}</td>
+      <td class="p-2">${placaHtml}</td>
       <td class="p-2">${u.trans}</td>
       <td class="p-2">${u.procedencia}</td>
       <td class="p-2 text-green-700 font-bold">${u.tipo}</td>
@@ -258,6 +266,7 @@ window.editarFila = function(id){
   document.getElementById('f-tipo').value = u.tipo;
   document.getElementById('f-hora').value = u.hora;
   document.getElementById('f-estatus').value = u.estatus;
+  document.getElementById('f-ubicacion').value = u.ubicacion || '';
   document.getElementById('modal-title').textContent = "Editar Unidad";
   const m = document.getElementById('modal');
   m.classList.remove('hidden'); m.classList.add('flex');
@@ -299,7 +308,7 @@ document.getElementById('btn-clear').addEventListener('click', function(e){
 document.getElementById('btn-add').addEventListener('click', ()=>{
   editId = null;
   document.getElementById('modal-title').textContent = "Agregar Unidad";
-  ['f-placa','f-trans','f-proc','f-hora'].forEach(id=>document.getElementById(id).value='');
+  ['f-placa','f-trans','f-proc','f-hora','f-ubicacion'].forEach(id=>document.getElementById(id).value='');
   const m = document.getElementById('modal');
   m.classList.remove('hidden'); m.classList.add('flex');
 });
@@ -316,7 +325,8 @@ document.getElementById('btn-save').addEventListener('click', async ()=>{
     procedencia: document.getElementById('f-proc').value.trim(),
     tipo: document.getElementById('f-tipo').value,
     hora: document.getElementById('f-hora').value,
-    estatus: document.getElementById('f-estatus').value
+    estatus: document.getElementById('f-estatus').value,
+    ubicacion: document.getElementById('f-ubicacion').value.trim()
   };
   if(!unidad.placa) return alert('Ingresa la placa');
   
@@ -376,11 +386,12 @@ window.exportarExcelTOP = async function(){
       {header:'PROCEDENCIA', key:'procedencia', width:30},
       {header:'TIPO', key:'tipo', width:14},
       {header:'HORA LLEGADA', key:'hora', width:16},
-      {header:'ESTATUS', key:'estatus', width:18}
+      {header:'ESTATUS', key:'estatus', width:18},
+      {header:'UBICACION', key:'ubicacion', width:40}
     ];
     sheet.pageSetup = {paperSize: 9, orientation:'landscape', fitToPage:true, fitToWidth:1, fitToHeight:0, margins:{left:0.4, right:0.4, top:0.5, bottom:0.5, header:0.3, footer:0.3}};
 
-    sheet.mergeCells('A1:G1');
+    sheet.mergeCells('A1:H1');
     const titulo = sheet.getCell('A1');
     titulo.value = 'BSF PUNTA HERMOSA - REPORTE DE OPERACIONES';
     titulo.font = {name:'Calibri', size:16, bold:true, color:{argb:'FFFFFFFF'}};
@@ -388,7 +399,7 @@ window.exportarExcelTOP = async function(){
     titulo.alignment = {horizontal:'center', vertical:'middle'};
     sheet.getRow(1).height = 30;
 
-    sheet.mergeCells('A2:G2');
+    sheet.mergeCells('A2:H2');
     const sub = sheet.getCell('A2');
     sub.value = `Fecha: ${new Date().toLocaleDateString('es-PE')} | Total Unidades: ${data.length} | Generado: ${new Date().toLocaleTimeString('es-PE')}`;
     sub.font = {name:'Calibri', size:11, color:{argb:'FF0C2340'}};
@@ -413,7 +424,8 @@ window.exportarExcelTOP = async function(){
         procedencia: u.procedencia,
         tipo: u.tipo,
         hora: u.hora,
-        estatus: u.estatus
+        estatus: u.estatus,
+        ubicacion: u.ubicacion || ''
       });
       row.height = 20;
       row.eachCell({includeEmpty:true}, (cell, colNumber)=>{
@@ -436,8 +448,8 @@ window.exportarExcelTOP = async function(){
       row.getCell('procedencia').alignment = {vertical:'middle', horizontal:'left', wrapText:true};
     });
 
-    sheet.autoFilter = {from:'A4', to:'G'+(4+data.length)};
-    const totalRow = sheet.addRow({prioridad:'', placa:'TOTAL', trans:'', procedencia:'', tipo:'', hora:'', estatus: data.length});
+    sheet.autoFilter = {from:'A4', to:'H'+(4+data.length)};
+    const totalRow = sheet.addRow({prioridad:'', placa:'TOTAL', trans:'', procedencia:'', tipo:'', hora:'', estatus: data.length, ubicacion:''});
     totalRow.font = {name:'Calibri', size:12, bold:true, color:{argb:'FFFFFFFF'}};
     totalRow.fill = {type:'pattern', pattern:'solid', fgColor:{argb:NAVY}};
     totalRow.alignment = {horizontal:'center', vertical:'middle'};
