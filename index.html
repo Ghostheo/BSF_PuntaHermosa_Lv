@@ -332,7 +332,7 @@ document.getElementById('btn-save').addEventListener('click', async ()=>{
 
 document.getElementById('search-input').addEventListener('input', ()=> updateDashboard(true));
 
-// EXPORTAR EXCEL CORREGIDO
+// EXPORTAR EXCEL CORREGIDO - CON ENCABEZADOS
 window.exportarExcelTOP = async function(){
   try {
     if(typeof ExcelJS === 'undefined'){
@@ -399,11 +399,12 @@ window.exportarExcelTOP = async function(){
     sheet.getRow(3).height = 5;
 
     const headerRow = sheet.getRow(4);
+    headerRow.values = ['PRIORIDAD','PLACA','N° TRANS.','PROCEDENCIA','TIPO','HORA LLEGADA','ESTATUS'];
     headerRow.font = {name:'Calibri', size:12, bold:true, color:{argb:'FFFFFFFF'}};
     headerRow.fill = {type:'pattern', pattern:'solid', fgColor:{argb:NAVY}};
     headerRow.alignment = {horizontal:'center', vertical:'middle'};
     headerRow.height = 22;
-    headerRow.eachCell((cell)=>{ cell.border = thinBorder; });
+    headerRow.eachCell({includeEmpty:true}, (cell)=>{ cell.border = thinBorder; });
 
     data.forEach((u,i)=>{
       const row = sheet.addRow({
@@ -469,6 +470,7 @@ window.exportarExcelTOP = async function(){
     resumen.getRow(3).height = 5;
 
     const resumenHeader = resumen.getRow(4);
+    resumenHeader.values = ['ESTATUS','CANTIDAD','% PARTICIPACION'];
     resumenHeader.font = {name:'Calibri', size:12, bold:true, color:{argb:'FFFFFFFF'}};
     resumenHeader.fill = {type:'pattern', pattern:'solid', fgColor:{argb:NAVY}};
     resumenHeader.alignment = {horizontal:'center', vertical:'middle'};
