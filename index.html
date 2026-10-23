@@ -313,7 +313,7 @@ document.getElementById('btn-save').addEventListener('click', async ()=>{
 
 document.getElementById('search-input').addEventListener('input', ()=> updateDashboard(true));
 
-// EXPORTAR EXCEL TOP CON COLORES - VERSION FINAL
+// EXPORTAR EXCEL TOP - DOS PESTAÑAS Y COLUMNAS CUADRADAS
 window.exportarExcelTOP = async function(){
   try {
     if(typeof ExcelJS === 'undefined'){
@@ -349,16 +349,19 @@ window.exportarExcelTOP = async function(){
       right:{style:'thin', color:{argb:'FFD5D8DC'}}
     };
 
+    // HOJA 1: BSF PUNTA HERMOSA
     const sheet = workbook.addWorksheet('BSF Punta Hermosa', {views:[{state:'frozen', ySplit:4}]});
     sheet.columns = [
       {header:'PRIORIDAD', key:'prioridad', width:12},
-      {header:'PLACA', key:'placa', width:14},
-      {header:'N° TRANS.', key:'trans', width:14},
-      {header:'PROCEDENCIA', key:'procedencia', width:22},
+      {header:'PLACA', key:'placa', width:15},
+      {header:'N° TRANS.', key:'trans', width:15},
+      {header:'PROCEDENCIA', key:'procedencia', width:30},
       {header:'TIPO', key:'tipo', width:14},
-      {header:'HORA LLEGADA', key:'hora', width:15},
+      {header:'HORA LLEGADA', key:'hora', width:16},
       {header:'ESTATUS', key:'estatus', width:18}
     ];
+    sheet.pageSetup = {paperSize: 9, orientation:'landscape', fitToPage:true, fitToWidth:1, fitToHeight:0, margins:{left:0.4, right:0.4, top:0.5, bottom:0.5, header:0.3, footer:0.3}};
+    sheet.sheetProperties.pageSetUpPr.fitToPage = true;
 
     sheet.mergeCells('A1:G1');
     const titulo = sheet.getCell('A1');
@@ -413,6 +416,7 @@ window.exportarExcelTOP = async function(){
         tipoCell.font = {name:'Calibri', size:11, bold:true, color:{argb:tipoFont[u.tipo]}};
       }
       row.getCell('placa').font = {name:'Calibri', size:11, bold:true};
+      row.getCell('procedencia').alignment = {vertical:'middle', horizontal:'left', wrapText:true};
     });
 
     sheet.autoFilter = {from:'A4', to:'G'+(4+data.length)};
@@ -421,13 +425,18 @@ window.exportarExcelTOP = async function(){
     totalRow.fill = {type:'pattern', pattern:'solid', fgColor:{argb:NAVY}};
     totalRow.alignment = {horizontal:'center', vertical:'middle'};
     totalRow.eachCell({includeEmpty:true}, (cell)=>{ cell.border = thinBorder; });
+    sheet.getRow(4+data.length+1).height = 22;
 
-    const resumen = workbook.addWorksheet('Resumen');
+    // HOJA 2: RESUMEN
+    const resumen = workbook.addWorksheet('Resumen', {views:[{state:'frozen', ySplit:4}]});
     resumen.columns = [
-      {header:'ESTATUS', key:'estatus', width:22},
-      {header:'CANTIDAD', key:'cantidad', width:12},
+      {header:'ESTATUS', key:'estatus', width:24},
+      {header:'CANTIDAD', key:'cantidad', width:14},
       {header:'% PARTICIPACION', key:'porcentaje', width:18}
     ];
+    resumen.pageSetup = {paperSize: 9, orientation:'portrait', fitToPage:true, fitToWidth:1, fitToHeight:1, margins:{left:0.5, right:0.5, top:0.5, bottom:0.5, header:0.3, footer:0.3}};
+    resumen.sheetProperties.pageSetUpPr.fitToPage = true;
+
     resumen.mergeCells('A1:C1');
     const rTitle = resumen.getCell('A1');
     rTitle.value = 'RESUMEN DE OPERACIONES - BSF PUNTA HERMOSA';
@@ -438,45 +447,68 @@ window.exportarExcelTOP = async function(){
 
     resumen.mergeCells('A2:C2');
     resumen.getCell('A2').value = `Fecha: ${new Date().toLocaleDateString('es-PE')} | Empresa: Operaciones Lavoro`;
-    resumen.getCell('A2').alignment = {horizontal:'center'};
+    resumen.getCell('A2').alignment = {horizontal:'center', vertical:'middle'};
     resumen.getCell('A2').font = {size:11, italic:true};
+    resumen.getRow(2).height = 18;
+
+    resumen.getRow(3).height = 5;
 
     const resumenHeader = resumen.getRow(4);
-    resumenHeader.font = {bold:true, color:{argb:'FFFFFFFF'}};
+    resumenHeader.font = {name:'Calibri', size:12, bold:true, color:{argb:'FFFFFFFF'}};
     resumenHeader.fill = {type:'pattern', pattern:'solid', fgColor:{argb:NAVY}};
-    resumenHeader.alignment = {horizontal:'center'};
+    resumenHeader.alignment = {horizontal:'center', vertical:'middle'};
+    resumenHeader.height = 22;
+    resumenHeader.eachCell({includeEmpty:true}, (cell)=>{ cell.border = thinBorder; });
 
     const estatusList = ['TOTAL','PENDIENTE','EN PROCESO','PEND. FACTURA','CARGADO/FACT.','ATENDIDO','NO EN CD','PERNOCTANDO'];
     estatusList.forEach((est)=>{
       const cant = est==='TOTAL' ? data.length : data.filter(u=>u.estatus===est).length;
       const pct = data.length ? ((cant/data.length)*100).toFixed(1)+'%' : '0%';
       const r = resumen.addRow({estatus:est, cantidad:cant, porcentaje:pct});
+      r.height = 20;
       r.eachCell({includeEmpty:true}, (cell)=>{
         cell.border = thinBorder;
         cell.font = {name:'Calibri', size:11};
+        cell.alignment = {vertical:'middle', horizontal:'center'};
       });
+      r.getCell('estatus').alignment = {vertical:'middle', horizontal:'left'};
       if(est!=='TOTAL' && statusFill[est]){
         r.getCell('estatus').fill = {type:'pattern', pattern:'solid', fgColor:{argb:statusFill[est]}};
-        r.getCell('estatus').font = {bold:true, color:{argb:'FFFFFFFF'}};
+        r.getCell('estatus').font = {name:'Calibri', size:11, bold:true, color:{argb:'FFFFFFFF'}};
       }
       if(est==='TOTAL'){
-        r.font = {bold:true};
+        r.font = {name:'Calibri', size:11, bold:true};
         r.fill = {type:'pattern', pattern:'solid', fgColor:{argb:'FFEBF5FB'}};
       }
     });
 
-    resumen.addRow({estatus:'RESUMEN POR TIPO', cantidad:'', porcentaje:''});
-    const tipoHeaderRow = resumen.lastRow;
-    tipoHeaderRow.font = {bold:true, color:{argb:'FFFFFFFF'}};
-    tipoHeaderRow.fill = {type:'pattern', pattern:'solid', fgColor:{argb:NAVY}};
+    resumen.addRow({});
+    const tipoTitleRow = resumen.addRow({estatus:'RESUMEN POR TIPO', cantidad:'', porcentaje:''});
+    tipoTitleRow.font = {name:'Calibri', size:12, bold:true, color:{argb:'FFFFFFFF'}};
+    tipoTitleRow.fill = {type:'pattern', pattern:'solid', fgColor:{argb:NAVY}};
+    tipoTitleRow.alignment = {horizontal:'center', vertical:'middle'};
+    tipoTitleRow.height = 22;
+    tipoTitleRow.eachCell({includeEmpty:true}, (cell)=>{ cell.border = thinBorder; });
 
     ['Recepción','Despacho','Traslado','Rece/Desp'].forEach(t=>{
       const cant = data.filter(u=>u.tipo===t).length;
       const pct = data.length ? ((cant/data.length)*100).toFixed(1)+'%' : '0%';
       const r = resumen.addRow({estatus:t, cantidad:cant, porcentaje:pct});
-      r.eachCell({includeEmpty:true}, (cell)=>{ cell.border = thinBorder; });
+      r.height = 20;
+      r.eachCell({includeEmpty:true}, (cell)=>{
+        cell.border = thinBorder;
+        cell.font = {name:'Calibri', size:11};
+        cell.alignment = {vertical:'middle', horizontal:'center'};
+      });
+      r.getCell('estatus').alignment = {vertical:'middle', horizontal:'left'};
     });
 
+    const footerRow = resumen.addRow({estatus:'Desarrollado por Luis Vallejo - Operaciones Lavoro', cantidad:'', porcentaje:''});
+    resumen.mergeCells(`A${footerRow.number}:C${footerRow.number}`);
+    footerRow.getCell('estatus').font = {name:'Calibri', size:9, italic:true, color:{argb:'FF808080'}};
+    footerRow.alignment = {horizontal:'center'};
+
+    // DESCARGAR
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
     const url = URL.createObjectURL(blob);
