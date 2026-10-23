@@ -5,8 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Status BSF PUNTA HERMOSA</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx-js-style.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 </head>
 <body class="bg-gray-100 p-2 md:p-6">
 <div class="max-w-7xl mx-auto bg-white rounded-xl shadow overflow-hidden">
@@ -314,97 +313,180 @@ document.getElementById('btn-save').addEventListener('click', async ()=>{
 
 document.getElementById('search-input').addEventListener('input', ()=> updateDashboard(true));
 
-// EXPORTAR EXCEL TOP - CORREGIDO
-window.exportarExcelTOP = function(){
+// EXPORTAR EXCEL TOP CON COLORES - VERSION FINAL
+window.exportarExcelTOP = async function(){
   try {
-    if(typeof XLSX === 'undefined'){
-      alert('No se cargó la librería Excel, recarga la página e inténtalo de nuevo');
+    if(typeof ExcelJS === 'undefined'){
+      alert('No se cargó ExcelJS, recarga la página');
       return;
     }
     const data = Object.values(database);
     if(data.length === 0) return alert('No hay datos para exportar');
 
-    const rows = data.map((u,i)=>({
-      'PRIORIDAD': i+1,
-      'PLACA': u.placa,
-      'N° TRANS.': u.trans,
-      'PROCEDENCIA': u.procedencia,
-      'TIPO': u.tipo,
-      'HORA LLEGADA': u.hora,
-      'ESTATUS': u.estatus
-    }));
+    const workbook = new ExcelJS.Workbook();
+    workbook.creator = 'Lavoro - BSF Punta Hermosa';
 
-    const ws = XLSX.utils.json_to_sheet(rows);
-    ws['!cols'] = [{wch:10},{wch:12},{wch:12},{wch:20},{wch:12},{wch:14},{wch:16}];
-
-    const range = XLSX.utils.decode_range(ws['!ref']);
-    for(let C=range.s.c; C<=range.e.c; ++C){
-      const cell = ws[XLSX.utils.encode_cell({r:0,c:C})];
-      if(cell) cell.s = {fill:{patternType:"solid", fgColor:{rgb:"0C2340"}}, font:{bold:true, color:{rgb:"FFFFFF"}, sz:12}, alignment:{horizontal:"center", vertical:"center"}};
-    }
-
-    const statusColors = {
-      'PENDIENTE': 'C62828',
-      'EN PROCESO': 'E65100',
-      'PEND. FACTURA': 'F57C00',
-      'CARGADO/FACT.': '2E7D32',
-      'ATENDIDO': '1B5E20',
-      'NO EN CD': '616161',
-      'PERNOCTANDO': '0277BD'
+    const NAVY = 'FF0C2340';
+    const statusFill = {
+      'PENDIENTE': 'FFC62828',
+      'EN PROCESO': 'FFE65100',
+      'PEND. FACTURA': 'FFF57C00',
+      'CARGADO/FACT.': 'FF2E7D32',
+      'ATENDIDO': 'FF1B5E20',
+      'NO EN CD': 'FF616161',
+      'PERNOCTANDO': 'FF0277BD'
     };
-    const tipoColors = {'Recepción':'0288D1','Despacho':'2E7D32','Traslado':'F9A825','Rece/Desp':'7B1FA2'};
+    const tipoFont = {
+      'Recepción': 'FF0288D1',
+      'Despacho': 'FF2E7D32',
+      'Traslado': 'FFF9A825',
+      'Rece/Desp': 'FF7B1FA2'
+    };
+    const thinBorder = {
+      top:{style:'thin', color:{argb:'FFD5D8DC'}},
+      bottom:{style:'thin', color:{argb:'FFD5D8DC'}},
+      left:{style:'thin', color:{argb:'FFD5D8DC'}},
+      right:{style:'thin', color:{argb:'FFD5D8DC'}}
+    };
 
-    for(let R=1; R<=range.e.r; ++R){
-      const estatusCell = ws[XLSX.utils.encode_cell({r:R,c:6})];
-      const tipoCell = ws[XLSX.utils.encode_cell({r:R,c:4})];
-      const estatus = estatusCell ? estatusCell.v : '';
-      const tipo = tipoCell ? tipoCell.v : '';
-      const isEven = R%2===0;
-      const baseFill = isEven ? {patternType:"solid", fgColor:{rgb:"F5F7FA"}} : {patternType:"solid", fgColor:{rgb:"FFFFFF"}};
-      for(let C=range.s.c; C<=range.e.c; ++C){
-        const addr = XLSX.utils.encode_cell({r:R,c:C});
-        if(!ws[addr]) continue;
-        ws[addr].s = {
-          fill: baseFill,
-          font: {sz:11},
-          border: {top:{style:'thin',color:{rgb:"D5D8DC"}}, bottom:{style:'thin',color:{rgb:"D5D8DC"}}, left:{style:'thin',color:{rgb:"D5D8DC"}}, right:{style:'thin',color:{rgb:"D5D8DC"}}},
-          alignment:{vertical:"center"}
-        };
-      }
-      if(estatus && statusColors[estatus]){
-        estatusCell.s = {...estatusCell.s, fill:{patternType:"solid", fgColor:{rgb:statusColors[estatus]}}, font:{bold:true, color:{rgb:"FFFFFF"}, sz:11}, alignment:{horizontal:"center", vertical:"center"}};
-      }
-      if(tipo && tipoColors[tipo]){
-        tipoCell.s = {...tipoCell.s, font:{bold:true, color:{rgb:tipoColors[tipo]}, sz:11}};
-      }
-    }
-
-    ws['!autofilter'] = {ref: ws['!ref']};
-    ws['!freeze'] = {xSplit:0, ySplit:1};
-
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "BSF Punta Hermosa");
-
-    const resumenData = [
-      ["RESUMEN BSF PUNTA HERMOSA", ""],
-      ["Fecha", new Date().toLocaleDateString('es-PE')],
-      ["", ""],
-      ["ESTATUS", "CANTIDAD"],
-      ["TOTAL", data.length],
-      ["PENDIENTE", data.filter(u=>u.estatus==='PENDIENTE').length],
-      ["EN PROCESO", data.filter(u=>u.estatus==='EN PROCESO').length],
-      ["PEND. FACTURA", data.filter(u=>u.estatus==='PEND. FACTURA').length],
-      ["CARGADO/FACT.", data.filter(u=>u.estatus==='CARGADO/FACT.').length],
-      ["ATENDIDO", data.filter(u=>u.estatus==='ATENDIDO').length],
-      ["NO EN CD", data.filter(u=>u.estatus==='NO EN CD').length],
-      ["PERNOCTANDO", data.filter(u=>u.estatus==='PERNOCTANDO').length]
+    const sheet = workbook.addWorksheet('BSF Punta Hermosa', {views:[{state:'frozen', ySplit:4}]});
+    sheet.columns = [
+      {header:'PRIORIDAD', key:'prioridad', width:12},
+      {header:'PLACA', key:'placa', width:14},
+      {header:'N° TRANS.', key:'trans', width:14},
+      {header:'PROCEDENCIA', key:'procedencia', width:22},
+      {header:'TIPO', key:'tipo', width:14},
+      {header:'HORA LLEGADA', key:'hora', width:15},
+      {header:'ESTATUS', key:'estatus', width:18}
     ];
-    const ws2 = XLSX.utils.aoa_to_sheet(resumenData);
-    ws2['!cols'] = [{wch:20},{wch:12}];
-    XLSX.utils.book_append_sheet(wb, ws2, "Resumen");
 
-    const fecha = new Date().toISOString().slice(0,10);
-    XLSX.writeFile(wb, "BSF_PUNTA_HERMOSA_" + fecha + ".xlsx");
+    sheet.mergeCells('A1:G1');
+    const titulo = sheet.getCell('A1');
+    titulo.value = 'BSF PUNTA HERMOSA - REPORTE DE OPERACIONES';
+    titulo.font = {name:'Calibri', size:16, bold:true, color:{argb:'FFFFFFFF'}};
+    titulo.fill = {type:'pattern', pattern:'solid', fgColor:{argb:NAVY}};
+    titulo.alignment = {horizontal:'center', vertical:'middle'};
+    sheet.getRow(1).height = 30;
+
+    sheet.mergeCells('A2:G2');
+    const sub = sheet.getCell('A2');
+    sub.value = `Fecha: ${new Date().toLocaleDateString('es-PE')} | Total Unidades: ${data.length} | Generado: ${new Date().toLocaleTimeString('es-PE')}`;
+    sub.font = {name:'Calibri', size:11, color:{argb:'FF0C2340'}};
+    sub.fill = {type:'pattern', pattern:'solid', fgColor:{argb:'FFEBF5FB'}};
+    sub.alignment = {horizontal:'center', vertical:'middle'};
+    sheet.getRow(2).height = 20;
+
+    sheet.getRow(3).height = 5;
+
+    const headerRow = sheet.getRow(4);
+    headerRow.font = {name:'Calibri', size:12, bold:true, color:{argb:'FFFFFFFF'}};
+    headerRow.fill = {type:'pattern', pattern:'solid', fgColor:{argb:NAVY}};
+    headerRow.alignment = {horizontal:'center', vertical:'middle'};
+    headerRow.height = 22;
+    headerRow.eachCell((cell)=>{ cell.border = thinBorder; });
+
+    data.forEach((u,i)=>{
+      const row = sheet.addRow({
+        prioridad: i+1,
+        placa: u.placa,
+        trans: u.trans,
+        procedencia: u.procedencia,
+        tipo: u.tipo,
+        hora: u.hora,
+        estatus: u.estatus
+      });
+      row.height = 20;
+      row.eachCell({includeEmpty:true}, (cell, colNumber)=>{
+        cell.font = {name:'Calibri', size:11};
+        cell.border = thinBorder;
+        cell.alignment = {vertical:'middle', horizontal: colNumber===1 ? 'center' : 'left'};
+        if(i%2===1) cell.fill = {type:'pattern', pattern:'solid', fgColor:{argb:'FFF5F7FA'}};
+      });
+      const estCell = row.getCell('estatus');
+      if(statusFill[u.estatus]){
+        estCell.fill = {type:'pattern', pattern:'solid', fgColor:{argb:statusFill[u.estatus]}};
+        estCell.font = {name:'Calibri', size:11, bold:true, color:{argb:'FFFFFFFF'}};
+        estCell.alignment = {horizontal:'center', vertical:'middle'};
+      }
+      const tipoCell = row.getCell('tipo');
+      if(tipoFont[u.tipo]){
+        tipoCell.font = {name:'Calibri', size:11, bold:true, color:{argb:tipoFont[u.tipo]}};
+      }
+      row.getCell('placa').font = {name:'Calibri', size:11, bold:true};
+    });
+
+    sheet.autoFilter = {from:'A4', to:'G'+(4+data.length)};
+    const totalRow = sheet.addRow({prioridad:'', placa:'TOTAL', trans:'', procedencia:'', tipo:'', hora:'', estatus: data.length});
+    totalRow.font = {name:'Calibri', size:12, bold:true, color:{argb:'FFFFFFFF'}};
+    totalRow.fill = {type:'pattern', pattern:'solid', fgColor:{argb:NAVY}};
+    totalRow.alignment = {horizontal:'center', vertical:'middle'};
+    totalRow.eachCell({includeEmpty:true}, (cell)=>{ cell.border = thinBorder; });
+
+    const resumen = workbook.addWorksheet('Resumen');
+    resumen.columns = [
+      {header:'ESTATUS', key:'estatus', width:22},
+      {header:'CANTIDAD', key:'cantidad', width:12},
+      {header:'% PARTICIPACION', key:'porcentaje', width:18}
+    ];
+    resumen.mergeCells('A1:C1');
+    const rTitle = resumen.getCell('A1');
+    rTitle.value = 'RESUMEN DE OPERACIONES - BSF PUNTA HERMOSA';
+    rTitle.font = {name:'Calibri', size:14, bold:true, color:{argb:'FFFFFFFF'}};
+    rTitle.fill = {type:'pattern', pattern:'solid', fgColor:{argb:NAVY}};
+    rTitle.alignment = {horizontal:'center', vertical:'middle'};
+    resumen.getRow(1).height = 28;
+
+    resumen.mergeCells('A2:C2');
+    resumen.getCell('A2').value = `Fecha: ${new Date().toLocaleDateString('es-PE')} | Empresa: Operaciones Lavoro`;
+    resumen.getCell('A2').alignment = {horizontal:'center'};
+    resumen.getCell('A2').font = {size:11, italic:true};
+
+    const resumenHeader = resumen.getRow(4);
+    resumenHeader.font = {bold:true, color:{argb:'FFFFFFFF'}};
+    resumenHeader.fill = {type:'pattern', pattern:'solid', fgColor:{argb:NAVY}};
+    resumenHeader.alignment = {horizontal:'center'};
+
+    const estatusList = ['TOTAL','PENDIENTE','EN PROCESO','PEND. FACTURA','CARGADO/FACT.','ATENDIDO','NO EN CD','PERNOCTANDO'];
+    estatusList.forEach((est)=>{
+      const cant = est==='TOTAL' ? data.length : data.filter(u=>u.estatus===est).length;
+      const pct = data.length ? ((cant/data.length)*100).toFixed(1)+'%' : '0%';
+      const r = resumen.addRow({estatus:est, cantidad:cant, porcentaje:pct});
+      r.eachCell({includeEmpty:true}, (cell)=>{
+        cell.border = thinBorder;
+        cell.font = {name:'Calibri', size:11};
+      });
+      if(est!=='TOTAL' && statusFill[est]){
+        r.getCell('estatus').fill = {type:'pattern', pattern:'solid', fgColor:{argb:statusFill[est]}};
+        r.getCell('estatus').font = {bold:true, color:{argb:'FFFFFFFF'}};
+      }
+      if(est==='TOTAL'){
+        r.font = {bold:true};
+        r.fill = {type:'pattern', pattern:'solid', fgColor:{argb:'FFEBF5FB'}};
+      }
+    });
+
+    resumen.addRow({estatus:'RESUMEN POR TIPO', cantidad:'', porcentaje:''});
+    const tipoHeaderRow = resumen.lastRow;
+    tipoHeaderRow.font = {bold:true, color:{argb:'FFFFFFFF'}};
+    tipoHeaderRow.fill = {type:'pattern', pattern:'solid', fgColor:{argb:NAVY}};
+
+    ['Recepción','Despacho','Traslado','Rece/Desp'].forEach(t=>{
+      const cant = data.filter(u=>u.tipo===t).length;
+      const pct = data.length ? ((cant/data.length)*100).toFixed(1)+'%' : '0%';
+      const r = resumen.addRow({estatus:t, cantidad:cant, porcentaje:pct});
+      r.eachCell({includeEmpty:true}, (cell)=>{ cell.border = thinBorder; });
+    });
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `BSF_PUNTA_HERMOSA_${new Date().toISOString().slice(0,10)}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(()=>{ document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+
   } catch(err){
     console.error(err);
     alert('Error al exportar: ' + err.message);
