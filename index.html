@@ -145,7 +145,7 @@
     <p id="confirm-text" class="font-bold text-sm mb-4">¿Eliminar esta unidad?</p>
     <div class="flex justify-center gap-3">
       <button id="btn-confirm-no" type="button" class="bg-gray-200 text-gray-700 text-xs font-bold px-5 py-2 rounded-md">Cancelar</button>
-      <button id="btn-confirm-yes" type="button" class="bg-[#C62828] text-white text-xs font-bold px-5 py-2 rounded-md">Sí, Confirmar</button>
+      <button id="btn-confirm-yes" type="button" class="bg-[#C62828] text-white text-xs font-bold px-5 py-2 rounded-md">Sí, Eliminar</button>
     </div>
   </div>
 </div>
@@ -275,9 +275,11 @@ document.getElementById('btn-confirm-yes').addEventListener('click', async ()=>{
     await fetch(`${FIREBASE_ITEM}${deleteId}.json`, { method: 'DELETE' });
     deleteId = null;
     cargarFirebase();
-  } else if(confirmAction === 'clear'){
-    document.getElementById('search-input').value = '';
+  } else if(confirmAction === 'clearAll'){
+    await fetch(FIREBASE_URL, { method: 'DELETE' });
+    database = {};
     filtroEstatus = null;
+    document.getElementById('search-input').value = '';
     updateDashboard();
   }
   confirmAction = null;
@@ -287,8 +289,9 @@ document.getElementById('btn-confirm-yes').addEventListener('click', async ()=>{
 
 document.getElementById('btn-clear').addEventListener('click', function(e){
   e.preventDefault();
-  confirmAction = 'clear';
-  document.getElementById('confirm-text').textContent = "¿Limpiar la búsqueda y los filtros? Se mostrarán todas las unidades.";
+  if(Object.keys(database).length === 0) return alert('No hay unidades para eliminar');
+  confirmAction = 'clearAll';
+  document.getElementById('confirm-text').textContent = "¿Eliminar TODAS las unidades? Esta acción no se puede deshacer.";
   const m = document.getElementById('confirm-modal');
   m.classList.remove('hidden'); m.classList.add('flex');
 });
