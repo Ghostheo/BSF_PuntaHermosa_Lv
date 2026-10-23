@@ -163,7 +163,10 @@ function setFiltro(estatus){
   updateDashboard(true);
 }
 
-function getBadgeTiempo(horaLlegada){
+function getBadgeTiempo(horaLlegada, estatus){
+  if(estatus === 'ATENDIDO' || estatus === 'CARGADO/FACT.' || estatus === 'NO EN CD'){
+    return `<span class="bg-gray-500 text-white text-[11px] font-bold px-2 py-1 rounded-md">✓ Finalizado</span>`;
+  }
   if(!horaLlegada) return "";
   const ahora = new Date();
   const [h,m] = horaLlegada.split(':').map(Number);
@@ -230,7 +233,7 @@ function updateDashboard(){
       <td class="p-2 flex gap-1">
         <button onclick="editarFila('${id}')" class="bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-md">Editar</button>
         <button onclick="eliminarFila('${id}')" class="bg-[#C62828] text-white text-[10px] font-bold px-2 py-1 rounded-md">Eliminar</button>
-        ${getBadgeTiempo(u.hora)}
+        ${getBadgeTiempo(u.hora, u.estatus)}
       </td>`;
     tbody.appendChild(tr);
   });
