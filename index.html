@@ -11,7 +11,7 @@
 <div class="max-w-7xl mx-auto bg-white rounded-xl shadow overflow-hidden">
 
   <div class="p-4 md:p-6 border-b">
-    <img src="logo.png" alt="Lavoro" class="h-10 md:h-12 object-contain mb-2">
+    <img src="logo.png" alt="Lavoro" class="h-16 md:h-20 w-auto object-contain mb-2">
     <h1 class="text-xl md:text-2xl font-bold mt-2">Status BSF PUNTA HERMOSA</h1>
     <p id="fecha" class="text-xs text-gray-500 mt-1"></p>
     <p class="text-xs text-green-600 font-bold mt-1">● Sincronizado en vivo</p>
@@ -79,7 +79,7 @@
       <div class="flex flex-col md:flex-row gap-2 md:items-center w-full md:w-auto">
         <input id="search-input" type="text" placeholder="Buscar por placa, N° trans, procedencia..." class="border rounded-md px-3 py-2 text-xs w-full md:w-80">
         <div class="flex gap-2">
-          <button id="btn-clear" type="button" onclick="if(confirm('¿Limpiar la búsqueda?')){document.getElementById('search-input').value=''; updateDashboard(true);}" class="bg-[#C62828] text-white text-xs font-bold px-4 py-2 rounded-md hover:bg-red-700">LIMPIAR</button>
+          <button id="btn-clear" type="button" onclick="limpiarBusqueda()" class="bg-[#C62828] text-white text-xs font-bold px-4 py-2 rounded-md hover:bg-red-700">LIMPIAR</button>
           <button id="btn-add" type="button" class="bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-md hover:bg-blue-800">+ Agregar Unidad</button>
           <button id="btn-export" type="button" onclick="exportarExcelTOP()" class="bg-green-700 text-white text-xs font-bold px-4 py-2 rounded-md hover:bg-green-800">Exportar a Excel</button>
         </div>
@@ -105,7 +105,6 @@
     </div>
   </div>
 
-  <img src="almacen.jpg" class="w-full h-48 object-cover">
   <p class="text-right text-[10px] text-gray-400 italic p-2">Desarrollado por Luis Vallejo - Operaciones Lavoro</p>
 </div>
 
@@ -162,6 +161,12 @@ let filtroEstatus = null;
 function setFiltro(estatus){
   filtroEstatus = (filtroEstatus === estatus) ? null : estatus;
   updateDashboard(true);
+}
+
+function limpiarBusqueda(){
+  document.getElementById('search-input').value = '';
+  filtroEstatus = null;
+  updateDashboard();
 }
 
 function getBadgeTiempo(horaLlegada, estatus){
@@ -313,7 +318,7 @@ document.getElementById('btn-save').addEventListener('click', async ()=>{
 
 document.getElementById('search-input').addEventListener('input', ()=> updateDashboard(true));
 
-// EXPORTAR EXCEL CORREGIDO
+// EXPORTAR EXCEL CORREGIDO - CON ENCABEZADO
 window.exportarExcelTOP = async function(){
   try {
     if(typeof ExcelJS === 'undefined'){
@@ -380,11 +385,12 @@ window.exportarExcelTOP = async function(){
     sheet.getRow(3).height = 5;
 
     const headerRow = sheet.getRow(4);
+    headerRow.values = ['PRIORIDAD','PLACA','N° TRANS.','PROCEDENCIA','TIPO','HORA LLEGADA','ESTATUS'];
     headerRow.font = {name:'Calibri', size:12, bold:true, color:{argb:'FFFFFFFF'}};
     headerRow.fill = {type:'pattern', pattern:'solid', fgColor:{argb:NAVY}};
     headerRow.alignment = {horizontal:'center', vertical:'middle'};
     headerRow.height = 22;
-    headerRow.eachCell((cell)=>{ cell.border = thinBorder; });
+    headerRow.eachCell({includeEmpty:true}, (cell)=>{ cell.border = thinBorder; });
 
     data.forEach((u,i)=>{
       const row = sheet.addRow({
@@ -450,6 +456,7 @@ window.exportarExcelTOP = async function(){
     resumen.getRow(3).height = 5;
 
     const resumenHeader = resumen.getRow(4);
+    resumenHeader.values = ['ESTATUS','CANTIDAD','% PARTICIPACION'];
     resumenHeader.font = {name:'Calibri', size:12, bold:true, color:{argb:'FFFFFFFF'}};
     resumenHeader.fill = {type:'pattern', pattern:'solid', fgColor:{argb:NAVY}};
     resumenHeader.alignment = {horizontal:'center', vertical:'middle'};
