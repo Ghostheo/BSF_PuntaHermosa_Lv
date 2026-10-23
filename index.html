@@ -525,7 +525,9 @@ window.exportarExcelTOP = async function(){
     alert('Error al exportar: ' + err.message);
   }
 };
-
+cargarFirebase();
+setInterval(cargarFirebase, 3000);
+updateDashboard();
 document.getElementById('btn-clear').addEventListener('click', () => {
   document.getElementById('search-input').value = '';
   filtroEstatus = null;
