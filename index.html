@@ -5,13 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Status BSF PUNTA HERMOSA</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx-js-style.min.js"></script>
 </head>
 <body class="bg-gray-100 p-2 md:p-6">
 <div class="max-w-7xl mx-auto bg-white rounded-xl shadow overflow-hidden">
 
   <div class="p-4 md:p-6 border-b">
-    <img src="logo.png" alt="Lavora" class="h-10 md:h-12 object-contain mb-2">
+    <img src="logo.png" alt="Lavoro" class="h-10 md:h-12 object-contain mb-2">
     <h1 class="text-xl md:text-2xl font-bold mt-2">Status BSF PUNTA HERMOSA</h1>
     <p id="fecha" class="text-xs text-gray-500 mt-1"></p>
     <p class="text-xs text-green-600 font-bold mt-1">● Sincronizado en vivo</p>
@@ -81,7 +82,7 @@
         <div class="flex gap-2">
           <button id="btn-clear" type="button" onclick="if(confirm('¿Limpiar la búsqueda?')){document.getElementById('search-input').value=''; updateDashboard(true);}" class="bg-[#C62828] text-white text-xs font-bold px-4 py-2 rounded-md hover:bg-red-700">LIMPIAR</button>
           <button id="btn-add" type="button" class="bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-md hover:bg-blue-800">+ Agregar Unidad</button>
-          <button id="btn-export" type="button" class="bg-green-700 text-white text-xs font-bold px-4 py-2 rounded-md hover:bg-green-800">Exportar a Excel</button>
+          <button id="btn-export" type="button" onclick="exportarExcelTOP()" class="bg-green-700 text-white text-xs font-bold px-4 py-2 rounded-md hover:bg-green-800">Exportar a Excel</button>
         </div>
       </div>
     </div>
@@ -106,7 +107,7 @@
   </div>
 
   <img src="almacen.jpg" class="w-full h-48 object-cover">
-  <p class="text-right text-[10px] text-gray-400 italic p-2">Desarrollado por Luis Vallejo - Operaciones Lavora</p>
+  <p class="text-right text-[10px] text-gray-400 italic p-2">Desarrollado por Luis Vallejo - Operaciones Lavoro</p>
 </div>
 
 <div id="modal" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-50 p-4">
@@ -313,95 +314,102 @@ document.getElementById('btn-save').addEventListener('click', async ()=>{
 
 document.getElementById('search-input').addEventListener('input', ()=> updateDashboard(true));
 
-// NUEVO EXPORTADOR TOP A EXCEL CON COLORES
-document.getElementById('btn-export').addEventListener('click', ()=>{
-  const data = Object.values(database);
-  if(data.length === 0) return alert('No hay datos para exportar');
+// EXPORTAR EXCEL TOP - CORREGIDO
+window.exportarExcelTOP = function(){
+  try {
+    if(typeof XLSX === 'undefined'){
+      alert('No se cargó la librería Excel, recarga la página e inténtalo de nuevo');
+      return;
+    }
+    const data = Object.values(database);
+    if(data.length === 0) return alert('No hay datos para exportar');
 
-  const rows = data.map((u,i)=>({
-    'PRIORIDAD': i+1,
-    'PLACA': u.placa,
-    'N° TRANS.': u.trans,
-    'PROCEDENCIA': u.procedencia,
-    'TIPO': u.tipo,
-    'HORA LLEGADA': u.hora,
-    'ESTATUS': u.estatus
-  }));
+    const rows = data.map((u,i)=>({
+      'PRIORIDAD': i+1,
+      'PLACA': u.placa,
+      'N° TRANS.': u.trans,
+      'PROCEDENCIA': u.procedencia,
+      'TIPO': u.tipo,
+      'HORA LLEGADA': u.hora,
+      'ESTATUS': u.estatus
+    }));
 
-  const ws = XLSX.utils.json_to_sheet(rows);
-  ws['!cols'] = [{wch:10},{wch:12},{wch:12},{wch:20},{wch:12},{wch:14},{wch:16}];
+    const ws = XLSX.utils.json_to_sheet(rows);
+    ws['!cols'] = [{wch:10},{wch:12},{wch:12},{wch:20},{wch:12},{wch:14},{wch:16}];
 
-  const headerFill = {patternType:"solid", fgColor:{rgb:"0C2340"}};
-  const headerFont = {bold:true, color:{rgb:"FFFFFF"}, sz:12};
-  const range = XLSX.utils.decode_range(ws['!ref']);
-  for(let C=range.s.c; C<=range.e.c; ++C){
-    const cell = ws[XLSX.utils.encode_cell({r:0,c:C})];
-    cell.s = {fill:headerFill, font:headerFont, alignment:{horizontal:"center", vertical:"center"}};
-  }
-
-  const statusColors = {
-    'PENDIENTE': 'C62828',
-    'EN PROCESO': 'E65100',
-    'PEND. FACTURA': 'F57C00',
-    'CARGADO/FACT.': '2E7D32',
-    'ATENDIDO': '1B5E20',
-    'NO EN CD': '616161',
-    'PERNOCTANDO': '0277BD'
-  };
-  const tipoColors = {'Recepción':'0288D1','Despacho':'2E7D32','Traslado':'F9A825','Rece/Desp':'7B1FA2'};
-
-  for(let R=1; R<=range.e.r; ++R){
-    const estatusCell = ws[XLSX.utils.encode_cell({r:R,c:6})];
-    const tipoCell = ws[XLSX.utils.encode_cell({r:R,c:4})];
-    const estatus = estatusCell ? estatusCell.v : '';
-    const tipo = tipoCell ? tipoCell.v : '';
-    const isEven = R%2===0;
-    const baseFill = isEven ? {patternType:"solid", fgColor:{rgb:"F5F7FA"}} : {patternType:"solid", fgColor:{rgb:"FFFFFF"}};
+    const range = XLSX.utils.decode_range(ws['!ref']);
     for(let C=range.s.c; C<=range.e.c; ++C){
-      const addr = XLSX.utils.encode_cell({r:R,c:C});
-      if(!ws[addr]) continue;
-      ws[addr].s = {
-        fill: baseFill,
-        font: {sz:11},
-        border: {top:{style:'thin',color:{rgb:"D5D8DC"}}, bottom:{style:'thin',color:{rgb:"D5D8DC"}}, left:{style:'thin',color:{rgb:"D5D8DC"}}, right:{style:'thin',color:{rgb:"D5D8DC"}}},
-        alignment:{vertical:"center"}
-      };
+      const cell = ws[XLSX.utils.encode_cell({r:0,c:C})];
+      if(cell) cell.s = {fill:{patternType:"solid", fgColor:{rgb:"0C2340"}}, font:{bold:true, color:{rgb:"FFFFFF"}, sz:12}, alignment:{horizontal:"center", vertical:"center"}};
     }
-    if(estatus && statusColors[estatus]){
-      estatusCell.s = {...estatusCell.s, fill:{patternType:"solid", fgColor:{rgb:statusColors[estatus]}}, font:{bold:true, color:{rgb:"FFFFFF"}, sz:11}, alignment:{horizontal:"center", vertical:"center"}};
+
+    const statusColors = {
+      'PENDIENTE': 'C62828',
+      'EN PROCESO': 'E65100',
+      'PEND. FACTURA': 'F57C00',
+      'CARGADO/FACT.': '2E7D32',
+      'ATENDIDO': '1B5E20',
+      'NO EN CD': '616161',
+      'PERNOCTANDO': '0277BD'
+    };
+    const tipoColors = {'Recepción':'0288D1','Despacho':'2E7D32','Traslado':'F9A825','Rece/Desp':'7B1FA2'};
+
+    for(let R=1; R<=range.e.r; ++R){
+      const estatusCell = ws[XLSX.utils.encode_cell({r:R,c:6})];
+      const tipoCell = ws[XLSX.utils.encode_cell({r:R,c:4})];
+      const estatus = estatusCell ? estatusCell.v : '';
+      const tipo = tipoCell ? tipoCell.v : '';
+      const isEven = R%2===0;
+      const baseFill = isEven ? {patternType:"solid", fgColor:{rgb:"F5F7FA"}} : {patternType:"solid", fgColor:{rgb:"FFFFFF"}};
+      for(let C=range.s.c; C<=range.e.c; ++C){
+        const addr = XLSX.utils.encode_cell({r:R,c:C});
+        if(!ws[addr]) continue;
+        ws[addr].s = {
+          fill: baseFill,
+          font: {sz:11},
+          border: {top:{style:'thin',color:{rgb:"D5D8DC"}}, bottom:{style:'thin',color:{rgb:"D5D8DC"}}, left:{style:'thin',color:{rgb:"D5D8DC"}}, right:{style:'thin',color:{rgb:"D5D8DC"}}},
+          alignment:{vertical:"center"}
+        };
+      }
+      if(estatus && statusColors[estatus]){
+        estatusCell.s = {...estatusCell.s, fill:{patternType:"solid", fgColor:{rgb:statusColors[estatus]}}, font:{bold:true, color:{rgb:"FFFFFF"}, sz:11}, alignment:{horizontal:"center", vertical:"center"}};
+      }
+      if(tipo && tipoColors[tipo]){
+        tipoCell.s = {...tipoCell.s, font:{bold:true, color:{rgb:tipoColors[tipo]}, sz:11}};
+      }
     }
-    if(tipo && tipoColors[tipo]){
-      tipoCell.s = {...tipoCell.s, font:{bold:true, color:{rgb:tipoColors[tipo]}, sz:11}};
-    }
+
+    ws['!autofilter'] = {ref: ws['!ref']};
+    ws['!freeze'] = {xSplit:0, ySplit:1};
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "BSF Punta Hermosa");
+
+    const resumenData = [
+      ["RESUMEN BSF PUNTA HERMOSA", ""],
+      ["Fecha", new Date().toLocaleDateString('es-PE')],
+      ["", ""],
+      ["ESTATUS", "CANTIDAD"],
+      ["TOTAL", data.length],
+      ["PENDIENTE", data.filter(u=>u.estatus==='PENDIENTE').length],
+      ["EN PROCESO", data.filter(u=>u.estatus==='EN PROCESO').length],
+      ["PEND. FACTURA", data.filter(u=>u.estatus==='PEND. FACTURA').length],
+      ["CARGADO/FACT.", data.filter(u=>u.estatus==='CARGADO/FACT.').length],
+      ["ATENDIDO", data.filter(u=>u.estatus==='ATENDIDO').length],
+      ["NO EN CD", data.filter(u=>u.estatus==='NO EN CD').length],
+      ["PERNOCTANDO", data.filter(u=>u.estatus==='PERNOCTANDO').length]
+    ];
+    const ws2 = XLSX.utils.aoa_to_sheet(resumenData);
+    ws2['!cols'] = [{wch:20},{wch:12}];
+    XLSX.utils.book_append_sheet(wb, ws2, "Resumen");
+
+    const fecha = new Date().toISOString().slice(0,10);
+    XLSX.writeFile(wb, "BSF_PUNTA_HERMOSA_" + fecha + ".xlsx");
+  } catch(err){
+    console.error(err);
+    alert('Error al exportar: ' + err.message);
   }
-
-  ws['!autofilter'] = {ref: ws['!ref']};
-  ws['!freeze'] = {xSplit:0, ySplit:1};
-
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "BSF Punta Hermosa");
-
-  const resumenData = [
-    ["RESUMEN BSF PUNTA HERMOSA", ""],
-    ["Fecha", new Date().toLocaleDateString('es-PE')],
-    ["", ""],
-    ["ESTATUS", "CANTIDAD"],
-    ["TOTAL", data.length],
-    ["PENDIENTE", data.filter(u=>u.estatus==='PENDIENTE').length],
-    ["EN PROCESO", data.filter(u=>u.estatus==='EN PROCESO').length],
-    ["PEND. FACTURA", data.filter(u=>u.estatus==='PEND. FACTURA').length],
-    ["CARGADO/FACT.", data.filter(u=>u.estatus==='CARGADO/FACT.').length],
-    ["ATENDIDO", data.filter(u=>u.estatus==='ATENDIDO').length],
-    ["NO EN CD", data.filter(u=>u.estatus==='NO EN CD').length],
-    ["PERNOCTANDO", data.filter(u=>u.estatus==='PERNOCTANDO').length]
-  ];
-  const ws2 = XLSX.utils.aoa_to_sheet(resumenData);
-  ws2['!cols'] = [{wch:20},{wch:12}];
-  XLSX.utils.book_append_sheet(wb, ws2, "Resumen");
-
-  const fecha = new Date().toISOString().slice(0,10);
-  XLSX.writeFile(wb, "BSF_PUNTA_HERMOSA_" + fecha + ".xlsx");
-});
+};
 
 cargarFirebase();
 setInterval(cargarFirebase, 3000);
