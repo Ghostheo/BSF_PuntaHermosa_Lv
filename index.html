@@ -15,21 +15,26 @@
 .tab-active{background:#0C2340;color:#fff}
 .tab-inactive{background:#e5e7eb;color:#000}
 .badge{padding:3px 8px;border-radius:12px;font-size:9px;font-weight:bold;display:inline-block;border:1px solid #000}
+/* === MODO CAPTURA BSF - PARA CLIENTE === */
+body.modo-cliente .ocultar-en-cliente{display:none !important;}
+body.modo-cliente .col-acciones{display:none !important;}
+body.modo-cliente #captura-header{justify-content:center !important;}
 </style>
 </head>
 <body class="bg-gray-100 p-2 md:p-6">
 <div class="max-w-7xl mx-auto bg-white rounded-xl shadow overflow-hidden card-bordered">
 
-  <div class="p-4 md:p-6 border-b flex justify-between items-start">
+  <div id="captura-header" class="p-4 md:p-6 border-b flex justify-between items-start">
     <div>
       <img src="logo.png" alt="Lavoro" class="h-10 md:h-12 object-contain mb-2">
       <h1 class="text-xl md:text-2xl font-bold mt-2">Status BSF PUNTA HERMOSA</h1>
       <p id="fecha" class="text-xs text-gray-500 mt-1"></p>
-      <p class="text-xs text-green-600 font-bold mt-1 flex items-center gap-1"><span class="dot-green"></span> Sincronizado en vivo</p>
+      <p class="text-xs text-green-600 font-bold mt-1 flex items-center gap-1 ocultar-en-cliente"><span class="dot-green"></span> Sincronizado en vivo</p>
     </div>
-    <div class="flex gap-2">
-      <button onclick="abrirAdminPass()" class="bg-white border-2 border-black rounded-xl px-4 py-2 text-[11px] font-bold">🔒 ADMIN</button>
-      <button onclick="guardarDiaBSF()" class="bg-green-600 text-white border-2 border-black rounded-xl px-4 py-2 text-[11px] font-bold">📥 GUARDAR DÍA → DATA</button>
+    <div class="flex gap-2 items-center">
+      <button id="btnCaptura" onclick="toggleCaptura()" class="bg-black text-white border-2 border-black rounded-xl px-4 py-2 text-[11px] font-bold">📸 MODO CAPTURA BSF</button>
+      <button onclick="abrirAdminPass()" class="ocultar-en-cliente bg-white border-2 border-black rounded-xl px-4 py-2 text-[11px] font-bold">🔒 ADMIN</button>
+      <button onclick="guardarDiaBSF()" class="ocultar-en-cliente bg-green-600 text-white border-2 border-black rounded-xl px-4 py-2 text-[11px] font-bold">📥 GUARDAR DÍA → DATA</button>
     </div>
   </div>
 
@@ -57,11 +62,11 @@
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-3">
       <h2 class="font-bold text-sm">PANEL DE CONTROL DE UNIDADES</h2>
       <div class="flex flex-col md:flex-row gap-2 md:items-center w-full md:w-auto">
-        <input id="search-input" type="text" placeholder="Buscar por placa, N° trans, pallets..." class="border-2 border-black rounded-md px-3 py-2 text-xs w-full md:w-80">
+        <input id="search-input" type="text" placeholder="Buscar por placa, N° trans, pallets..." class="ocultar-en-cliente border-2 border-black rounded-md px-3 py-2 text-xs w-full md:w-80">
         <div class="flex gap-2">
-          <button id="btn-clear" type="button" class="bg-[#C62828] text-white text-xs font-bold px-4 py-2 rounded-md hover:bg-red-700 border border-black">LIMPIAR</button>
-          <button id="btn-add" type="button" class="bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-md hover:bg-blue-800 border border-black">+ Agregar Unidad</button>
-          <button id="btn-export" type="button" onclick="exportarExcelTOP()" class="bg-green-700 text-white text-xs font-bold px-4 py-2 rounded-md hover:bg-green-800 border border-black">Exportar a Excel</button>
+          <button id="btn-clear" type="button" class="ocultar-en-cliente bg-[#C62828] text-white text-xs font-bold px-4 py-2 rounded-md hover:bg-red-700 border border-black">LIMPIAR</button>
+          <button id="btn-add" type="button" class="ocultar-en-cliente bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-md hover:bg-blue-800 border border-black">+ Agregar Unidad</button>
+          <button id="btn-export" type="button" onclick="exportarExcelTOP()" class="ocultar-en-cliente bg-green-700 text-white text-xs font-bold px-4 py-2 rounded-md hover:bg-green-800 border border-black">Exportar a Excel</button>
         </div>
       </div>
     </div>
@@ -78,7 +83,7 @@
             <th class="text-left p-2 font-bold border border-black bg-yellow-100">TIPO</th>
             <th class="text-left p-2 font-bold border border-black bg-yellow-100">HORA DE LLEGADA</th>
             <th class="text-left p-2 font-bold border border-black bg-yellow-100">ESTATUS</th>
-            <th class="text-left p-2 font-bold border border-black bg-yellow-100">ACCIONES</th>
+            <th class="col-acciones text-left p-2 font-bold border border-black bg-yellow-100">ACCIONES</th>
           </tr>
         </thead>
         <tbody id="tabla-body"></tbody>
@@ -86,11 +91,10 @@
     </div>
   </div>
 
-  <img src="almacen.jpg" class="w-full h-48 object-cover">
-  <p class="text-right text-[10px] text-gray-400 italic p-2">Desarrollado por Luis Vallejo - Operaciones Lavoro</p>
+  <img src="almacen.jpg" class="ocultar-en-cliente w-full h-48 object-cover">
+  <p class="ocultar-en-cliente text-right text-[10px] text-gray-400 italic p-2">Desarrollado por Luis Vallejo - Operaciones Lavoro</p>
 </div>
 
-<!-- MODAL AGREGAR -->
 <div id="modal" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-50 p-4">
   <div class="bg-white rounded-xl shadow-xl w-full max-w-lg p-5 border-2 border-black">
     <h3 id="modal-title" class="font-bold mb-3">Agregar Unidad</h3>
@@ -124,7 +128,6 @@
   </div>
 </div>
 
-<!-- ADMIN MODAL -->
 <div id="modalAdmin" class="fixed inset-0 modal-bg hidden z-[70] p-2 overflow-y-auto">
   <div class="bg-white rounded-xl max-w-[1500px] mx-auto p-3 border-2 border-black">
     <div class="flex justify-between mb-3">
@@ -174,6 +177,18 @@ let deleteId = null;
 let filtroEstatus = null;
 let confirmAction = null;
 let chTipo=null,chEstatus=null;
+
+function toggleCaptura(){
+  document.body.classList.toggle('modo-cliente');
+  let btn = document.getElementById('btnCaptura');
+  if(document.body.classList.contains('modo-cliente')){
+    btn.innerHTML = "↩️ VOLVER A MODO ADMIN";
+    btn.style.background = "#C62828";
+  } else {
+    btn.innerHTML = "📸 MODO CAPTURA BSF";
+    btn.style.background = "#000";
+  }
+}
 
 function getEstatusBadge(estatus){
   const e=(estatus||'').toUpperCase();
@@ -245,7 +260,7 @@ function updateDashboard(){
       <td class="p-2 text-green-700 font-bold border border-black bg-white">${u.tipo}</td>
       <td class="p-2 border border-black bg-white">${u.hora}</td>
       <td class="p-2 border border-black bg-white">${getEstatusBadge(u.estatus)}</td>
-      <td class="p-2 flex gap-1 border border-black bg-white">
+      <td class="col-acciones p-2 flex gap-1 border border-black bg-white">
         <button onclick="editarFila('${id}')" class="bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-md border border-black">Editar</button>
         <button onclick="eliminarFila('${id}')" class="bg-[#C62828] text-white text-[10px] font-bold px-2 py-1 rounded-md border border-black">Eliminar</button>
         ${getBadgeTiempo(u.hora, u.estatus)}
