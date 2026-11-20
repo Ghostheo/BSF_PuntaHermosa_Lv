@@ -163,7 +163,19 @@ let ucaCapacidades={evaporada:7092,paneton:36,agua:0};
 function mostrarInventario(){document.getElementById('vistaUnidades').classList.add('hidden');document.getElementById('vistaInventario').classList.remove('hidden');cargarInventario();}
 function mostrarUnidades(){document.getElementById('vistaInventario').classList.add('hidden');document.getElementById('vistaUnidades').classList.remove('hidden');}
 function getUCA(c){return ucaConfig.find(x=>x.codigo===c)||{cajasPorPallet:0,undPorCaja:0,descripcion:''};}
-async function cargarUCA(){try{let r=await fetch(UCA_URL+"?t="+Date.now());let d=await r.json();if(d&&Array.isArray(d)&&d.length)ucaConfig=d;}catch(e){}}
+async function cargarUCA(){try{let r=await fetch(UCA_URL+"?t="+Date.now());let d=await r.json();if(d&&Array.isArray(d)&&d.length)ucaConfig=d;}catch(e){}
+// REPARAR: Si falta el 4to codigo, lo agrega solo sin borrar los otros 3
+let tienePaneton = ucaConfig.some(x=>String(x.codigo)==='1007119');
+if(!tienePaneton){
+  ucaConfig.push({codigo:'1007119',descripcion:'GLORIA PANETÓN TRADICIONAL 900GR X 6 UND',cajasPorPallet:60,undPorCaja:6});
+  fetch(UCA_URL,{method:'PUT',body:JSON.stringify(ucaConfig)});
+}
+// Corrige descripcion simple a descripcion TOP para reporte
+ucaConfig = ucaConfig.map(c=>{
+  if(String(c.codigo)==='1007119') c.descripcion='GLORIA PANETÓN TRADICIONAL 900GR X 6 UND';
+  return c;
+});
+}
 async function cargarCapacidades(){try{let r=await fetch(UCA_CAP_URL+"?t="+Date.now());let d=await r.json();if(d&&typeof d==='object'){ucaCapacidades={evaporada:parseFloat(d.evaporada)||0,paneton:parseFloat(d.paneton)||0,agua:parseFloat(d.agua)||0};}}catch(e){}}
 async function guardarCapacidad(clave,valor){ucaCapacidades[clave]=parseFloat(valor)||0;await fetch(UCA_CAP_URL,{method:'PUT',body:JSON.stringify(ucaCapacidades)});renderUCA();}
 window.cambiarCapacidad=function(clave,el){guardarCapacidad(clave,el.value);};
