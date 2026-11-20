@@ -4,218 +4,213 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Status BSF PUNTA HERMOSA</title>
-<style>
-*{box-sizing:border-box}
-body{font-family:Arial,sans-serif;background:#e8e8d5;margin:0;padding:10px}
-.card{background:#fff;border-radius:10px;padding:15px;max-width:1100px;margin:auto}
-h1{color:#1a3aa0;font-size:18px;margin:0}
-h2{font-size:19px;margin:5px 0}
-.top{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
-button{padding:10px 14px;border:0;border-radius:8px;font-weight:bold;cursor:pointer}
-.btn-black{background:#111;color:#fff}
-.btn-green{background:#1a7a2e;color:#fff}
-.btn-blue{background:#1a3aa0;color:#fff}
-.btn-red{background:#c00;color:#fff}
-.btn-gray{background:#ddd}
-input,select,textarea{padding:10px;border:1px solid #ccc;border-radius:8px;width:100%}
-textarea{height:150px}
-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:10px}
-th{background:#e8e6c8;padding:8px;text-align:left}
-td{padding:8px;border-bottom:1px solid #ddd}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.box{background:#e9e9ff;padding:12px;border-radius:8px;text-align:center;font-weight:bold}
-.box span{display:block;font-size:20px}
-.hidden{display:none}
-.badge{padding:3px 8px;border-radius:10px;font-size:11px;font-weight:bold}
-.flex{display:flex;gap:8px}
-.mt{margin-top:12px}
-.pasteBox{border:2px solid #1a7a2e;padding:12px;border-radius:10px;background:#f0fff2;margin-top:12px}
-</style>
+<script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-<div class="card">
-<h1>Lavoro</h1>
-<h2>Status BSF PUNTA HERMOSA</h2>
-<p id="fechaHoy"></p>
-<div class="top">
-<button class="btn-black" onclick="mostrar('captura')">MODO CAPTURA BSF</button>
-<button class="btn-black" onclick="mostrar('admin')">ADMIN</button>
-<button class="btn-green" onclick="guardarDia()">GUARDAR DIA - DATA</button>
-<button class="btn-blue" onclick="exportarExcel()">Exportar a Excel</button>
+<body class="bg-gray-100 p-2 md:p-6">
+<div class="max-w-7xl mx-auto bg-white rounded-xl shadow overflow-hidden">
+  <div class="p-4 md:p-6 border-b">
+    <div class="text-blue-800 font-extrabold text-2xl">Lav<span class="text-green-600">o</span>ro</div>
+    <h1 class="text-xl md:text-2xl font-bold mt-2">Status BSF PUNTA HERMOSA</h1>
+    <p id="fecha" class="text-xs text-gray-500 mt-1"></p>
+    <p class="text-xs text-green-600 font-bold mt-1">● Sincronizado en vivo</p>
+    <div class="flex gap-2 mt-3 flex-wrap">
+      <button onclick="mostrar('captura')" class="bg-black text-white text-xs font-bold px-4 py-2 rounded-md">MODO CAPTURA BSF</button>
+      <button onclick="mostrar('admin')" class="bg-black text-white text-xs font-bold px-4 py-2 rounded-md">ADMIN</button>
+      <button onclick="guardarDia()" class="bg-green-700 text-white text-xs font-bold px-4 py-2 rounded-md">GUARDAR DIA - DATA</button>
+    </div>
+  </div>
+
+  <!-- CAPTURA -->
+  <div id="captura" class="p-4 md:p-6">
+    <p class="text-xs font-bold tracking-widest text-gray-500 mb-2">POR TIPO</p>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+      <div class="bg-sky-100 rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-sky-700">RECEPCIÓN</p><p id="tipo-recepcion" class="text-2xl font-bold text-sky-700">0</p></div>
+      <div class="bg-green-100 rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-green-700">DESPACHO</p><p id="tipo-despacho" class="text-2xl font-bold text-green-700">0</p></div>
+      <div class="bg-yellow-100 rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-yellow-700">TRASLADO</p><p id="tipo-traslado" class="text-2xl font-bold text-yellow-700">0</p></div>
+      <div class="bg-purple-100 rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-purple-700">RECE/DESP</p><p id="tipo-rece-desp" class="text-2xl font-bold text-purple-700">0</p></div>
+    </div>
+    <p class="text-xs font-bold tracking-widest text-gray-500 mb-2">POR ESTATUS</p>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+      <div class="bg-black text-white rounded-lg p-3 text-center"><p class="text-[11px] font-bold">TOTAL</p><p id="count-total" class="text-2xl font-bold">0</p></div>
+      <div onclick="setFiltro('PENDIENTE')" class="cursor-pointer bg-[#C62828] text-white rounded-lg p-3 text-center"><p class="text-[11px] font-bold">PENDIENTE</p><p id="count-pendiente" class="text-2xl font-bold">0</p></div>
+      <div onclick="setFiltro('EN PROCESO')" class="cursor-pointer bg-red-100 rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-red-700">EN PROCESO</p><p id="count-proceso" class="text-2xl font-bold text-red-700">0</p></div>
+      <div onclick="setFiltro('PEND. FACTURA')" class="cursor-pointer bg-orange-500 text-white rounded-lg p-3 text-center"><p class="text-[11px] font-bold">PEND. FACTURA</p><p id="count-factura" class="text-2xl font-bold">0</p></div>
+      <div onclick="setFiltro('CARGADO/FACT.')" class="cursor-pointer bg-green-100 rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-green-700">CARGADO/FACT.</p><p id="count-cargado" class="text-2xl font-bold text-green-700">0</p></div>
+      <div onclick="setFiltro('ATENDIDO')" class="cursor-pointer bg-green-700 text-white rounded-lg p-3 text-center"><p class="text-[11px] font-bold">ATENDIDO</p><p id="count-atendido" class="text-2xl font-bold">0</p></div>
+      <div onclick="setFiltro('NO EN CD')" class="cursor-pointer bg-gray-200 rounded-lg p-3 text-center"><p class="text-[11px] font-bold text-gray-700">NO EN CD</p><p id="count-noencd" class="text-2xl font-bold text-gray-700">0</p></div>
+      <div onclick="setFiltro('PERNOCTANDO')" class="cursor-pointer bg-sky-500 text-white rounded-lg p-3 text-center"><p class="text-[11px] font-bold">PERNOCTANDO</p><p id="count-pernoctando" class="text-2xl font-bold">0</p></div>
+    </div>
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-3">
+      <h2 class="font-bold text-sm">PANEL DE CONTROL DE UNIDADES</h2>
+      <div class="flex flex-col md:flex-row gap-2 md:items-center w-full md:w-auto">
+        <input id="search-input" type="text" placeholder="Buscar por placa, N° trans, procedencia..." class="border rounded-md px-3 py-2 text-xs w-full md:w-80">
+        <div class="flex gap-2">
+          <button onclick="document.getElementById('search-input').value='';updateDashboard(true)" class="bg-[#C62828] text-white text-xs font-bold px-4 py-2 rounded-md">LIMPIAR</button>
+          <button id="btn-add" type="button" class="bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-md">+ Agregar Unidad</button>
+          <button id="btn-export" type="button" class="bg-green-700 text-white text-xs font-bold px-4 py-2 rounded-md">Exportar a Excel</button>
+        </div>
+      </div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-xs"><thead><tr class="bg-gray-50 text-gray-500"><th class="text-left p-2">PRIORIDAD</th><th class="text-left p-2">PLACA</th><th class="text-left p-2">PALLETS</th><th class="text-left p-2">N° TRANS.</th><th class="text-left p-2">PROCEDENCIA</th><th class="text-left p-2">TIPO</th><th class="text-left p-2">HORA</th><th class="text-left p-2">ESTATUS</th><th class="text-left p-2">ACCIONES</th></tr></thead><tbody id="tabla-body"></tbody></table>
+    </div>
+  </div>
+
+  <!-- ADMIN / DATA -->
+  <div id="admin" class="p-4 md:p-6 hidden">
+    <h2 class="font-bold">DATA BSF - ADMIN</h2>
+    <div class="border-2 border-green-600 bg-green-50 rounded-xl p-4 mt-3">
+      <h3 class="font-bold text-green-700">PEGAR TODO DE UNA VEZ - NUEVO</h3>
+      <p class="text-xs mt-1">Copia lo que te mando, pégalo abajo y dale al botón. Se llena solo.</p>
+      <label class="text-xs font-bold">Fecha para estas filas:</label>
+      <input type="date" id="fechaPegar" class="border rounded-md px-3 py-2 text-xs w-full mt-1">
+      <textarea id="pegarData" placeholder="Ejemplo:
+1 - A6P883/AFG988 - 38 - 14385745 - HUACHIPA - Recepción - 06:50 - ATENDIDO" class="border rounded-md px-3 py-2 text-xs w-full mt-2 h-36"></textarea>
+      <div class="flex gap-2 mt-2 flex-wrap">
+        <button onclick="pegarMasivo()" class="bg-green-700 text-white text-xs font-bold px-4 py-2 rounded-md">PEGAR TODO Y LLENAR DATA</button>
+        <button onclick="pegarMasivoCaptura()" class="bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-md">PEGAR TODO EN CAPTURA</button>
+      </div>
+      <p id="msgPegar" class="text-green-700 font-bold text-xs mt-2"></p>
+    </div>
+    <div class="overflow-x-auto mt-4">
+      <table class="w-full text-xs"><thead><tr class="bg-gray-50 text-gray-500"><th class="text-left p-2">FECHA</th><th class="text-left p-2">PRIORIDAD</th><th class="text-left p-2">PLACA</th><th class="text-left p-2">PALLETS</th><th class="text-left p-2">N TRANS</th><th class="text-left p-2">PROCEDENCIA</th><th class="text-left p-2">TIPO</th><th class="text-left p-2">HORA</th><th class="text-left p-2">ESTATUS</th><th class="text-left p-2"></th></tr></thead><tbody id="tabla-data"></tbody></table>
+    </div>
+  </div>
+  <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1200" class="w-full h-48 object-cover">
+  <p class="text-right text-[10px] text-gray-400 italic p-2">Desarrollado por Luis Vallejo - Operaciones Lavora</p>
 </div>
 
-<!-- CAPTURA -->
-<div id="captura">
-<div class="grid2">
-<div class="box">TOTAL<span id="totalCap">0</span></div>
-<div class="box">ATENDIDO<span id="totalAten">0</span></div>
-</div>
-<div class="flex mt">
-<input id="buscar" placeholder="Buscar por placa, N trans..." oninput="renderCaptura()">
-<button class="btn-red" onclick="limpiarCaptura()">LIMPIAR</button>
-<button class="btn-blue" onclick="abrirAgregar()">+ Agregar Unidad</button>
-</div>
-<div class="flex mt">
-<select id="filtroEstatus" onchange="renderCaptura()"><option value="">Todos los estatus</option><option>PENDIENTE</option><option>ATENDIDO</option><option>EN PROCESO</option><option>CARGADO/FACT.</option><option>NO EN CD</option><option>PERNOCTANDO</option><option>PEND. FACTURA</option></select>
-<select id="filtroTipo" onchange="renderCaptura()"><option value="">Todos los tipos</option><option>Recepción</option><option>Despacho</option><option>Traslado</option><option>Rece/Desp</option></select>
-</div>
-<table><thead><tr><th>PRIORIDAD</th><th>PLACA</th><th>PALLETS</th><th>N TRANS</th><th>PROCEDENCIA</th><th>TIPO</th><th>HORA</th><th>ESTATUS</th><th></th></tr></thead><tbody id="tbodyCap"></tbody></table>
-
-<div id="formAgregar" class="hidden mt" style="border:1px solid #ddd;padding:12px;border-radius:10px">
-<h3>Agregar / Editar Unidad</h3>
-<div class="grid2">
-<input id="fPrioridad" placeholder="Prioridad">
-<input id="fPlaca" placeholder="Placa ej: A6P883/AFG988">
-<input id="fPallets" placeholder="N Pallets">
-<input id="fTrans" placeholder="N Trans">
-<input id="fProc" placeholder="Procedencia ej: HUACHIPA">
-<select id="fTipo"><option>Recepción</option><option>Despacho</option><option>Traslado</option><option>Rece/Desp</option></select>
-<input id="fHora" placeholder="Hora ej: 06:50">
-<select id="fEstatus"><option>PENDIENTE</option><option>ATENDIDO</option><option>EN PROCESO</option><option>CARGADO/FACT.</option><option>NO EN CD</option><option>PERNOCTANDO</option><option>PEND. FACTURA</option></select>
-</div>
-<div class="flex mt"><button class="btn-blue" onclick="guardarUnidad()">Guardar</button><button class="btn-gray" onclick="cerrarAgregar()">Cancelar</button></div>
-</div>
-</div>
-
-<!-- ADMIN -->
-<div id="admin" class="hidden">
-<h3>DATA BSF - ADMIN</h3>
-<div class="pasteBox">
-<h3 style="margin:0;color:#1a7a2e">PEGAR TODO DE UNA VEZ - NUEVO</h3>
-<p>Copias lo que te mando, lo pegas abajo y le das al boton. Se llena solo.</p>
-<label>Fecha para estas filas:</label>
-<input type="date" id="fechaPegar">
-<textarea id="pegarData" placeholder="Ejemplo:
-1 - A6P883/AFG988 - 38 - 14385745 - HUACHIPA - Recepción - 06:50 - ATENDIDO
-2 - F1U789/D3X987 - 38 - 14385746 - HUACHIPA - Recepción - 06:50 - ATENDIDO"></textarea>
-<div class="flex"><button class="btn-green" onclick="pegarMasivo()">PEGAR TODO Y LLENAR DATA</button><button class="btn-blue" onclick="pegarMasivoCaptura()">PEGAR TODO EN CAPTURA</button></div>
-<p id="msgPegar" style="color:green;font-weight:bold"></p>
-</div>
-<div class="flex mt">
-<input id="buscarData" placeholder="Buscar en DATA..." oninput="renderData()">
-<button class="btn-red" onclick="limpiarData()">LIMPIAR DATA</button>
-</div>
-<table><thead><tr><th>FECHA</th><th>PRIORIDAD</th><th>PLACA</th><th>PALLETS</th><th>N TRANS</th><th>PROCEDENCIA</th><th>TIPO</th><th>HORA</th><th>ESTATUS</th><th></th></tr></thead><tbody id="tbodyData"></tbody></table>
-</div>
+<div id="modal" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-lg p-5">
+    <h3 id="modal-title" class="font-bold mb-3">Agregar Unidad</h3>
+    <div class="grid grid-cols-2 gap-3">
+      <input id="f-placa" placeholder="Placa" class="border rounded-md px-3 py-2 text-xs">
+      <input id="f-pallets" placeholder="N Pallets" class="border rounded-md px-3 py-2 text-xs">
+      <input id="f-trans" placeholder="N° Trans" class="border rounded-md px-3 py-2 text-xs">
+      <input id="f-proc" placeholder="Procedencia" class="border rounded-md px-3 py-2 text-xs">
+      <select id="f-tipo" class="border rounded-md px-3 py-2 text-xs"><option>Recepción</option><option>Despacho</option><option>Traslado</option><option>Rece/Desp</option></select>
+      <input id="f-hora" type="time" class="border rounded-md px-3 py-2 text-xs">
+      <select id="f-estatus" class="border rounded-md px-3 py-2 text-xs"><option>PENDIENTE</option><option>EN PROCESO</option><option>PEND. FACTURA</option><option>CARGADO/FACT.</option><option>ATENDIDO</option><option>NO EN CD</option><option>PERNOCTANDO</option></select>
+    </div>
+    <div class="flex justify-end gap-2 mt-4">
+      <button id="btn-cancel" type="button" class="bg-gray-200 text-xs font-bold px-4 py-2 rounded-md">Cancelar</button>
+      <button id="btn-save" type="button" class="bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-md">Guardar</button>
+    </div>
+  </div>
 </div>
 
 <script>
-// RECUPERAR DATA VIEJA: busca en todas las llaves posibles que pudo usar tu version original
-function leerClave(nombres){
-  for(let n of nombres){
-    try{let v=localStorage.getItem(n); if(v){let a=JSON.parse(v); if(Array.isArray(a)&&a.length>0) return a;}}catch(e){}
-  } return [];
-}
-let captura = leerClave(['bsf_captura','captura','unidades','bsf','dataCaptura','lavoro_captura']);
-let data = leerClave(['bsf_data','data','bsfData','historial','lavoro_data']);
-if(captura.length>0||data.length>0){ localStorage.setItem('bsf_captura',JSON.stringify(captura)); localStorage.setItem('bsf_data',JSON.stringify(data)); }
-else{
-  captura = JSON.parse(localStorage.getItem('bsf_captura')||'[]');
-  data = JSON.parse(localStorage.getItem('bsf_data')||'[]');
-}
+let database = JSON.parse(localStorage.getItem('bsf_data') || '[]');
+let historial = JSON.parse(localStorage.getItem('bsf_historial') || '[]');
 let editIndex = -1;
-document.getElementById('fechaHoy').innerText = new Date().toLocaleDateString('es-PE',{day:'numeric',month:'long',year:'numeric'}) + ' | Sincronizado en vivo';
+let filtroEstatus = null;
 document.getElementById('fechaPegar').valueAsDate = new Date();
+function save(){ localStorage.setItem('bsf_data', JSON.stringify(database)); localStorage.setItem('bsf_historial', JSON.stringify(historial)); }
 function mostrar(v){
   document.getElementById('captura').classList.toggle('hidden', v!=='captura');
   document.getElementById('admin').classList.toggle('hidden', v!=='admin');
-  renderCaptura(); renderData();
+  updateDashboard(true); renderData();
 }
-function guardarLS(){
-  localStorage.setItem('bsf_captura', JSON.stringify(captura));
-  localStorage.setItem('bsf_data', JSON.stringify(data));
+function setFiltro(e){ filtroEstatus = (filtroEstatus===e)?null:e; updateDashboard(true); }
+function getBadgeTiempo(hora){
+  if(!hora) return '';
+  const ahora=new Date(); const [h,m]=hora.split(':').map(Number); const llegada=new Date(); llegada.setHours(h,m,0,0);
+  let diff=Math.floor((ahora-llegada)/60000); if(diff<0) diff+=24*60;
+  const hh=String(Math.floor(diff/60)).padStart(2,'0'); const mm=String(diff%60).padStart(2,'0'); const ss=String(ahora.getSeconds()).padStart(2,'0');
+  const t=hh+':'+mm+':'+ss;
+  if(diff>=120) return '<span class="bg-red-600 text-white text-[11px] font-bold px-2 py-1 rounded-md animate-pulse">⏱ '+t+'</span>';
+  if(diff>=60) return '<span class="bg-orange-500 text-white text-[11px] font-bold px-2 py-1 rounded-md">⏱ '+t+'</span>';
+  return '<span class="bg-green-600 text-white text-[11px] font-bold px-2 py-1 rounded-md">⏱ '+t+'</span>';
 }
-function colorEstatus(e){
-  if(e==='ATENDIDO') return 'background:#c6f5c6';
-  if(e==='PENDIENTE') return 'background:#ffe08a';
-  if(e==='PERNOCTANDO') return 'background:#ffc2c2';
-  return 'background:#eee';
-}
-function renderCaptura(){
-  let q=(document.getElementById('buscar').value||'').toLowerCase();
-  let fe=document.getElementById('filtroEstatus').value;
-  let ft=document.getElementById('filtroTipo').value;
-  let html='';
-  captura.forEach((u,i)=>{
-    if(q && !JSON.stringify(u).toLowerCase().includes(q)) return;
-    if(fe && u.estatus!==fe) return;
-    if(ft && u.tipo!==ft) return;
-    html+='<tr><td>'+u.prio+'</td><td><b>'+u.placa+'</b></td><td>'+u.pallets+'</td><td>'+u.trans+'</td><td>'+u.proc+'</td><td>'+u.tipo+'</td><td>'+u.hora+'</td><td><span class="badge" style="'+colorEstatus(u.estatus)+'">'+u.estatus+'</span></td><td><button onclick="editarCap('+i+')">Editar</button> <button onclick="eliminarCap('+i+')">X</button></td></tr>';
+function updateDashboard(skipSave){
+  if(!skipSave) save();
+  const hoy=new Date(); document.getElementById('fecha').textContent = hoy.toLocaleDateString('es-PE',{day:'numeric',month:'long',year:'numeric'})+' | '+hoy.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'});
+  const search=document.getElementById('search-input').value.toLowerCase();
+  let filtered=[...database];
+  if(filtroEstatus) filtered=filtered.filter(u=>u.estatus===filtroEstatus);
+  if(search) filtered=filtered.filter(u=>(u.placa+u.trans+u.procedencia).toLowerCase().includes(search));
+  document.getElementById('count-total').textContent=database.length;
+  document.getElementById('count-pendiente').textContent=database.filter(u=>u.estatus==='PENDIENTE').length;
+  document.getElementById('count-proceso').textContent=database.filter(u=>u.estatus==='EN PROCESO').length;
+  document.getElementById('count-factura').textContent=database.filter(u=>u.estatus==='PEND. FACTURA').length;
+  document.getElementById('count-cargado').textContent=database.filter(u=>u.estatus==='CARGADO/FACT.').length;
+  document.getElementById('count-atendido').textContent=database.filter(u=>u.estatus==='ATENDIDO').length;
+  document.getElementById('count-noencd').textContent=database.filter(u=>u.estatus==='NO EN CD').length;
+  document.getElementById('count-pernoctando').textContent=database.filter(u=>u.estatus==='PERNOCTANDO').length;
+  document.getElementById('tipo-recepcion').textContent=database.filter(u=>u.tipo==='Recepción').length;
+  document.getElementById('tipo-despacho').textContent=database.filter(u=>u.tipo==='Despacho').length;
+  document.getElementById('tipo-traslado').textContent=database.filter(u=>u.tipo==='Traslado').length;
+  document.getElementById('tipo-rece-desp').textContent=database.filter(u=>u.tipo==='Rece/Desp').length;
+  const tbody=document.getElementById('tabla-body'); tbody.innerHTML='';
+  filtered.forEach((u)=>{
+    const realIndex=database.indexOf(u);
+    const tr=document.createElement('tr'); tr.className='border-t';
+    tr.innerHTML='<td class="p-2">'+(realIndex+1)+'</td><td class="p-2 font-bold">'+(u.placa||'')+'</td><td class="p-2">'+(u.pallets||'')+'</td><td class="p-2">'+(u.trans||'')+'</td><td class="p-2">'+(u.procedencia||'')+'</td><td class="p-2 text-green-700 font-bold">'+(u.tipo||'')+'</td><td class="p-2">'+(u.hora||'')+'</td><td class="p-2"><span class="bg-red-100 text-red-700 text-[10px] font-bold px-2 py-1 rounded-full">'+(u.estatus||'')+'</span></td><td class="p-2 flex gap-1"><button onclick="editarFila('+realIndex+')" class="bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-md">Editar</button><button onclick="eliminarFila('+realIndex+')" class="bg-[#C62828] text-white text-[10px] font-bold px-2 py-1 rounded-md">Eliminar</button>'+getBadgeTiempo(u.hora)+'</td>';
+    tbody.appendChild(tr);
   });
-  document.getElementById('tbodyCap').innerHTML=html||'<tr><td colspan="9">Sin unidades. Dale a + Agregar Unidad o pega en ADMIN.</td></tr>';
-  document.getElementById('totalCap').innerText=captura.length;
-  document.getElementById('totalAten').innerText=captura.filter(x=>x.estatus==='ATENDIDO').length;
 }
 function renderData(){
-  let q=(document.getElementById('buscarData').value||'').toLowerCase();
-  let html='';
-  data.forEach((u,i)=>{
-    if(q && !JSON.stringify(u).toLowerCase().includes(q)) return;
-    html+='<tr><td>'+u.fecha+'</td><td>'+u.prio+'</td><td><b>'+u.placa+'</b></td><td>'+u.pallets+'</td><td>'+u.trans+'</td><td>'+u.proc+'</td><td>'+u.tipo+'</td><td>'+u.hora+'</td><td>'+u.estatus+'</td><td><button onclick="eliminarData('+i+')">X</button></td></tr>';
+  const tbody=document.getElementById('tabla-data'); tbody.innerHTML='';
+  historial.forEach((u,i)=>{
+    const tr=document.createElement('tr'); tr.className='border-t';
+    tr.innerHTML='<td class="p-2">'+(u.fecha||'')+'</td><td class="p-2">'+(u.prio||i+1)+'</td><td class="p-2 font-bold">'+(u.placa||'')+'</td><td class="p-2">'+(u.pallets||'')+'</td><td class="p-2">'+(u.trans||'')+'</td><td class="p-2">'+(u.procedencia||'')+'</td><td class="p-2">'+(u.tipo||'')+'</td><td class="p-2">'+(u.hora||'')+'</td><td class="p-2">'+(u.estatus||'')+'</td><td class="p-2"><button onclick="eliminarHist('+i+')" class="bg-[#C62828] text-white text-[10px] font-bold px-2 py-1 rounded-md">X</button></td>';
+    tbody.appendChild(tr);
   });
-  document.getElementById('tbodyData').innerHTML=html||'<tr><td colspan="10">DATA vacia. Usa PEGAR TODO arriba.</td></tr>';
+  if(historial.length===0) tbody.innerHTML='<tr><td colspan="10" class="p-2">DATA vacia. Usa PEGAR TODO arriba.</td></tr>';
 }
-function abrirAgregar(){editIndex=-1;document.getElementById('formAgregar').classList.remove('hidden');}
-function cerrarAgregar(){document.getElementById('formAgregar').classList.add('hidden');}
-function editarCap(i){
-  let u=captura[i]; editIndex=i;
-  document.getElementById('fPrioridad').value=u.prio;
-  document.getElementById('fPlaca').value=u.placa;
-  document.getElementById('fPallets').value=u.pallets;
-  document.getElementById('fTrans').value=u.trans;
-  document.getElementById('fProc').value=u.proc;
-  document.getElementById('fTipo').value=u.tipo;
-  document.getElementById('fHora').value=u.hora;
-  document.getElementById('fEstatus').value=u.estatus;
-  document.getElementById('formAgregar').classList.remove('hidden');
-  window.scrollTo(0,document.body.scrollHeight);
-}
-function guardarUnidad(){
-  let u={prio:document.getElementById('fPrioridad').value||'1',placa:document.getElementById('fPlaca').value,pallets:document.getElementById('fPallets').value,trans:document.getElementById('fTrans').value,proc:document.getElementById('fProc').value,tipo:document.getElementById('fTipo').value,hora:document.getElementById('fHora').value,estatus:document.getElementById('fEstatus').value};
-  if(!u.placa){alert('Falta placa');return;}
-  if(editIndex>=0) captura[editIndex]=u; else captura.push(u);
-  guardarLS(); renderCaptura(); cerrarAgregar();
-}
-function eliminarCap(i){if(confirm('Borrar esta unidad de captura?')){captura.splice(i,1);guardarLS();renderCaptura();}}
-function eliminarData(i){if(confirm('Borrar esta fila de DATA?')){data.splice(i,1);guardarLS();renderData();}}
-function limpiarCaptura(){if(confirm('Limpiar solo CAPTURA? Tu DATA no se borra')){captura=[];guardarLS();renderCaptura();}}
-function limpiarData(){if(confirm('Seguro borrar TODA la DATA?')){data=[];guardarLS();renderData();}}
+window.eliminarFila=function(idx){ if(confirm('¿Eliminar esta unidad?')){ database.splice(idx,1); updateDashboard(); } };
+window.eliminarHist=function(idx){ if(confirm('¿Borrar esta fila de DATA?')){ historial.splice(idx,1); save(); renderData(); } };
+window.editarFila=function(idx){
+  editIndex=idx; const u=database[idx];
+  document.getElementById('f-placa').value=u.placa||''; document.getElementById('f-pallets').value=u.pallets||''; document.getElementById('f-trans').value=u.trans||''; document.getElementById('f-proc').value=u.procedencia||''; document.getElementById('f-tipo').value=u.tipo||'Recepción'; document.getElementById('f-hora').value=u.hora||''; document.getElementById('f-estatus').value=u.estatus||'PENDIENTE';
+  document.getElementById('modal-title').textContent='Editar Unidad'; const m=document.getElementById('modal'); m.classList.remove('hidden'); m.classList.add('flex');
+};
+document.getElementById('btn-add').addEventListener('click', ()=>{
+  editIndex=-1; document.getElementById('modal-title').textContent='Agregar Unidad';
+  ['f-placa','f-pallets','f-trans','f-proc','f-hora'].forEach(id=>document.getElementById(id).value='');
+  const m=document.getElementById('modal'); m.classList.remove('hidden'); m.classList.add('flex');
+});
+document.getElementById('btn-cancel').addEventListener('click', ()=>{ const m=document.getElementById('modal'); m.classList.add('hidden'); m.classList.remove('flex'); });
+document.getElementById('btn-save').addEventListener('click', ()=>{
+  const unidad={placa:document.getElementById('f-placa').value.trim(),pallets:document.getElementById('f-pallets').value.trim(),trans:document.getElementById('f-trans').value.trim(),procedencia:document.getElementById('f-proc').value.trim(),tipo:document.getElementById('f-tipo').value,hora:document.getElementById('f-hora').value,estatus:document.getElementById('f-estatus').value};
+  if(!unidad.placa) return alert('Ingresa la placa');
+  if(editIndex>=0) database[editIndex]=unidad; else database.push(unidad);
+  updateDashboard(); const m=document.getElementById('modal'); m.classList.add('hidden'); m.classList.remove('flex');
+});
+document.getElementById('search-input').addEventListener('input', ()=>updateDashboard(true));
+document.getElementById('btn-export').addEventListener('click', ()=>{
+  let csv='Prioridad,Placa,Pallets,N Trans,Procedencia,Tipo,Hora,Estatus,Fecha\n';
+  historial.forEach((u,i)=>{ csv+=(u.prio||i+1)+','+u.placa+','+(u.pallets||'')+','+u.trans+','+u.procedencia+','+u.tipo+','+u.hora+','+u.estatus+','+(u.fecha||'')+'\n'; });
+  if(historial.length===0) database.forEach((u,i)=>{ csv+=(i+1)+','+u.placa+','+(u.pallets||'')+','+u.trans+','+u.procedencia+','+u.tipo+','+u.hora+','+u.estatus+',\n'; });
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='BSF_PUNTA_HERMOSA.csv'; a.click();
+});
 function guardarDia(){
-  if(captura.length===0){alert('Captura vacia');return;}
-  let f=document.getElementById('fechaPegar').value || new Date().toISOString().slice(0,10);
-  let p=f.split('-'); let fechaForm=p[2]+'/'+p[1]+'/'+p[0];
-  captura.forEach(u=>{data.push({fecha:fechaForm,...u})});
-  captura=[]; guardarLS(); renderCaptura(); renderData(); alert('Dia guardado en DATA: '+fechaForm+' - '+data.length+' filas en total');
+  if(database.length===0){alert('Captura vacia');return;}
+  let f=document.getElementById('fechaPegar').value || new Date().toISOString().slice(0,10); let p=f.split('-'); let fechaForm=p[2]+'/'+p[1]+'/'+p[0];
+  database.forEach((u,i)=>{ historial.push({fecha:fechaForm,prio:i+1,...u}); });
+  database=[]; save(); updateDashboard(); renderData(); alert('Dia guardado en DATA: '+fechaForm);
 }
 function parseLinea(l){
   l=l.trim(); if(!l) return null;
   let p=l.split('-').map(s=>s.trim());
-  if(p.length>=8) return {prio:p[0],placa:p[1],pallets:p[2],trans:p[3],proc:p[4],tipo:p[5],hora:p[6],estatus:p[7]};
-  if(p.length>=7) return {prio:'1',placa:p[0],pallets:p[1],trans:p[2],proc:p[3],tipo:p[4],hora:p[5],estatus:p[6]};
+  if(p.length>=8) return {prio:p[0],placa:p[1],pallets:p[2],trans:p[3],procedencia:p[4],tipo:p[5],hora:p[6],estatus:p[7]};
+  if(p.length>=7) return {prio:'1',placa:p[0],pallets:p[1],trans:p[2],procedencia:p[3],tipo:p[4],hora:p[5],estatus:p[6]};
+  if(p.length>=6) return {prio:'1',placa:p[0],pallets:'',trans:p[1],procedencia:p[2],tipo:p[3],hora:p[4],estatus:p[5]};
   return null;
 }
-function fechaFormateada(){
-  let f=document.getElementById('fechaPegar').value || new Date().toISOString().slice(0,10);
-  let p=f.split('-'); return p[2]+'/'+p[1]+'/'+p[0];
-}
+function fechaFormateada(){ let f=document.getElementById('fechaPegar').value || new Date().toISOString().slice(0,10); let p=f.split('-'); return p[2]+'/'+p[1]+'/'+p[0]; }
 function pegarMasivo(){
   let texto=document.getElementById('pegarData').value; let fecha=fechaFormateada(); let cont=0;
-  texto.split('\n').forEach(l=>{let u=parseLinea(l); if(u){data.push({fecha,...u}); cont++;}});
-  guardarLS(); renderData(); document.getElementById('msgPegar').innerText='Listo! '+cont+' filas agregadas a DATA con fecha '+fecha;
-  document.getElementById('pegarData').value=''; alert('Listo! '+cont+' filas en DATA');
+  texto.split('\n').forEach(l=>{ let u=parseLinea(l); if(u){ historial.push({fecha:fecha,placa:u.placa,pallets:u.pallets,trans:u.trans,procedencia:u.procedencia,tipo:u.tipo,hora:u.hora,estatus:u.estatus,prio:u.prio}); cont++; } });
+  save(); renderData(); document.getElementById('msgPegar').innerText='Listo! '+cont+' filas en DATA '+fecha; document.getElementById('pegarData').value=''; alert('Listo! '+cont+' filas en DATA');
 }
 function pegarMasivoCaptura(){
   let texto=document.getElementById('pegarData').value; let cont=0;
-  texto.split('\n').forEach(l=>{let u=parseLinea(l); if(u){captura.push(u); cont++;}});
-  guardarLS(); renderCaptura(); document.getElementById('msgPegar').innerText='Listo! '+cont+' filas en CAPTURA';
-  document.getElementById('pegarData').value=''; mostrar('captura');
+  texto.split('\n').forEach(l=>{ let u=parseLinea(l); if(u){ database.push({placa:u.placa,pallets:u.pallets,trans:u.trans,procedencia:u.procedencia,tipo:u.tipo,hora:u.hora,estatus:u.estatus}); cont++; } });
+  save(); updateDashboard(); document.getElementById('msgPegar').innerText='Listo! '+cont+' filas en CAPTURA'; document.getElementById('pegarData').value=''; mostrar('captura');
 }
-function exportarExcel(){
-  let csv='FECHA,PRIORIDAD,PLACA,PALLETS,TRANS,PROCEDENCIA,TIPO,HORA,ESTATUS\n';
-  data.forEach(u=>{csv+=u.fecha+','+u.prio+','+u.placa+','+u.pallets+','+u.trans+','+u.proc+','+u.tipo+','+u.hora+','+u.estatus+'\n'});
-  let a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='BSF_DATA.csv'; a.click();
-}
-renderCaptura(); renderData();
+setInterval(()=>updateDashboard(true), 1000);
+updateDashboard(true); renderData();
 </script>
 </body>
 </html>
