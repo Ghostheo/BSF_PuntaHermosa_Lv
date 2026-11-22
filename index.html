@@ -3,210 +3,247 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Status BSF PUNTA HERMOSA</title>
+<title>BSF - Inventario</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<style>
-.card-bordered{border:2px solid #000}.dot-green{width:8px;height:8px;background:#22c55e;border-radius:50%;display:inline-block;animation:pulse 2s infinite}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.7)}70%{box-shadow:0 0 0 6px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
-.modal-bg{background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}.tab-active{background:#0C2340;color:#fff}.tab-inactive{background:#e5e7eb;color:#000}
-.badge{padding:3px 8px;border-radius:12px;font-size:9px;font-weight:bold;display:inline-block;border:1px solid #000}
-body.modo-cliente{background:#fff!important;padding:0!important}body.modo-cliente .ocultar-en-cliente{display:none!important}body.modo-cliente .col-acciones{display:none!important}
-body.modo-cliente #main-header{background:#111!important;color:#fff!important;text-align:center!important;justify-content:center!important;padding:18px 20px!important;border-radius:0!important}
-body.modo-cliente #main-header h1{color:#fff!important;width:100%;text-align:center;font-size:26px!important}body.modo-cliente #main-header #fecha{color:#bbb!important;width:100%;text-align:center}
-body.modo-cliente #btnCaptura{display:none!important}body.modo-cliente .foto-captura{display:block!important;width:100%!important;height:190px!important;object-fit:cover!important}
-body.modo-cliente .footer-captura{display:block!important;text-align:right!important;font-size:11px!important;color:#9ca3af!important;font-style:italic!important;padding:8px 12px!important}
-#btnVolverFlecha{display:none;position:fixed;top:10px;left:10px;background:#fff;border:2px solid #000;border-radius:20px;padding:6px 14px;font-size:12px;font-weight:bold;z-index:99999;cursor:pointer}
-body.modo-cliente #btnVolverFlecha{display:flex!important;align-items:center;gap:4px}.kpi-card{border:2px solid #000;border-radius:12px;padding:12px;text-align:center;background:#fff}
-.filtro-cod{padding:6px 12px;border:2px solid #000;border-radius:20px;font-size:11px;font-weight:bold;background:#fff;cursor:pointer}
-.filtro-cod.activo{background:#0C2340;color:#fff}
-input.cap-input{width:90px;border:2px solid #000;border-radius:6px;padding:4px;text-align:center;font-weight:bold;font-size:12px;background:#fff}
-.prio-cell{display:flex;align-items:center;gap:10px;justify-content:flex-start;padding-left:6px}
-.prio-num{font-weight:900;font-size:13px;min-width:20px;text-align:center}
-.prio-flechas{display:flex;flex-direction:column;line-height:1;gap:0}
-.prio-flechas button{background:none;border:none;cursor:pointer;color:#C62828;font-size:11px;line-height:1;padding:0;margin:0}
-.prio-flechas button:hover{transform:scale(1.3)}
-body.modo-cliente .prio-flechas{display:none!important}
-body.modo-cliente .prio-cell{justify-content:center!important;padding-left:0!important}
-</style>
 </head>
-<body class="bg-gray-100 p-2 md:p-6">
-<div class="max-w-7xl mx-auto bg-white rounded-xl shadow overflow-hidden card-bordered">
-<div id="main-header" class="p-4 md:p-6 border-b flex justify-between items-start">
-<div><img src="logo.png" class="ocultar-en-cliente h-10 md:h-12 object-contain mb-2"><h1 class="text-xl md:text-2xl font-bold mt-2">Status BSF PUNTA HERMOSA</h1><p id="fecha" class="text-xs text-gray-500 mt-1"></p><p class="text-xs text-green-600 font-bold mt-1 flex items-center gap-1 ocultar-en-cliente"><span class="dot-green"></span> Sincronizado en vivo - DATA compartida</p></div>
-<div class="flex gap-2 flex-wrap justify-end">
-<button id="btnCaptura" onclick="toggleCaptura()" class="bg-black text-white border-2 border-black rounded-xl px-4 py-2 text-[11px] font-bold">📸 MODO CAPTURA BSF</button>
-<button onclick="abrirAdminPass()" class="ocultar-en-cliente bg-white border-2 border-black rounded-xl px-4 py-2 text-[11px] font-bold">🔒 ADMIN</button>
-<button onclick="guardarDiaBSF()" class="ocultar-en-cliente bg-green-600 text-white border-2 border-black rounded-xl px-4 py-2 text-[11px] font-bold">📥 GUARDAR DÍA → DATA</button>
-<button onclick="mostrarInventario()" class="ocultar-en-cliente bg-orange-500 text-white border-2 border-black rounded-xl px-4 py-2 text-[11px] font-bold">📦 INVENTARIO</button>
-<button onclick="abrirUCA()" class="ocultar-en-cliente bg-white border-2 border-black rounded-xl px-4 py-2 text-[11px] font-bold">⚙️ UCA</button>
-</div></div>
+<body class="bg-gray-100 text-black font-sans">
 
-<div id="vistaInventario" class="hidden p-4 md:p-6">
-<div class="flex flex-col md:flex-row justify-between md:items-center gap-2 mb-3"><h2 class="font-bold text-sm">📦 INVENTARIO - PALLETS EN SUELO</h2><div class="flex gap-2"><button onclick="mostrarUnidades()" class="bg-black text-white text-xs font-bold px-4 py-2 rounded-md border border-black">← VOLVER A UNIDADES</button><button onclick="abrirModalInventario()" class="bg-green-700 text-white text-xs font-bold px-4 py-2 rounded-md border border-black">+ AGREGAR PALLET</button></div></div>
-<div class="border-2 border-black rounded-lg p-3 mb-3 bg-gray-50">
-<p class="text-[11px] font-black mb-2">🔍 FILTRO POR CÓDIGO - Toca un código para ver solo ese:</p>
-<div id="inv-filtros" class="flex gap-2 flex-wrap"></div>
-<p id="inv-filtro-activo" class="text-[11px] text-gray-600 mt-2 font-bold">Mostrando: TODOS LOS CÓDIGOS</p>
-</div>
-<div class="grid grid-cols-3 gap-3 mb-4"><div class="kpi-card bg-orange-100"><p class="text-[10px] font-bold">TOTAL PALLETS</p><p id="inv-total-pallets" class="text-2xl font-black">0</p></div><div class="kpi-card bg-blue-100"><p class="text-[10px] font-bold">TOTAL CAJAS</p><p id="inv-total-cajas" class="text-2xl font-black">0</p></div><div class="kpi-card bg-yellow-100"><p class="text-[10px] font-bold">TOTAL UND</p><p id="inv-total-und" class="text-2xl font-black">0</p></div></div>
-<div id="inv-resumen-codigos" class="flex gap-2 flex-wrap mb-3"></div>
-<div class="overflow-x-auto border-2 border-black"><table class="w-full text-xs"><thead><tr class="bg-yellow-100"><th class="p-2 border border-black">CÓDIGO</th><th class="p-2 border border-black">DESCRIPCIÓN</th><th class="p-2 border border-black">UBICACIÓN</th><th class="p-2 border border-black">LOTE</th><th class="p-2 border border-black">F.VENCIMIENTO</th><th class="p-2 border border-black">PALLETS</th><th class="p-2 border border-black">CAJAS</th><th class="p-2 border border-black">UND</th><th class="p-2 border border-black">ACCIONES</th></tr></thead><tbody id="tbodyInventario"></tbody></table></div>
-<p class="text-[11px] text-gray-500 mt-2">* Solo se despacha pallet completo.</p>
-<div class="mt-6 rounded-2xl overflow-hidden border-2 border-black shadow-lg">
-<div class="bg-[#0C2340] px-4 py-3">
-<p class="text-[10px] tracking-[2px] text-yellow-300 font-black">BSF PUNTA HERMOSA • OPERACIONES LAVORO</p>
-<h3 class="text-white font-black text-[16px] leading-tight">📊 OCUPABILIDAD - UCA</h3>
-</div>
-<div class="p-3 bg-[#F8FAFC]">
-<div class="overflow-x-auto rounded-xl border-2 border-black bg-white">
-<table class="w-full text-xs"><thead><tr class="bg-[#0C2340] text-white"><th class="p-2.5">NAVE</th><th class="p-2.5">ALMACÉN</th><th class="p-2.5">ALMACENAMIENTO</th><th class="p-2.5">CAPACIDAD<br>NOMINAL ✏️</th><th class="p-2.5">AL 95%</th><th class="p-2.5">STOCK<br>OCUPADO</th><th class="p-2.5">UBICACIONES<br>LIBRES</th><th class="p-2.5">% OCUPABILIDAD</th></tr></thead><tbody id="tbodyUCA"></tbody></table>
-</div>
-<div class="grid md:grid-cols-2 gap-3 mt-3">
-<div class="rounded-2xl border-2 border-black p-4 bg-white shadow"><div class="flex justify-between items-center"><p class="text-[11px] font-black tracking-wider text-gray-500">UCA SIN TRÁNSITO</p><span class="text-[10px] bg-green-100 text-green-700 font-black px-2 py-1 rounded-full border">● EN VIVO</span></div><p id="uca-sin-transito-pct" class="text-[42px] leading-none font-black text-[#0C2340] mt-1">0%</p><div class="h-[26px] bg-gray-100 border-2 border-black rounded-full overflow-hidden mt-2"><div id="uca-sin-transito-bar" class="h-full text-center text-[11px] font-black text-white leading-[22px] bg-gradient-to-r from-green-500 to-emerald-700 transition-all" style="width:0%">0%</div></div><p id="uca-sin-transito-det" class="text-[11px] font-bold text-gray-500 mt-2">0 / 0 pallets</p></div>
-<div class="rounded-2xl border-2 border-black p-4 bg-white shadow"><div class="flex justify-between items-center"><p class="text-[11px] font-black tracking-wider text-gray-500">UCA CON TRÁNSITO</p><span class="text-[10px] bg-blue-100 text-blue-700 font-black px-2 py-1 rounded-full border">● EN VIVO</span></div><p id="uca-con-transito-pct" class="text-[42px] leading-none font-black text-[#0C2340] mt-1">0%</p><div class="h-[26px] bg-gray-100 border-2 border-black rounded-full overflow-hidden mt-2"><div id="uca-con-transito-bar" class="h-full text-center text-[11px] font-black text-white leading-[22px] bg-gradient-to-r from-blue-500 to-[#0C2340] transition-all" style="width:0%">0%</div></div><p id="uca-con-transito-det" class="text-[11px] font-bold text-gray-500 mt-2">0 / 0 pallets</p></div>
-</div>
-<p class="text-[10px] text-gray-400 mt-2 text-center">EVAPORADA = 1001135 + 1001273 + 1001277 | PANETÓN = 1007119 - GLORIA PANETÓN TRADICIONAL 900GR X 6 UND | CON TRÁNSITO = Stock + Pallets en PENDIENTE / EN PROCESO</p>
-</div>
-</div>
+<div class="max-w-6xl mx-auto p-3">
+  <div class="bg-black text-white p-4 rounded-xl flex justify-between items-center">
+    <div>
+      <h1 class="text-xl font-black">BSF - INVENTARIO</h1>
+      <p class="text-[11px] opacity-70">Despacho y Recepción - Ubicaciones A1-A47 / B1-B47 / P1-P47</p>
+    </div>
+    <button onclick="exportarExcel()" class="bg-green-500 text-white text-xs font-bold px-3 py-2 rounded">📥 EXCEL</button>
+  </div>
+
+  <!-- BUSCADOR -->
+  <div class="bg-white p-3 rounded-xl mt-3 shadow">
+    <input id="buscar-ubicacion" placeholder="🔍 Buscar ubicación Ej: A15, B10, P20 o código..." oninput="filtrarTabla()" class="border-2 border-black rounded px-3 py-2 text-sm w-full font-bold" />
+    <div class="flex gap-2 mt-2">
+      <select id="filtro-letra" onchange="filtrarTabla()" class="border rounded px-2 py-1 text-xs font-bold">
+        <option value="">TODAS LAS UBICACIONES</option>
+        <option value="A">SOLO A (A1-A47)</option>
+        <option value="B">SOLO B (B1-B47)</option>
+        <option value="P">SOLO P (P1-P47)</option>
+        <option value="VACIA">SOLO VACÍAS</option>
+      </select>
+      <button onclick="document.getElementById('buscar-ubicacion').value='';document.getElementById('filtro-letra').value='';filtrarTabla()" class="bg-white border-2 border-black px-3 rounded text-xs font-bold">VER TODO</button>
+      <button onclick="abrirModalInventario()" class="bg-black text-white px-3 rounded text-xs font-bold flex-1">+ AGREGAR PALLET</button>
+    </div>
+    <p class="text-[10px] mt-2 text-gray-500">Tu inventario actual se queda igual. Solo se agregan las ubicaciones que faltaban para completar A1-A47, B1-B47, P1-P47.</p>
+  </div>
+
+  <!-- RESUMEN -->
+  <div class="grid grid-cols-3 gap-2 mt-3 text-center">
+    <div class="bg-white rounded-xl p-3 shadow"><p class="text-[10px] font-bold text-gray-500">PALLETS</p><p id="res-pallets" class="text-xl font-black">0</p></div>
+    <div class="bg-white rounded-xl p-3 shadow"><p class="text-[10px] font-bold text-gray-500">CAJAS</p><p id="res-cajas" class="text-xl font-black">0</p></div>
+    <div class="bg-white rounded-xl p-3 shadow"><p class="text-[10px] font-bold text-gray-500">UND</p><p id="res-und" class="text-xl font-black">0</p></div>
+  </div>
+
+  <!-- TABLA -->
+  <div class="bg-white rounded-xl mt-3 shadow overflow-x-auto">
+    <table class="w-full text-xs">
+      <thead class="bg-black text-white">
+        <tr><th class="p-2 text-left">UBICACIÓN</th><th class="p-2 text-left">CÓDIGO / PRODUCTO</th><th class="p-2">PALLETS</th><th class="p-2">CAJAS</th><th class="p-2">UND</th><th class="p-2">ACCIONES</th></tr>
+      </thead>
+      <tbody id="tbodyInventario"></tbody>
+    </table>
+    <p id="sin-datos" class="p-4 text-center text-xs text-gray-500 hidden">Sin resultados para esa búsqueda.</p>
+  </div>
+  <p class="text-[10px] text-center mt-3 text-gray-400">BSF - Si agregas A1, A2, A7, el sistema ya te deja elegir A3, A4, A5, A6 sin borrar lo que tienes.</p>
 </div>
 
-<div id="vistaUnidades"><div class="p-4 md:p-6">
-<p class="text-xs font-bold tracking-widest text-gray-500 mb-2">POR TIPO</p>
-<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
-<div class="bg-sky-100 rounded-lg p-3 text-center border"><p class="text-[11px] font-bold text-sky-700">RECEPCIÓN</p><p id="tipo-recepcion" class="text-2xl font-bold text-sky-700">0</p></div>
-<div class="bg-green-100 rounded-lg p-3 text-center border"><p class="text-[11px] font-bold text-green-700">DESPACHO</p><p id="tipo-despacho" class="text-2xl font-bold text-green-700">0</p></div>
-<div class="bg-yellow-100 rounded-lg p-3 text-center border"><p class="text-[11px] font-bold text-yellow-700">TRASLADO</p><p id="tipo-traslado" class="text-2xl font-bold text-yellow-700">0</p></div>
-<div class="bg-purple-100 rounded-lg p-3 text-center border"><p class="text-[11px] font-bold text-purple-700">RECE/DESP</p><p id="tipo-rece-desp" class="text-2xl font-bold text-purple-700">0</p></div></div>
-<p class="text-xs font-bold tracking-widest text-gray-500 mb-2">POR ESTATUS</p>
-<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
-<div class="bg-black text-white rounded-lg p-3 text-center card-bordered"><p class="text-[11px] font-bold">TOTAL</p><p id="count-total" class="text-2xl font-bold">0</p></div>
-<div onclick="setFiltro('PENDIENTE')" class="cursor-pointer bg-[#C62828] text-white rounded-lg p-3 text-center card-bordered"><p class="text-[11px] font-bold">PENDIENTE</p><p id="count-pendiente" class="text-2xl font-bold">0</p></div>
-<div onclick="setFiltro('EN PROCESO')" class="cursor-pointer bg-red-100 rounded-lg p-3 text-center card-bordered"><p class="text-[11px] font-bold text-red-700">EN PROCESO</p><p id="count-proceso" class="text-2xl font-bold text-red-700">0</p></div>
-<div onclick="setFiltro('PEND. FACTURA')" class="cursor-pointer bg-orange-500 text-white rounded-lg p-3 text-center card-bordered"><p class="text-[11px] font-bold">PEND. FACTURA</p><p id="count-factura" class="text-2xl font-bold">0</p></div>
-<div onclick="setFiltro('CARGADO/FACT.')" class="cursor-pointer bg-green-100 rounded-lg p-3 text-center card-bordered"><p class="text-[11px] font-bold text-green-700">CARGADO/FACT.</p><p id="count-cargado" class="text-2xl font-bold text-green-700">0</p></div>
-<div onclick="setFiltro('ATENDIDO')" class="cursor-pointer bg-green-700 text-white rounded-lg p-3 text-center card-bordered"><p class="text-[11px] font-bold">ATENDIDO</p><p id="count-atendido" class="text-2xl font-bold">0</p></div>
-<div onclick="setFiltro('NO EN CD')" class="cursor-pointer bg-gray-200 rounded-lg p-3 text-center card-bordered"><p class="text-[11px] font-bold text-gray-700">NO EN CD</p><p id="count-noencd" class="text-2xl font-bold text-gray-700">0</p></div>
-<div onclick="setFiltro('PERNOCTANDO')" class="cursor-pointer bg-sky-500 text-white rounded-lg p-3 text-center card-bordered"><p class="text-[11px] font-bold text-sky-700">PERNOCTANDO</p><p id="count-pernoctando" class="text-2xl font-bold text-sky-700">0</p></div></div>
-<div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-3"><h2 class="font-bold text-sm">PANEL DE CONTROL DE UNIDADES</h2><div class="flex flex-col md:flex-row gap-2 md:items-center w-full md:w-auto"><input id="search-input" placeholder="Buscar por placa, N° trans, pallets..." class="ocultar-en-cliente border-2 border-black rounded-md px-3 py-2 text-xs w-full md:w-80"><div class="flex gap-2"><button id="btn-clear" class="ocultar-en-cliente bg-[#C62828] text-white text-xs font-bold px-4 py-2 rounded-md border border-black">LIMPIAR DÍA ACTUAL</button><button id="btn-add" class="ocultar-en-cliente bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-md border border-black">+ Agregar Unidad</button><button id="btn-export" onclick="exportarExcelTOP()" class="ocultar-en-cliente bg-green-700 text-white text-xs font-bold px-4 py-2 rounded-md border border-black">Exportar a Excel</button></div></div></div>
-<p class="text-[11px] text-gray-500 mb-2 font-bold ocultar-en-cliente">↕️ En PRIORIDAD toca ▲ ▼ para ordenar tal como se atendió. En captura no se ve.</p>
-<div class="overflow-x-auto border-2 border-black"><table class="w-full text-xs"><thead><tr class="bg-gray-50 text-gray-500"><th class="text-left p-2 font-bold border border-black bg-yellow-100">PRIORIDAD</th><th class="text-left p-2 font-bold border border-black bg-yellow-100">PLACA</th><th class="text-left p-2 font-bold border border-black bg-yellow-100">N° PALLETS</th><th class="text-left p-2 font-bold border border-black bg-yellow-100">N° TRANS.</th><th class="text-left p-2 font-bold border border-black bg-yellow-100">PROCEDENCIA</th><th class="text-left p-2 font-bold border border-black bg-yellow-100">TIPO</th><th class="text-left p-2 font-bold border border-black bg-yellow-100">HORA DE LLEGADA</th><th class="text-left p-2 font-bold border border-black bg-yellow-100">ESTATUS</th><th class="col-acciones text-left p-2 font-bold border border-black bg-yellow-100">ACCIONES</th></tr></thead><tbody id="tabla-body"></tbody></table></div>
-</div></div>
-<img src="almacen.jpg" class="foto-captura w-full h-48 object-cover"><p class="footer-captura text-right text-[10px] text-gray-400 italic p-2">Desarrollado por Luis Vallejo - Operaciones Lavoro</p></div>
-<button id="btnVolverFlecha" onclick="toggleCaptura()">← VOLVER</button>
-<div id="modal" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-50 p-4"><div class="bg-white rounded-xl w-full max-w-lg p-5 border-2 border-black"><h3 id="modal-title" class="font-bold mb-3">Agregar Unidad</h3><div class="grid grid-cols-2 gap-3"><input id="f-placa" placeholder="Placa" class="border-2 border-black rounded-md px-3 py-2 text-xs bg-yellow-50 font-bold"><input id="f-pallets" placeholder="N° Pallets" type="number" class="border-2 border-black rounded-md px-3 py-2 text-xs bg-yellow-50 font-bold"><input id="f-trans" placeholder="N° Trans" class="border rounded-md px-3 py-2 text-xs"><input id="f-proc" placeholder="Procedencia" class="border rounded-md px-3 py-2 text-xs"><select id="f-tipo" class="border rounded-md px-3 py-2 text-xs"><option>Recepción</option><option>Despacho</option><option>Traslado</option><option>Rece/Desp</option></select><input id="f-hora" type="time" class="border rounded-md px-3 py-2 text-xs"><select id="f-estatus" class="border rounded-md px-3 py-2 text-xs col-span-2"><option>PENDIENTE</option><option>EN PROCESO</option><option>PEND. FACTURA</option><option>CARGADO/FACT.</option><option>ATENDIDO</option><option>NO EN CD</option><option>PERNOCTANDO</option></select></div><div class="flex justify-end gap-2 mt-4"><button id="btn-cancel" class="bg-gray-200 text-xs font-bold px-4 py-2 rounded-md border border-black">Cancelar</button><button id="btn-save" class="bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-md border border-black">Guardar</button></div></div></div>
-<div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-[60] p-4"><div class="bg-white rounded-xl w-full max-w-sm p-5 text-center border-2 border-black"><p id="confirm-text" class="font-bold text-sm mb-4">¿Eliminar esta unidad?</p><div class="flex justify-center gap-3"><button id="btn-confirm-no" class="bg-gray-200 text-xs font-bold px-5 py-2 rounded-md border border-black">Cancelar</button><button id="btn-confirm-yes" class="bg-[#C62828] text-white text-xs font-bold px-5 py-2 rounded-md border border-black">Sí, Eliminar</button></div></div></div>
-<div id="modalAdmin" class="fixed inset-0 modal-bg hidden z-[70] p-2 overflow-y-auto"><div class="bg-white rounded-xl max-w-[1500px] mx-auto p-3 border-2 border-black"><div class="flex justify-between mb-3"><h2 class="font-black text-[13px] border border-black px-2 bg-white">BSF ADMIN - DATA + GRÁFICA + DASHBOARD PRO</h2><button onclick="cerrarAdmin()" class="bg-black text-white px-4 py-1 rounded border border-black">X Cerrar</button></div><div class="flex gap-1 mb-3 flex-wrap"><button onclick="switchTab('data')" id="tabData" class="tab-active px-4 py-2 text-[11px] font-bold border border-black">1. DATA BSF (MADRE)</button><button onclick="switchTab('graf')" id="tabGraf" class="tab-inactive px-4 py-2 text-[11px] font-bold border border-black">2. GRÁFICA CON LO LLENADO</button><button onclick="switchTab('dash')" id="tabDash" class="tab-inactive px-4 py-2 text-[11px] font-bold border border-black bg-yellow-300">3. 📊 DASHBOARD PRO</button><button onclick="exportarRespaldoDATA()" class="bg-green-700 text-white px-3 py-2 text-[10px] font-bold border border-black ml-auto">💾 EXPORTAR RESPALDO DATA</button><button onclick="verPapelera()" class="bg-orange-500 text-white px-3 py-2 text-[10px] font-bold border border-black">🗑️ VER PAPELERA</button></div>
-<div id="ventanaData" class="border-2 border-black bg-white"><div class="border-2 border-green-600 bg-green-50 p-3 m-2 rounded"><h3 class="font-bold text-green-700 text-[12px]">PEGAR TODO DE UNA VEZ</h3><p class="text-[11px] mt-1">Copia lo que te mando en WhatsApp, pégalo abajo y dale al botón.</p><label class="text-[11px] font-bold">Fecha para estas filas:</label><input type="date" id="fechaPegar" class="border-2 border-black rounded px-2 py-1 text-[12px] w-full mt-1"><textarea id="pegarData" placeholder="Ejemplo: 1 - A6P883/AFG988 - 38 - 14385745 - HUACHIPA - Recepción - 06:50 - ATENDIDO" class="border-2 border-black rounded px-2 py-1 text-[12px] w-full mt-2 h-32"></textarea><div class="flex gap-2 mt-2 flex-wrap"><button onclick="pegarMasivo()" class="bg-green-700 text-white px-4 py-2 text-[11px] font-bold rounded border border-black">PEGAR TODO Y LLENAR DATA</button><button onclick="pegarMasivoCaptura()" class="bg-blue-700 text-white px-4 py-2 text-[11px] font-bold rounded border border-black">PEGAR TODO EN CAPTURA (Firebase)</button></div><p id="msgPegar" class="text-green-700 font-bold text-[11px] mt-2"></p></div>
-<div class="border-2 border-blue-600 bg-blue-50 p-3 m-2 rounded"><h3 class="font-bold text-blue-800 text-[12px]">🔍 FILTRO POR DÍA - DATA COMPARTIDA - PROTEGIDA</h3><p class="text-[11px] mt-1">Al borrar un día, primero se guarda copia en PAPELERA. Ya no se puede borrar todo.</p><div class="flex flex-wrap gap-2 mt-2 items-center"><input type="date" id="filtroFechaData" class="border-2 border-black rounded px-2 py-1 text-[12px] font-bold"><button onclick="filtrarDataPorDia()" class="bg-blue-700 text-white px-4 py-2 text-[11px] font-bold rounded border border-black">🔍 FILTRAR DÍA</button><button onclick="mostrarTodaData()" class="bg-white px-4 py-2 text-[11px] font-bold rounded border-2 border-black">VER TODOS LOS DÍAS</button><button onclick="borrarDiaFiltrado()" class="bg-red-600 text-white px-4 py-2 text-[11px] font-bold rounded border border-black">🗑️ MOVER ESTE DÍA A PAPELERA</button></div><p id="msgFiltroData" class="text-blue-800 font-bold text-[11px] mt-2">Mostrando: TODOS LOS DÍAS</p><div id="papeleraBox" class="hidden mt-2 border-2 border-orange-500 bg-orange-50 p-2 rounded"><p class="font-bold text-[11px]">🗑️ PAPELERA:</p><div id="listaPapelera" class="text-[11px] mt-1"></div></div></div>
-<div class="overflow-auto max-h-[500px]"><table class="w-full text-[10px]"><thead><tr><th class="bg-black text-white p-2 border border-black">FECHA</th><th class="bg-black text-white p-2 border border-black">PRIORIDAD</th><th class="bg-black text-white p-2 border border-black">PLACA</th><th class="bg-black text-white p-2 border border-black">N° PALLETS</th><th class="bg-black text-white p-2 border border-black">N° TRANS</th><th class="bg-black text-white p-2 border border-black">PROCEDENCIA</th><th class="bg-black text-white p-2 border border-black">TIPO</th><th class="bg-black text-white p-2 border border-black">HORA</th><th class="bg-black text-white p-2 border border-black">ESTATUS</th></tr></thead><tbody id="tbodyData"></tbody></table></div><div id="totalDataInfo" class="bg-yellow-100 border border-black p-2 text-[11px] font-bold">Total DATA BSF: 0</div></div>
-<div id="ventanaGraf" class="hidden border-2 border-black p-3 bg-white"><div class="grid md:grid-cols-2 gap-4"><div class="border-2 border-black p-2"><h4 class="font-bold text-[11px] mb-2 text-center">POR TIPO</h4><canvas id="chartTipo"></canvas></div><div class="border-2 border-black p-2"><h4 class="font-bold text-[11px] mb-2 text-center">POR ESTATUS</h4><canvas id="chartEstatus"></canvas></div></div></div>
-<div id="ventanaDash" class="hidden border-2 border-black p-3 bg-[#F8FAFC]"><div class="flex flex-wrap gap-2 items-center mb-3 bg-white border-2 border-black p-2 rounded"><span class="font-black text-[12px]">📊 DASHBOARD PRO - DATA GUARDADA:</span><select id="dash-fecha" onchange="cargarDashboard()" class="border-2 border-black rounded px-2 py-1 text-[12px] font-bold"><option value="TODAS">TODAS LAS FECHAS</option></select><button onclick="cargarDashboard()" class="bg-black text-white px-3 py-1 rounded text-[11px] font-bold border border-black">↻ Actualizar</button><span id="dash-rango" class="text-[11px] text-gray-600 font-bold"></span></div><div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4"><div class="kpi-card bg-black text-white"><p class="text-[10px] font-bold">TOTAL UNIDADES</p><p id="dash-total-unid" class="text-3xl font-black">0</p><p id="dash-total-dias" class="text-[10px]">0 días guardados</p></div><div class="kpi-card bg-yellow-300"><p class="text-[10px] font-bold">TOTAL PALLETS</p><p id="dash-total-pallets" class="text-3xl font-black">0</p></div><div class="kpi-card"><p class="text-[10px] font-bold">PROM. PALLETS / UNIDAD</p><p id="dash-prom-pallets" class="text-3xl font-black text-blue-700">0</p></div><div class="kpi-card"><p class="text-[10px] font-bold">% ATENDIDO + CARGADO</p><p id="dash-pct-atendido" class="text-3xl font-black text-green-700">0%</p><p id="dash-pendientes" class="text-[10px] font-bold text-red-600">0 pendientes</p></div></div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-<div class="kpi-card bg-white"><p class="text-[10px] font-bold">📈 3. HOY VS AYER</p><p id="dash-compara" class="text-[18px] font-black">-</p><p id="dash-compara-det" class="text-[11px] font-bold text-gray-600">-</p></div>
-<div class="kpi-card bg-white"><p class="text-[10px] font-bold">⏱️ 4. TIEMPO PROMEDIO ATENCIÓN</p><p id="dash-tiempo-prom" class="text-[18px] font-black text-blue-700">-</p><p id="dash-tiempo-det" class="text-[11px] font-bold text-gray-600">Primera a Última llegada del día</p></div>
-<div class="kpi-card bg-yellow-100"><p class="text-[10px] font-bold">📄 5. REPORTE JEFATURA</p><button onclick="exportarPDFJefatura()" class="bg-black text-white px-3 py-2 rounded text-[11px] font-bold border border-black mt-1 w-full">📄 DESCARGAR REPORTE PDF</button><p class="text-[10px] mt-1">Se abre listo para imprimir / guardar en PDF</p></div>
+<!-- MODAL INVENTARIO -->
+<div id="modalInv" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-4 z-50">
+  <div class="bg-white rounded-xl w-full max-w-md p-4">
+    <h2 id="titulo-modal" class="font-black text-lg">AGREGAR PALLET</h2>
+    <p class="text-[11px] text-gray-500 mb-3">Elige ubicación de la lista completa. Si no existe, agrégala.</p>
+    <div class="grid grid-cols-2 gap-2 text-xs">
+      <label class="col-span-2 font-bold">UBICACIÓN *</label>
+      <select id="inv-ubicacion" class="border rounded-md px-3 py-2 text-sm font-bold col-span-2"></select>
+      <button onclick="agregarNuevaUbicacion()" class="bg-white border-2 border-black text-[11px] font-bold px-2 py-2 rounded col-span-2">+ NUEVA UBICACIÓN (si no existe Ej: A48)</button>
+      <label class="col-span-2 font-bold mt-1">CÓDIGO / PRODUCTO</label>
+      <input id="inv-codigo" placeholder="Código Ej: 12345 / Nombre producto" class="border rounded-md px-3 py-2 col-span-2">
+      <label class="font-bold">PALLETS</label>
+      <label class="font-bold">CAJAS</label>
+      <input id="inv-pallets" type="number" value="1" min="0" class="border rounded-md px-3 py-2">
+      <input id="inv-cajas" type="number" value="0" min="0" class="border rounded-md px-3 py-2">
+      <label class="font-bold col-span-2">UND (Unidades)</label>
+      <input id="inv-und" type="number" value="0" min="0" class="border rounded-md px-3 py-2 col-span-2">
+      <input id="inv-id" type="hidden">
+    </div>
+    <div class="flex gap-2 mt-4">
+      <button onclick="cerrarModal()" class="flex-1 border-2 border-black py-2 rounded font-bold text-xs">CANCELAR</button>
+      <button onclick="guardarInventario()" class="flex-1 bg-black text-white py-2 rounded font-bold text-xs">GUARDAR</button>
+    </div>
+  </div>
 </div>
-<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4"><div class="kpi-card"><p class="text-[10px] font-bold">🏆 TOP PROCEDENCIA</p><p id="dash-top-proc" class="text-[14px] font-black">-</p><p id="dash-top-proc-num" class="text-[10px]">-</p></div><div class="kpi-card"><p class="text-[10px] font-bold">⏰ HORA PICO</p><p id="dash-hora-pico" class="text-[14px] font-black">-</p><p id="dash-hora-pico-num" class="text-[10px]">-</p></div><div class="kpi-card"><p class="text-[10px] font-bold">🕐 PRIMERA LLEGADA</p><p id="dash-primera" class="text-[14px] font-black">-</p></div><div class="kpi-card"><p class="text-[10px] font-bold">🕐 ÚLTIMA LLEGADA</p><p id="dash-ultima" class="text-[14px] font-black">-</p></div></div><div class="grid md:grid-cols-2 gap-4"><div class="border-2 border-black p-2 bg-white"><h4 class="font-bold text-[11px] mb-2 text-center">UNIDADES POR PROCEDENCIA</h4><canvas id="chartDashProc"></canvas></div><div class="border-2 border-black p-2 bg-white"><h4 class="font-bold text-[11px] mb-2 text-center">PALLETS POR PROCEDENCIA</h4><canvas id="chartDashPallets"></canvas></div><div class="border-2 border-black p-2 bg-white"><h4 class="font-bold text-[11px] mb-2 text-center">UNIDADES POR HORA</h4><canvas id="chartDashHora"></canvas></div><div class="border-2 border-black p-2 bg-white"><h4 class="font-bold text-[11px] mb-2 text-center">POR TIPO + POR ESTATUS</h4><canvas id="chartDashTipo"></canvas><div class="mt-2"><canvas id="chartDashEstatus" style="max-height:180px"></canvas></div></div></div><div class="mt-3 bg-white border-2 border-black p-2"><h4 class="font-bold text-[11px] mb-2">📋 RESUMEN POR PROCEDENCIA</h4><div class="overflow-auto max-h-[220px]"><table class="w-full text-[11px]"><thead><tr><th class="bg-black text-white p-2 border border-black text-left">PROCEDENCIA</th><th class="bg-black text-white p-2 border border-black">UNIDADES</th><th class="bg-black text-white p-2 border border-black">PALLETS</th><th class="bg-black text-white p-2 border border-black">% DEL TOTAL</th></tr></thead><tbody id="tbodyDashResumen"></tbody></table></div></div></div>
-</div></div>
-<div id="modalPass" class="fixed inset-0 modal-bg hidden z-[80] items-center justify-center"><div class="bg-white p-6 rounded-xl w-80 border-2 border-black"><h3 class="font-bold mb-2">🔒 Acceso BSF Admin</h3><input type="password" id="inputPass" placeholder="Clave" class="border border-black w-full p-2 rounded mb-3"><button onclick="entrarAdmin()" class="bg-blue-700 text-white w-full py-2 rounded font-bold border border-black">Entrar</button></div></div>
-<div id="modalUCA" class="fixed inset-0 modal-bg hidden z-[90] items-center justify-center p-4"><div class="bg-white rounded-xl w-full max-w-2xl p-5 border-2 border-black max-h-[90vh] overflow-y-auto"><h3 class="font-bold mb-1">⚙️ UCA - Configura tus 4 productos</h3><p class="text-[11px] text-gray-500 mb-2">Aquí cambias cajas x pallet y und x caja sin tocar código.</p><div id="uca-form" class="space-y-3"></div><div class="flex justify-end gap-2 mt-4"><button onclick="cerrarUCA()" class="bg-gray-200 text-xs font-bold px-4 py-2 rounded-md border border-black">Cancelar</button><button onclick="guardarUCA()" class="bg-green-700 text-white text-xs font-bold px-4 py-2 rounded-md border border-black">Guardar UCA</button></div></div></div>
-<div id="modalInv" class="fixed inset-0 modal-bg hidden z-[90] items-center justify-center p-4"><div class="bg-white rounded-xl w-full max-w-md p-5 border-2 border-black"><h3 id="modalInv-title" class="font-bold mb-3">Agregar Pallet</h3><div class="grid grid-cols-2 gap-3"><select id="inv-codigo" class="border-2 border-black rounded-md px-3 py-2 text-xs col-span-2"></select><input id="inv-ubicacion" placeholder="Ubicación Ej: A1" class="border rounded-md px-3 py-2 text-xs"><input id="inv-lote" placeholder="Lote" class="border rounded-md px-3 py-2 text-xs"><input id="inv-vencimiento" type="date" class="border rounded-md px-3 py-2 text-xs col-span-2"><input id="inv-cantidad" type="number" value="1" min="1" class="border rounded-md px-3 py-2 text-xs col-span-2"></div><div class="flex justify-end gap-2 mt-4"><button onclick="cerrarModalInv()" class="bg-gray-200 text-xs font-bold px-4 py-2 rounded-md border border-black">Cancelar</button><button onclick="guardarInventario()" class="bg-green-700 text-white text-xs font-bold px-4 py-2 rounded-md border border-black">Guardar</button></div></div></div>
+
 <script>
-const FIREBASE_URL="https://bsf-puntahermosalv-default-rtdb.firebaseio.com/operaciones.json";
-const FIREBASE_ITEM="https://bsf-puntahermosalv-default-rtdb.firebaseio.com/operaciones/";
-const DATA_BSF_URL="https://bsf-puntahermosalv-default-rtdb.firebaseio.com/data_bsf.json";
-const DATA_BSF_ITEM="https://bsf-puntahermosalv-default-rtdb.firebaseio.com/data_bsf/";
-const PAPELERA_URL="https://bsf-puntahermosalv-default-rtdb.firebaseio.com/papelera_bsf.json";
-const PAPELERA_ITEM="https://bsf-puntahermosalv-default-rtdb.firebaseio.com/papelera_bsf/";
-let database={},editId=null,deleteId=null,filtroEstatus=null,confirmAction=null,dataBSF=[],filtroFechaData=null;
-let charts={};
-function mkChart(id,type,labels,vals){let el=document.getElementById(id);if(!el)return;if(charts[id])charts[id].destroy();let cols=['#0C2340','#22c55e','#f59e0b','#a855f7','#ef4444','#f97316','#6b7280','#0ea5e9'];charts[id]=new Chart(el,{type:type,data:{labels:labels,datasets:[{data:vals,backgroundColor:cols,borderColor:'#000',borderWidth:1}]},options:{responsive:true,plugins:{legend:{display:type==='doughnut'}}}});}
-function toggleCaptura(){document.body.classList.toggle('modo-cliente');window.scrollTo(0,0);}
-document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.body.classList.contains('modo-cliente'))toggleCaptura();});
-function getEstatusBadge(s){let e=(s||'').toUpperCase();if(e==='PENDIENTE')return '<span class="badge bg-[#C62828] text-white">PENDIENTE</span>';if(e==='EN PROCESO')return '<span class="badge bg-red-100 text-red-700">EN PROCESO</span>';if(e==='PEND. FACTURA')return '<span class="badge bg-orange-500 text-white">PEND. FACTURA</span>';if(e==='CARGADO/FACT.')return '<span class="badge bg-green-100 text-green-700">CARGADO/FACT.</span>';if(e==='ATENDIDO')return '<span class="badge bg-green-700 text-white">ATENDIDO</span>';if(e==='NO EN CD')return '<span class="badge bg-gray-200 text-gray-700">NO EN CD</span>';if(e==='PERNOCTANDO')return '<span class="badge bg-sky-500 text-white">PERNOCTANDO</span>';return '<span class="badge bg-gray-200">'+s+'</span>';}
-function setFiltro(s){filtroEstatus=(filtroEstatus===s)?null:s;updateDashboard();}
-function getBadgeTiempo(h,est){if(est==='ATENDIDO'||est==='CARGADO/FACT.'||est==='NO EN CD')return '<span class="bg-gray-500 text-white text-[11px] font-bold px-2 py-1 rounded-md border border-black">✓ Finalizado</span>';if(!h)return "";let a=new Date();let p=h.split(':').map(Number);let l=new Date();l.setHours(p[0],p[1],0,0);let d=Math.floor((a-l)/60000);if(d<0)d+=1440;let hh=String(Math.floor(d/60)).padStart(2,'0'),mm=String(d%60).padStart(2,'0'),ss=String(a.getSeconds()).padStart(2,'0');let t=hh+':'+mm+':'+ss;let c=d>=120?'bg-red-600':d>=60?'bg-orange-500':'bg-green-600';return '<span class="'+c+' text-white text-[11px] font-bold px-2 py-1 rounded-md border border-black">⏱ '+t+'</span>';}
-async function cargarFirebase(){try{let r=await fetch(FIREBASE_URL+"?t="+Date.now());database=await r.json()||{};updateDashboard();}catch(e){}}
-function updateDashboard(){let hoy=new Date();let fe=document.getElementById('fecha');if(fe)fe.textContent=hoy.toLocaleDateString('es-PE',{day:'numeric',month:'long',year:'numeric'})+' | '+hoy.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'});let se=document.getElementById('search-input');let sr=se?se.value.toLowerCase():'';let entries=Object.entries(database);let all=Object.values(database);if(filtroEstatus)entries=entries.filter(([i,u])=>u.estatus===filtroEstatus);if(sr)entries=entries.filter(([i,u])=>(u.placa+u.trans+u.procedencia+u.pallets).toLowerCase().includes(sr));let g=(k,v)=>all.filter(u=>u[k]===v).length;document.getElementById('count-total').textContent=all.length;document.getElementById('count-pendiente').textContent=g('estatus','PENDIENTE');document.getElementById('count-proceso').textContent=g('estatus','EN PROCESO');document.getElementById('count-factura').textContent=g('estatus','PEND. FACTURA');document.getElementById('count-cargado').textContent=g('estatus','CARGADO/FACT.');document.getElementById('count-atendido').textContent=g('estatus','ATENDIDO');document.getElementById('count-noencd').textContent=g('estatus','NO EN CD');document.getElementById('count-pernoctando').textContent=g('estatus','PERNOCTANDO');document.getElementById('tipo-recepcion').textContent=g('tipo','Recepción');document.getElementById('tipo-despacho').textContent=g('tipo','Despacho');document.getElementById('tipo-traslado').textContent=g('tipo','Traslado');document.getElementById('tipo-rece-desp').textContent=g('tipo','Rece/Desp');let tb=document.getElementById('tabla-body');if(!tb)return;tb.innerHTML='';let c=1;entries.forEach(([id,u])=>{let tr=document.createElement('tr');tr.className='border-t';let num=c++;tr.innerHTML='<td class="p-2 border border-black bg-white"><div class="prio-cell"><span class="prio-num">'+num+'</span><span class="prio-flechas"><button onclick="moverFila(\''+id+'\',-1)" title="Subir">▲</button><button onclick="moverFila(\''+id+'\',1)" title="Bajar">▼</button></span></div></td><td class="p-2 font-bold border border-black bg-white">'+u.placa+'</td><td class="p-2 border border-black bg-white font-bold text-center bg-yellow-50">'+(u.pallets||'')+'</td><td class="p-2 border border-black bg-white">'+u.trans+'</td><td class="p-2 border border-black bg-white">'+u.procedencia+'</td><td class="p-2 text-green-700 font-bold border border-black bg-white">'+u.tipo+'</td><td class="p-2 border border-black bg-white">'+u.hora+'</td><td class="p-2 border border-black bg-white">'+getEstatusBadge(u.estatus)+'</td><td class="col-acciones p-2 flex gap-1 border border-black bg-white flex-wrap"><button onclick="editarFila(\''+id+'\')" class="bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-md border border-black">Editar</button><button onclick="eliminarFila(\''+id+'\')" class="bg-[#C62828] text-white text-[10px] font-bold px-2 py-1 rounded-md border border-black">Eliminar</button>'+getBadgeTiempo(u.hora,u.estatus)+'</td>';tb.appendChild(tr);});}
-window.moverFila=async function(id,dir){let keys=Object.keys(database);let idx=keys.indexOf(id);let ni=idx+dir;if(ni<0||ni>=keys.length)return;let id2=keys[ni];let a=database[id],b=database[id2];if(!a||!b)return;await fetch(FIREBASE_ITEM+id+'.json',{method:'PUT',body:JSON.stringify(b)});await fetch(FIREBASE_ITEM+id2+'.json',{method:'PUT',body:JSON.stringify(a)});cargarFirebase();};
-window.eliminarFila=function(id){deleteId=id;confirmAction='delete';document.getElementById('confirm-text').textContent="¿Eliminar esta unidad?";let m=document.getElementById('confirm-modal');m.classList.remove('hidden');m.classList.add('flex');};
-window.editarFila=function(id){editId=id;let u=database[id];document.getElementById('f-placa').value=u.placa;document.getElementById('f-pallets').value=u.pallets||'';document.getElementById('f-trans').value=u.trans;document.getElementById('f-proc').value=u.procedencia;document.getElementById('f-tipo').value=u.tipo;document.getElementById('f-hora').value=u.hora;document.getElementById('f-estatus').value=u.estatus;document.getElementById('modal-title').textContent="Editar Unidad";let m=document.getElementById('modal');m.classList.remove('hidden');m.classList.add('flex');};
-document.getElementById('btn-confirm-no').addEventListener('click',()=>{deleteId=null;confirmAction=null;let m=document.getElementById('confirm-modal');m.classList.add('hidden');m.classList.remove('flex');});
-document.getElementById('btn-confirm-yes').addEventListener('click',async()=>{if(confirmAction==='delete'&&deleteId){await fetch(FIREBASE_ITEM+deleteId+'.json',{method:'DELETE'});deleteId=null;cargarFirebase();}else if(confirmAction==='clearAll'){if(!confirm('Esto solo borra el DÍA ACTUAL en pantalla. Tu DATA guardada NO se borra. ¿Seguro?')){confirmAction=null;let mm=document.getElementById('confirm-modal');mm.classList.add('hidden');mm.classList.remove('flex');return;}await fetch(FIREBASE_URL,{method:'DELETE'});database={};filtroEstatus=null;let s=document.getElementById('search-input');if(s)s.value='';updateDashboard();}confirmAction=null;let m=document.getElementById('confirm-modal');m.classList.add('hidden');m.classList.remove('flex');});
-document.getElementById('btn-clear').addEventListener('click',function(e){e.preventDefault();if(!Object.keys(database).length)return alert('No hay unidades');confirmAction='clearAll';document.getElementById('confirm-text').textContent="¿Eliminar TODAS las unidades del DÍA ACTUAL? Tu DATA guardada NO se toca.";let m=document.getElementById('confirm-modal');m.classList.remove('hidden');m.classList.add('flex');});
-document.getElementById('btn-add').addEventListener('click',()=>{editId=null;document.getElementById('modal-title').textContent="Agregar Unidad";['f-placa','f-pallets','f-trans','f-proc','f-hora'].forEach(id=>{let el=document.getElementById(id);if(el)el.value='';});let m=document.getElementById('modal');m.classList.remove('hidden');m.classList.add('flex');});
-document.getElementById('btn-cancel').addEventListener('click',()=>{let m=document.getElementById('modal');m.classList.add('hidden');m.classList.remove('flex');});
-document.getElementById('btn-save').addEventListener('click',async()=>{let u={placa:document.getElementById('f-placa').value.trim(),pallets:document.getElementById('f-pallets').value.trim(),trans:document.getElementById('f-trans').value.trim(),procedencia:document.getElementById('f-proc').value.trim(),tipo:document.getElementById('f-tipo').value,hora:document.getElementById('f-hora').value,estatus:document.getElementById('f-estatus').value};if(!u.placa)return alert('Ingresa la placa');if(editId){await fetch(FIREBASE_ITEM+editId+'.json',{method:'PATCH',body:JSON.stringify(u)});}else{await fetch(FIREBASE_URL,{method:'POST',body:JSON.stringify(u)});}let m=document.getElementById('modal');m.classList.add('hidden');m.classList.remove('flex');cargarFirebase();});
-let si=document.getElementById('search-input');if(si)si.addEventListener('input',()=>updateDashboard());
-window.abrirAdminPass=function(){let mp=document.getElementById('modalPass');mp.classList.remove('hidden');mp.classList.add('flex');}
-window.cerrarAdmin=function(){document.getElementById('modalAdmin').classList.add('hidden')}
-window.entrarAdmin=function(){if(document.getElementById('inputPass').value==='Lavoro2026'){let mp=document.getElementById('modalPass');mp.classList.add('hidden');mp.classList.remove('flex');document.getElementById('modalAdmin').classList.remove('hidden');cargarData();}else alert('Clave incorrecta')}
-window.switchTab=function(t){['ventanaData','ventanaGraf','ventanaDash'].forEach(id=>document.getElementById(id).classList.add('hidden'));['tabData','tabGraf','tabDash'].forEach(id=>document.getElementById(id).className='tab-inactive px-4 py-2 text-[11px] font-bold border border-black'+(id==='tabDash'?' bg-yellow-300':''));if(t==='data'){document.getElementById('ventanaData').classList.remove('hidden');document.getElementById('tabData').className='tab-active px-4 py-2 text-[11px] font-bold border border-black';}if(t==='graf'){document.getElementById('ventanaGraf').classList.remove('hidden');document.getElementById('tabGraf').className='tab-active px-4 py-2 text-[11px] font-bold border border-black';setTimeout(cargarGrafica,200);}if(t==='dash'){document.getElementById('ventanaDash').classList.remove('hidden');document.getElementById('tabDash').className='tab-active px-4 py-2 text-[11px] font-bold border border-black';setTimeout(cargarDashboard,200);}}
-function fechaISOtoDisplay(iso){if(!iso)return '';let p=iso.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
-function fechaDisplayToISO(d){let p=d.split('/');return p[2]+'-'+p[1].padStart(2,'0')+'-'+p[0].padStart(2,'0');}
-function hoyISO(){let n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
-async function fetchDataBSF(){try{let r=await fetch(DATA_BSF_URL+"?t="+Date.now());let raw=await r.json();let arr=[];if(raw){Object.entries(raw).forEach(([iso,dia])=>{let filas=dia.filas||dia;if(Array.isArray(filas))filas.forEach(x=>arr.push({...x,fecha:dia.fecha||fechaISOtoDisplay(iso),_diaISO:iso}));});}dataBSF=arr;return arr;}catch(e){return [];}}
-function renderData(){let lista=filtroFechaData?dataBSF.filter(r=>r._diaISO===filtroFechaData):dataBSF;let h='';lista.forEach(r=>{h+='<tr><td class="p-2 border border-black bg-white">'+r.fecha+'</td><td class="p-2 border border-black bg-white">'+r.prioridad+'</td><td class="p-2 border border-black bg-white font-bold">'+r.placa+'</td><td class="p-2 border border-black bg-white font-bold text-center bg-yellow-50">'+(r.pallets||'')+'</td><td class="p-2 border border-black bg-white">'+r.trans+'</td><td class="p-2 border border-black bg-white">'+r.proc+'</td><td class="p-2 border border-black bg-white">'+r.tipo+'</td><td class="p-2 border border-black bg-white">'+r.hora+'</td><td class="p-2 border border-black bg-white">'+r.status+'</td></tr>'});document.getElementById('tbodyData').innerHTML=h||'<tr><td colspan=9 class="text-center p-3 text-gray-400">No hay DATA BSF para este filtro, guarda un día</td></tr>';document.getElementById('totalDataInfo').innerText='Total DATA BSF: '+dataBSF.length+' | Mostrando: '+lista.length+(filtroFechaData?' | Día: '+fechaISOtoDisplay(filtroFechaData):' | Todos los días');let m=document.getElementById('msgFiltroData');if(m)m.innerText=filtroFechaData?'Mostrando solo: '+fechaISOtoDisplay(filtroFechaData)+' - '+lista.length+' unidades.':'Mostrando: TODOS LOS DÍAS - '+dataBSF.length+' unidades.';}
-async function cargarData(){await fetchDataBSF();renderData();}
-window.filtrarDataPorDia=function(){let v=document.getElementById('filtroFechaData').value;if(!v)return alert('Elige una fecha primero');filtroFechaData=v;renderData();};
-window.mostrarTodaData=function(){filtroFechaData=null;document.getElementById('filtroFechaData').value='';renderData();};
-window.borrarDiaFiltrado=async function(){if(!filtroFechaData)return alert('Primero filtra un día');let cant=dataBSF.filter(r=>r._diaISO===filtroFechaData).length;if(!cant)return alert('Ese día no tiene datos');if(!confirm('¿Mover SOLO el día '+fechaISOtoDisplay(filtroFechaData)+' a PAPELERA? Tiene '+cant+' unidades. Se guarda copia.'))return;if(!confirm('Segunda confirmación: ¿Seguro?'))return;let dd=null;try{let r=await fetch(DATA_BSF_ITEM+filtroFechaData+'.json');dd=await r.json();}catch(e){}if(dd){await fetch(PAPELERA_ITEM+filtroFechaData+'.json',{method:'PUT',body:JSON.stringify({fecha:dd.fecha,filas:dd.filas,borradoEn:new Date().toISOString()})});}await fetch(DATA_BSF_ITEM+filtroFechaData+'.json',{method:'DELETE'});filtroFechaData=null;document.getElementById('filtroFechaData').value='';await cargarData();cargarDashboard();alert('✅ Día movido a PAPELERA. Puedes restaurarlo desde VER PAPELERA.');};
-window.verPapelera=async function(){let b=document.getElementById('papeleraBox');b.classList.toggle('hidden');if(b.classList.contains('hidden'))return;let r=await fetch(PAPELERA_URL+"?t="+Date.now());let raw=await r.json()||{};let h='';Object.entries(raw).forEach(([iso,dia])=>{h+='<div class="flex justify-between items-center border-b py-1"><span>'+(dia.fecha||iso)+' - '+(dia.filas?dia.filas.length:0)+' unidades</span><button onclick="restaurarDia(\''+iso+'\')" class="bg-green-700 text-white px-2 py-1 rounded text-[10px] font-bold border border-black">RESTAURAR</button></div>';});document.getElementById('listaPapelera').innerHTML=h||'Papelera vacía';};
-window.restaurarDia=async function(iso){if(!confirm('¿Restaurar el día '+iso+'?'))return;let r=await fetch(PAPELERA_ITEM+iso+'.json');let dia=await r.json();if(!dia)return alert('No se encontró');await fetch(DATA_BSF_ITEM+iso+'.json',{method:'PUT',body:JSON.stringify({fecha:dia.fecha,filas:dia.filas,guardadoEn:new Date().toISOString()})});await fetch(PAPELERA_ITEM+iso+'.json',{method:'DELETE'});await cargarData();cargarDashboard();verPapelera();alert('✅ Día restaurado');};
-window.borrarDataBSF=function(){alert('⛔ BLOQUEADO para proteger tu historial. Ya no se puede borrar toda la DATA de una vez.');};
-window.exportarRespaldoDATA=async function(){await fetchDataBSF();if(!dataBSF.length)return alert('No hay DATA');try{let wb=new ExcelJS.Workbook();let sh=wb.addWorksheet('RESPALDO');sh.columns=[{header:'FECHA',key:'fecha',width:14},{header:'PRIORIDAD',key:'prioridad',width:10},{header:'PLACA',key:'placa',width:16},{header:'PALLETS',key:'pallets',width:10},{header:'TRANS',key:'trans',width:14},{header:'PROCEDENCIA',key:'proc',width:20},{header:'TIPO',key:'tipo',width:12},{header:'HORA',key:'hora',width:10},{header:'ESTATUS',key:'status',width:14}];dataBSF.forEach(r=>sh.addRow(r));let buf=await wb.xlsx.writeBuffer();let blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});let url=URL.createObjectURL(blob);let a=document.createElement('a');a.href=url;a.download='RESPALDO_DATA_BSF_'+new Date().toISOString().slice(0,10)+'.xlsx';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch(e){alert('Error: '+e.message);}};
-window.guardarDiaBSF=async function(){let all=Object.values(database);if(!all.length)return alert('No hay datos BSF');let iso=hoyISO();let fd=fechaISOtoDisplay(iso);let existe=false;try{let r=await fetch(DATA_BSF_ITEM+iso+'.json');if(await r.json())existe=true;}catch(e){}if(existe){if(!confirm('⚠️ El día '+fd+' YA está guardado. ¿Quieres ACTUALIZARLO? No se duplica.'))return;}let filas=all.map((u,i)=>{return {fecha:fd,prioridad:i+1,placa:u.placa,pallets:u.pallets||'',trans:u.trans,proc:u.procedencia,tipo:u.tipo,hora:u.hora,status:u.estatus};});await fetch(DATA_BSF_ITEM+iso+'.json',{method:'PUT',body:JSON.stringify({fecha:fd,filas:filas,guardadoEn:new Date().toISOString()})});alert('✅ BSF GUARDADO en DATA: '+filas.length+' unidades del '+fd);await cargarData();};
-function cargarGrafica(){let all=Object.values(database);let tipos=['Recepción','Despacho','Traslado','Rece/Desp'];let ests=['PENDIENTE','EN PROCESO','PEND. FACTURA','CARGADO/FACT.','ATENDIDO','NO EN CD','PERNOCTANDO'];mkChart('chartTipo','bar',tipos,tipos.map(t=>all.filter(u=>u.tipo===t).length));mkChart('chartEstatus','doughnut',ests,ests.map(e=>all.filter(u=>u.estatus===e).length));}
-function getDataFiltrada(){let s=document.getElementById('dash-fecha');let f=s?s.value:'TODAS';if(f==='TODAS')return dataBSF;return dataBSF.filter(r=>r.fecha===f);}
-function llenarFiltroFechas(){let fechas=[...new Set(dataBSF.map(r=>r.fecha))];let s=document.getElementById('dash-fecha');if(!s)return;let act=s.value||'TODAS';s.innerHTML='<option value="TODAS">TODAS LAS FECHAS</option>';fechas.forEach(f=>{s.innerHTML+='<option value="'+f+'">'+f+'</option>';});if(fechas.includes(act))s.value=act;}
-window.cargarDashboard=async function(){await fetchDataBSF();llenarFiltroFechas();let DATA=getDataFiltrada();let total=DATA.length;let tp=DATA.reduce((s,r)=>s+(parseInt(r.pallets)||0),0);let prom=total?(tp/total).toFixed(1):0;let ate=DATA.filter(r=>r.status==='ATENDIDO'||r.status==='CARGADO/FACT.').length;let pct=total?Math.round(ate/total*100):0;let pen=DATA.filter(r=>r.status==='PENDIENTE'||r.status==='EN PROCESO'||r.status==='PEND. FACTURA').length;let dias=[...new Set(DATA.map(r=>r.fecha))].length;document.getElementById('dash-total-unid').textContent=total;document.getElementById('dash-total-dias').textContent=dias+' días guardados';document.getElementById('dash-total-pallets').textContent=tp;document.getElementById('dash-prom-pallets').textContent=prom;document.getElementById('dash-pct-atendido').textContent=pct+'%';document.getElementById('dash-pendientes').textContent=pen+' pendientes / en proceso';document.getElementById('dash-rango').textContent='Mostrando: '+(document.getElementById('dash-fecha').value==='TODAS'?'Todas las fechas':document.getElementById('dash-fecha').value)+' | Registros: '+total;let horas=DATA.map(r=>r.hora).filter(Boolean).sort();document.getElementById('dash-primera').textContent=horas[0]||'-';document.getElementById('dash-ultima').textContent=horas[horas.length-1]||'-';let porProc={},palProc={};DATA.forEach(r=>{let p=(r.proc||'SIN PROCEDENCIA').toUpperCase();porProc[p]=(porProc[p]||0)+1;palProc[p]=(palProc[p]||0)+(parseInt(r.pallets)||0);});let pk=Object.keys(porProc).sort((a,b)=>porProc[b]-porProc[a]);let top=pk[0]||'-';document.getElementById('dash-top-proc').textContent=top;document.getElementById('dash-top-proc-num').textContent=top!=='-'?porProc[top]+' unidades | '+palProc[top]+' pallets':'-';let porHora={};DATA.forEach(r=>{if(!r.hora)return;let h=r.hora.split(':')[0]+':00';porHora[h]=(porHora[h]||0)+1;});let hk=Object.keys(porHora).sort();let th=hk.sort((a,b)=>porHora[b]-porHora[a])[0]||'-';document.getElementById('dash-hora-pico').textContent=th!=='-'?th+' - '+(parseInt(th)+1)+':00':'-';document.getElementById('dash-hora-pico-num').textContent=th!=='-'?porHora[th]+' unidades':'-';let tb=document.getElementById('tbodyDashResumen');let h='';pk.forEach(p=>{let pp=total?Math.round(porProc[p]/total*100):0;h+='<tr><td class="p-2 border border-black bg-white font-bold">'+p+'</td><td class="p-2 border border-black bg-white text-center">'+porProc[p]+'</td><td class="p-2 border border-black bg-white text-center font-bold bg-yellow-50">'+palProc[p]+'</td><td class="p-2 border border-black bg-white text-center">'+pp+'%</td></tr>';});tb.innerHTML=h||'<tr><td colspan=4 class="text-center p-3 text-gray-400">Sin DATA todavía. Guarda un día primero.</td></tr>';mkChart('chartDashProc','bar',pk,pk.map(k=>porProc[k]));mkChart('chartDashPallets','bar',pk,pk.map(k=>palProc[k]));mkChart('chartDashHora','line',Object.keys(porHora).sort(),Object.keys(porHora).sort().map(k=>porHora[k]));let tipos=['Recepción','Despacho','Traslado','Rece/Desp'];mkChart('chartDashTipo','doughnut',tipos,tipos.map(t=>DATA.filter(r=>r.tipo===t).length));let ests=['PENDIENTE','EN PROCESO','PEND. FACTURA','CARGADO/FACT.','ATENDIDO','NO EN CD','PERNOCTANDO'];mkChart('chartDashEstatus','bar',ests,ests.map(e=>DATA.filter(r=>r.status===e).length));
-let fechasOrd=[...new Set(dataBSF.map(r=>r.fecha))].sort((a,b)=>{let pa=a.split('/'),pb=b.split('/');return new Date(pb[2],pb[1]-1,pb[0])-new Date(pa[2],pa[1]-1,pa[0]);});
-let hoyF=fechasOrd[0], ayerF=fechasOrd[1];
-if(hoyF && ayerF){let hoyPal=dataBSF.filter(r=>r.fecha===hoyF).reduce((s,r)=>s+(parseInt(r.pallets)||0),0);let ayerPal=dataBSF.filter(r=>r.fecha===ayerF).reduce((s,r)=>s+(parseInt(r.pallets)||0),0);let hoyUni=dataBSF.filter(r=>r.fecha===hoyF).length;let ayerUni=dataBSF.filter(r=>r.fecha===ayerF).length;let difPal=hoyPal-ayerPal;let signo=difPal>=0?'🟢 +':'🔴 ';document.getElementById('dash-compara').textContent=signo+difPal+' pallets vs ayer';document.getElementById('dash-compara').style.color=difPal>=0?'#15803d':'#dc2626';document.getElementById('dash-compara-det').textContent=hoyF+': '+hoyUni+' unid / '+hoyPal+' pal | '+ayerF+': '+ayerUni+' unid / '+ayerPal+' pal';}else{document.getElementById('dash-compara').textContent='Falta 1 día más';document.getElementById('dash-compara-det').textContent='Guarda otro día para comparar';}
-let horasDia=DATA.map(r=>r.hora).filter(Boolean).sort();
-if(horasDia.length>=2){let aMin=(hh2)=>{let p=hh2.split(':');return parseInt(p[0])*60+parseInt(p[1]);};let dur=aMin(horasDia[horasDia.length-1])-aMin(horasDia[0]);if(dur<0)dur+=1440;let promMin=DATA.length?Math.round(dur/DATA.length):0;let hhh=Math.floor(promMin/60),mmm=promMin%60;document.getElementById('dash-tiempo-prom').textContent=hhh+'h '+mmm+'m por unidad';document.getElementById('dash-tiempo-det').textContent='Ventana: '+horasDia[0]+' a '+horasDia[horasDia.length-1]+' | '+DATA.length+' unidades';}
+// ===== UBICACIONES FIJAS - NO SE BORRA NADA, SOLO SE COMPLETA =====
+let ubicacionesBSF = [];
+['A','B','P'].forEach(letra=>{
+  for(let i=1;i<=47;i++){ ubicacionesBSF.push(letra+i); }
+});
+let ubicacionesExtra = JSON.parse(localStorage.getItem('ubicacionesExtraBSF')||'[]');
+function todasUbicaciones(){
+  let todas = [...ubicacionesBSF, ...ubicacionesExtra];
+  return [...new Set(todas)];
 }
-function parseLineaPegar(l){l=l.trim();if(!l)return null;let p=l.split('-').map(s=>s.trim());if(p.length>=8)return {prioridad:p[0],placa:p[1],pallets:p[2],trans:p[3],proc:p[4],tipo:p[5],hora:p[6],status:p[7]};if(p.length>=7)return {prioridad:'1',placa:p[0],pallets:p[1],trans:p[2],proc:p[3],tipo:p[4],hora:p[5],status:p[6]};return null;}
-function fechaPegarFormateada(){let f=document.getElementById('fechaPegar').value;if(!f)return new Date().toLocaleDateString('es-PE');let p=f.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
-window.pegarMasivo=async function(){let tx=document.getElementById('pegarData').value;let fecha=fechaPegarFormateada();let iso=fechaDisplayToISO(fecha);let filas=[];tx.split('\n').forEach(l=>{let u=parseLineaPegar(l);if(u)filas.push({fecha:fecha,prioridad:u.prioridad,placa:u.placa,pallets:u.pallets,trans:u.trans,proc:u.proc,tipo:u.tipo,hora:u.hora,status:u.status});});if(!filas.length)return alert('No se pudo leer ninguna fila');let ex=false;try{let r=await fetch(DATA_BSF_ITEM+iso+'.json');if(await r.json())ex=true;}catch(e){}if(ex){if(!confirm('El día '+fecha+' ya existe. ¿Reemplazarlo?'))return;}await fetch(DATA_BSF_ITEM+iso+'.json',{method:'PUT',body:JSON.stringify({fecha:fecha,filas:filas,guardadoEn:new Date().toISOString()})});await cargarData();document.getElementById('msgPegar').innerText='Listo! '+filas.length+' filas en DATA '+fecha;document.getElementById('pegarData').value='';alert('Listo! '+filas.length+' filas en DATA '+fecha);};
-window.pegarMasivoCaptura=async function(){let tx=document.getElementById('pegarData').value;let c=0;for(let l of tx.split('\n')){let u=parseLineaPegar(l);if(!u)continue;await fetch(FIREBASE_URL,{method:'POST',body:JSON.stringify({placa:u.placa,pallets:u.pallets,trans:u.trans,procedencia:u.proc,tipo:u.tipo,hora:u.hora,estatus:u.status})});c++;}document.getElementById('msgPegar').innerText='Listo! '+c+' filas en CAPTURA';document.getElementById('pegarData').value='';alert('Listo! '+c+' filas en CAPTURA');cargarFirebase();};
-window.exportarExcelTOP=async function(){try{if(typeof ExcelJS==='undefined')return alert('No se cargó ExcelJS');let data=Object.values(database);if(!data.length)return alert('No hay datos');let wb=new ExcelJS.Workbook();let sh=wb.addWorksheet('BSF Punta Hermosa');sh.columns=[{header:'PRIORIDAD',key:'prioridad',width:12},{header:'PLACA',key:'placa',width:15},{header:'N° PALLETS',key:'pallets',width:12},{header:'N° TRANS.',key:'trans',width:15},{header:'PROCEDENCIA',key:'procedencia',width:30},{header:'TIPO',key:'tipo',width:14},{header:'HORA LLEGADA',key:'hora',width:16},{header:'ESTATUS',key:'estatus',width:18}];data.forEach((u,i)=>{sh.addRow({prioridad:i+1,placa:u.placa,pallets:u.pallets||'',trans:u.trans,procedencia:u.procedencia,tipo:u.tipo,hora:u.hora,estatus:u.estatus});});let buf=await wb.xlsx.writeBuffer();let blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});let url=URL.createObjectURL(blob);let a=document.createElement('a');a.href=url;a.download='BSF_PUNTA_HERMOSA_'+new Date().toISOString().slice(0,10)+'.xlsx';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch(e){alert('Error: '+e.message);}};
-const INV_URL="https://bsf-puntahermosalv-default-rtdb.firebaseio.com/inventario_bsf.json";
-const INV_ITEM="https://bsf-puntahermosalv-default-rtdb.firebaseio.com/inventario_bsf/";
-const UCA_URL="https://bsf-puntahermosalv-default-rtdb.firebaseio.com/uca_config.json";
-const UCA_CAP_URL="https://bsf-puntahermosalv-default-rtdb.firebaseio.com/uca_capacidades.json";
-let inventario={},ucaConfig=[{codigo:'1001135',descripcion:'GLORIA LECHE REC. ENTERA 170GRX48U',cajasPorPallet:80,undPorCaja:48},{codigo:'1001273',descripcion:'GLORIA LECHE REC. ENTERA 390GR BANDEJX24U',cajasPorPallet:88,undPorCaja:24},{codigo:'1001277',descripcion:'GLORIA LECHE REC. ENTERA 390GR X 6-8PK',cajasPorPallet:72,undPorCaja:48},{codigo:'1007119',descripcion:'GLORIA PANETÓN TRADICIONAL 900GR X 6 UND',cajasPorPallet:60,undPorCaja:6}],invEditId=null;
-let invFiltroCodigo=null;
-let ucaCapacidades={evaporada:7092,paneton:36,agua:0};
-function mostrarInventario(){document.getElementById('vistaUnidades').classList.add('hidden');document.getElementById('vistaInventario').classList.remove('hidden');cargarInventario();}
-function mostrarUnidades(){document.getElementById('vistaInventario').classList.add('hidden');document.getElementById('vistaUnidades').classList.remove('hidden');}
-function getUCA(c){return ucaConfig.find(x=>x.codigo===c)||{cajasPorPallet:0,undPorCaja:0,descripcion:''};}
-async function cargarUCA(){try{let r=await fetch(UCA_URL+"?t="+Date.now());let d=await r.json();if(d&&Array.isArray(d)&&d.length)ucaConfig=d;}catch(e){}
-if(!ucaConfig.some(x=>String(x.codigo)==='1007119')){ucaConfig.push({codigo:'1007119',descripcion:'GLORIA PANETÓN TRADICIONAL 900GR X 6 UND',cajasPorPallet:60,undPorCaja:6});fetch(UCA_URL,{method:'PUT',body:JSON.stringify(ucaConfig)});}
-ucaConfig=ucaConfig.map(c=>{if(String(c.codigo)==='1007119')c.descripcion='GLORIA PANETÓN TRADICIONAL 900GR X 6 UND';return c;});}
-async function cargarCapacidades(){try{let r=await fetch(UCA_CAP_URL+"?t="+Date.now());let d=await r.json();if(d&&typeof d==='object'){ucaCapacidades={evaporada:parseFloat(d.evaporada)||0,paneton:parseFloat(d.paneton)||0,agua:parseFloat(d.agua)||0};}}catch(e){}}
-async function guardarCapacidad(clave,valor){ucaCapacidades[clave]=parseFloat(valor)||0;await fetch(UCA_CAP_URL,{method:'PUT',body:JSON.stringify(ucaCapacidades)});renderUCA();}
-window.cambiarCapacidad=function(clave,el){guardarCapacidad(clave,el.value);};
-window.setFiltroCodigo=function(cod){invFiltroCodigo=cod;renderInventario();};
-function renderFiltrosCodigo(){let cont=document.getElementById('inv-filtros');if(!cont)return;let h='<button onclick="setFiltroCodigo(null)" class="filtro-cod '+(invFiltroCodigo===null?'activo':'')+'">TODOS</button>';ucaConfig.forEach(c=>{h+='<button onclick="setFiltroCodigo(\''+c.codigo+'\')" class="filtro-cod '+(invFiltroCodigo===c.codigo?'activo':'')+'">'+c.codigo+'</button>';});cont.innerHTML=h;let lab=document.getElementById('inv-filtro-activo');if(lab)lab.textContent=invFiltroCodigo?('Mostrando solo: '+invFiltroCodigo+' - '+getUCA(invFiltroCodigo).descripcion):'Mostrando: TODOS LOS CÓDIGOS';}
-async function cargarInventario(){await cargarUCA();await cargarCapacidades();try{let r=await fetch(INV_URL+"?t="+Date.now());inventario=await r.json()||{};}catch(e){inventario={};}renderInventario();}
-function calcStockPorGrupo(){let ev=0,pan=0;Object.values(inventario).forEach(it=>{let p=parseInt(it.pallets)||0;if(['1001135','1001273','1001277'].includes(String(it.codigo)))ev+=p;if(String(it.codigo)==='1007119')pan+=p;});return {ev:ev,pan:pan,total:ev+pan};}
-function renderUCA(){let tb=document.getElementById('tbodyUCA');if(!tb)return;let s=calcStockPorGrupo();let transito=0;Object.values(database).forEach(u=>{let e=(u.estatus||'').toUpperCase();if(e==='PENDIENTE'||e==='EN PROCESO')transito+=(parseInt(u.pallets)||0);});let filas=[{nave:'NAVE 1',alm:'ABARROTES',nom:'EVAPORADA',cap:ucaCapacidades.evaporada,stock:s.ev,clave:'evaporada'},{nave:'NAVE 2',alm:'ABARROTES',nom:'PANETON',cap:ucaCapacidades.paneton,stock:s.pan,clave:'paneton'},{nave:'NAVE 3',alm:'ABARROTES',nom:'AGUA',cap:ucaCapacidades.agua,stock:0,clave:'agua'}];let capT=0,al95T=0,stockT=0;let h='';filas.forEach(f=>{let al95=f.cap*0.95;let libres=al95-f.stock;let pct=al95>0?Math.round(f.stock/al95*100):0;capT+=f.cap;al95T+=al95;stockT+=f.stock;let badgeNom=f.nom==='EVAPORADA'?'bg-blue-100 text-blue-800':f.nom==='PANETON'?'bg-orange-100 text-orange-800':'bg-cyan-100 text-cyan-800';let pillPct=pct>100?'bg-red-600 text-white':pct>=90?'bg-orange-500 text-white':pct>=50?'bg-yellow-400 text-black':'bg-green-600 text-white';h+='<tr class="border-b"><td class="p-2.5 text-center font-black">'+f.nave+'</td><td class="p-2.5 text-center">ABARROTES</td><td class="p-2.5 text-center"><span class="px-2 py-1 rounded-full font-black text-[11px] border '+badgeNom+'">'+f.nom+'</span></td><td class="p-2.5 text-center"><input class="cap-input" type="number" value="'+f.cap+'" onchange="cambiarCapacidad(\''+f.clave+'\',this)"></td><td class="p-2.5 text-center">'+al95.toLocaleString('es-PE',{maximumFractionDigits:1})+'</td><td class="p-2.5 text-center font-black text-[14px]">'+f.stock+'</td><td class="p-2.5 text-center font-bold">'+libres.toLocaleString('es-PE',{maximumFractionDigits:1})+'</td><td class="p-2.5 text-center"><span class="px-3 py-1 rounded-full font-black '+pillPct+'">'+pct+'%</span></td></tr>';});let pctT=al95T>0?Math.round(stockT/al95T*100):0;h+='<tr class="bg-[#0C2340] text-white font-black"><td colspan="3" class="p-2.5 text-center">TOTAL GENERAL</td><td class="p-2.5 text-center">'+capT.toLocaleString('es-PE')+'</td><td class="p-2.5 text-center">'+al95T.toLocaleString('es-PE',{maximumFractionDigits:1})+'</td><td class="p-2.5 text-center">'+stockT+'</td><td class="p-2.5 text-center">'+(al95T-stockT).toLocaleString('es-PE',{maximumFractionDigits:1})+'</td><td class="p-2.5 text-center"><span class="px-3 py-1 rounded-full font-black bg-yellow-300 text-black">'+pctT+'%</span></td></tr>';tb.innerHTML=h;let sinPct=pctT;let conStock=stockT+transito;let conPct=al95T>0?Math.round(conStock/al95T*100):0;let e1=document.getElementById('uca-sin-transito-pct');if(e1)e1.textContent=sinPct+'%';let b1=document.getElementById('uca-sin-transito-bar');if(b1){b1.style.width=Math.min(sinPct,100)+'%';b1.textContent=sinPct+'%';}let d1=document.getElementById('uca-sin-transito-det');if(d1)d1.textContent=stockT+' / '+al95T.toLocaleString('es-PE',{maximumFractionDigits:1})+' pallets';let e2=document.getElementById('uca-con-transito-pct');if(e2)e2.textContent=conPct+'%';let b2=document.getElementById('uca-con-transito-bar');if(b2){b2.style.width=Math.min(conPct,100)+'%';b2.textContent=conPct+'%';}let d2=document.getElementById('uca-con-transito-det');if(d2)d2.textContent=conStock+' / '+al95T.toLocaleString('es-PE',{maximumFractionDigits:1})+' pallets (Tránsito: '+transito+')';}
-function renderInventario(){renderFiltrosCodigo();let tb=document.getElementById('tbodyInventario');tb.innerHTML='';let tp=0,tc=0,tu=0,por={};Object.entries(inventario).forEach(([id,it])=>{if(invFiltroCodigo && String(it.codigo)!==String(invFiltroCodigo))return;let u=getUCA(it.codigo);let cajas=(parseInt(it.pallets)||0)*(u.cajasPorPallet||0);let und=cajas*(u.undPorCaja||0);tp+=parseInt(it.pallets)||0;tc+=cajas;tu+=und;if(!por[it.codigo])por[it.codigo]={p:0,c:0,u:0,desc:u.descripcion};por[it.codigo].p+=parseInt(it.pallets)||0;por[it.codigo].c+=cajas;por[it.codigo].u+=und;tb.innerHTML+='<tr><td class="p-2 border border-black font-bold">'+it.codigo+'</td><td class="p-2 border border-black">'+u.descripcion+'</td><td class="p-2 border border-black text-center font-bold bg-yellow-50">'+it.ubicacion+'</td><td class="p-2 border border-black text-center">'+(it.lote||'')+'</td><td class="p-2 border border-black text-center font-bold">'+(it.vencimiento||'')+'</td><td class="p-2 border border-black text-center font-bold">'+it.pallets+'</td><td class="p-2 border border-black text-center">'+cajas+'</td><td class="p-2 border border-black text-center">'+und+'</td><td class="p-2 border border-black flex gap-1 justify-center flex-wrap"><button onclick="moverPallet(\''+id+'\',1)" class="bg-green-600 text-white px-2 py-1 rounded text-[10px] font-bold border border-black">+1</button><button onclick="moverPallet(\''+id+'\',-1)" class="bg-orange-500 text-white px-2 py-1 rounded text-[10px] font-bold border border-black">-1 Despachar</button><button onclick="editarInv(\''+id+'\')" class="bg-blue-600 text-white px-2 py-1 rounded text-[10px] font-bold border border-black">Editar</button><button onclick="eliminarInv(\''+id+'\')" class="bg-red-600 text-white px-2 py-1 rounded text-[10px] font-bold border border-black">X</button></td></tr>';});document.getElementById('inv-total-pallets').textContent=tp;document.getElementById('inv-total-cajas').textContent=tc;document.getElementById('inv-total-und').textContent=tu;let res=document.getElementById('inv-resumen-codigos');res.innerHTML='';Object.entries(por).forEach(([cod,v])=>{res.innerHTML+='<div class="border-2 border-black rounded px-3 py-1 bg-white text-[11px] font-bold">'+cod+' - '+v.desc+': <span class="text-orange-600">'+v.p+' pallets = '+v.c+' cajas = '+v.u+' und</span></div>';});if(!Object.keys(inventario).length)tb.innerHTML='<tr><td colspan=9 class="text-center p-4 text-gray-400">Sin inventario. Configura UCA y agrega tu primer pallet.</td></tr>';else if(!tb.innerHTML)tb.innerHTML='<tr><td colspan=9 class="text-center p-4 text-gray-400">Sin filas para este código. Toca TODOS para ver todo.</td></tr>';renderUCA();}
-async function moverPallet(id,d){let it=inventario[id];let nv=(parseInt(it.pallets)||0)+d;if(nv<0)return alert('No hay pallets para despachar en '+it.ubicacion);if(nv===0){if(!confirm('Quedan 0 pallets en '+it.ubicacion+'. ¿Eliminar la ubicación?'))return;await fetch(INV_ITEM+id+'.json',{method:'DELETE'});}else{await fetch(INV_ITEM+id+'.json',{method:'PATCH',body:JSON.stringify({pallets:nv})});}cargarInventario();}
-function abrirModalInventario(){invEditId=null;document.getElementById('modalInv-title').textContent='Agregar Pallet';let s=document.getElementById('inv-codigo');s.innerHTML=ucaConfig.map(c=>'<option value="'+c.codigo+'">'+c.codigo+' - '+c.descripcion+'</option>').join('');document.getElementById('inv-ubicacion').value='';document.getElementById('inv-lote').value='';document.getElementById('inv-vencimiento').value='';document.getElementById('inv-cantidad').value=1;let m=document.getElementById('modalInv');m.classList.remove('hidden');m.classList.add('flex');}
-function cerrarModalInv(){let m=document.getElementById('modalInv');m.classList.add('hidden');m.classList.remove('flex');}
-async function guardarInventario(){let codigo=document.getElementById('inv-codigo').value;let ub=document.getElementById('inv-ubicacion').value.trim().toUpperCase();let lote=document.getElementById('inv-lote').value.trim();let ven=document.getElementById('inv-vencimiento').value;let cant=parseInt(document.getElementById('inv-cantidad').value)||0;if(!ub)return alert('Pon la ubicación Ej: A1');if(cant<=0)return alert('Cantidad debe ser mayor a 0');if(invEditId){await fetch(INV_ITEM+invEditId+'.json',{method:'PATCH',body:JSON.stringify({codigo,ubicacion:ub,lote,vencimiento:ven,pallets:cant})});}else{await fetch(INV_URL,{method:'POST',body:JSON.stringify({codigo,ubicacion:ub,lote,vencimiento:ven,pallets:cant})});}cerrarModalInv();cargarInventario();}
-function editarInv(id){invEditId=id;let it=inventario[id];let s=document.getElementById('inv-codigo');s.innerHTML=ucaConfig.map(c=>'<option value="'+c.codigo+'">'+c.codigo+' - '+c.descripcion+'</option>').join('');s.value=it.codigo;document.getElementById('inv-ubicacion').value=it.ubicacion;document.getElementById('inv-lote').value=it.lote||'';document.getElementById('inv-vencimiento').value=it.vencimiento||'';document.getElementById('inv-cantidad').value=it.pallets;document.getElementById('modalInv-title').textContent='Editar Pallet';let m=document.getElementById('modalInv');m.classList.remove('hidden');m.classList.add('flex');}
-async function eliminarInv(id){if(!confirm('¿Eliminar esta ubicación?'))return;await fetch(INV_ITEM+id+'.json',{method:'DELETE'});cargarInventario();}
-function abrirUCA(){let cont=document.getElementById('uca-form');cont.innerHTML='';ucaConfig.forEach((c,i)=>{cont.innerHTML+='<div class="border-2 border-black rounded p-3 bg-gray-50"><p class="font-bold text-[12px] mb-2">Producto '+(i+1)+'</p><div class="grid grid-cols-2 gap-2"><input id="uca-cod-'+i+'" value="'+c.codigo+'" class="border rounded px-2 py-1 text-xs"><input id="uca-desc-'+i+'" value="'+c.descripcion+'" class="border rounded px-2 py-1 text-xs"><input id="uca-cajas-'+i+'" type="number" value="'+c.cajasPorPallet+'" class="border rounded px-2 py-1 text-xs"><input id="uca-und-'+i+'" type="number" value="'+c.undPorCaja+'" class="border rounded px-2 py-1 text-xs"></div></div>';});let m=document.getElementById('modalUCA');m.classList.remove('hidden');m.classList.add('flex');}
-function cerrarUCA(){let m=document.getElementById('modalUCA');m.classList.add('hidden');m.classList.remove('flex');}
-async function guardarUCA(){let nv=[];for(let i=0;i<4;i++){nv.push({codigo:document.getElementById('uca-cod-'+i).value.trim().toUpperCase(),descripcion:document.getElementById('uca-desc-'+i).value.trim(),cajasPorPallet:parseInt(document.getElementById('uca-cajas-'+i).value)||0,undPorCaja:parseInt(document.getElementById('uca-und-'+i).value)||0});}ucaConfig=nv;await fetch(UCA_URL,{method:'PUT',body:JSON.stringify(ucaConfig)});cerrarUCA();cargarInventario();alert('✅ UCA guardada.');}
-window.exportarPDFJefatura=function(){let sel=document.getElementById('dash-fecha');let f=sel?sel.value:'TODAS';let DATA=f==='TODAS'?dataBSF:dataBSF.filter(r=>r.fecha===f);let tp=DATA.reduce((s,r)=>s+(parseInt(r.pallets)||0),0);let ate=DATA.filter(r=>r.status==='ATENDIDO'||r.status==='CARGADO/FACT.').length;let pct=DATA.length?Math.round(ate/DATA.length*100):0;let html='<html><head><title>BSF Punta Hermosa</title><style>body{font-family:Arial;padding:20px}table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #000;padding:6px;text-align:left}th{background:#0C2340;color:#fff}</style></head><body>';html+='<h2>BSF PUNTA HERMOSA - REPORTE JEFATURA</h2>';html+='<p><b>Fecha:</b> '+(f==='TODAS'?'Todas las fechas':f)+' | <b>Unidades:</b> '+DATA.length+' | <b>Pallets:</b> '+tp+' | <b>Atendido:</b> '+pct+'%</p>';html+='<table><tr><th>FECHA</th><th>PLACA</th><th>PALLETS</th><th>PROCEDENCIA</th><th>TIPO</th><th>HORA</th><th>ESTATUS</th></tr>';DATA.forEach(r=>{html+='<tr><td>'+r.fecha+'</td><td>'+r.placa+'</td><td>'+r.pallets+'</td><td>'+r.proc+'</td><td>'+r.tipo+'</td><td>'+r.hora+'</td><td>'+r.status+'</td></tr>';});html+='</table><p style="text-align:right;font-style:italic">Desarrollado por Luis Vallejo - Operaciones Lavoro</p></body></html>';let w=window.open('','_blank');w.document.write(html);w.document.close();w.print();};
-cargarFirebase();
-setInterval(cargarFirebase,30000);
+function llenarSelectUbicaciones(sel, valorActual){
+  sel.innerHTML = todasUbicaciones().map(u=>'<option value="'+u+'">'+u+'</option>').join('');
+  if(valorActual && todasUbicaciones().includes(valorActual)) sel.value = valorActual;
+}
+function agregarNuevaUbicacion(){
+  let n = prompt('Escribe la nueva ubicación Ej: D1, A48, P48');
+  if(!n) return;
+  n = n.trim().toUpperCase();
+  if(todasUbicaciones().includes(n)){ alert('Esa ubicación ya existe'); return; }
+  ubicacionesExtra.push(n);
+  localStorage.setItem('ubicacionesExtraBSF', JSON.stringify(ubicacionesExtra));
+  let sel = document.getElementById('inv-ubicacion');
+  llenarSelectUbicaciones(sel, n);
+  alert('✅ Ubicación '+n+' agregada y guardada');
+}
+
+// ===== INVENTARIO - SE MANTIENE TU INVENTARIO ACTUAL =====
+let inventario = JSON.parse(localStorage.getItem('inventarioBSF')||'{}');
+// Si tu inventario anterior estaba con otra clave, se respeta. No se borra.
+function guardarLocal(){
+  localStorage.setItem('inventarioBSF', JSON.stringify(inventario));
+}
+function abrirModalInventario(){
+  document.getElementById('titulo-modal').innerText = 'AGREGAR PALLET';
+  document.getElementById('inv-id').value = '';
+  document.getElementById('inv-codigo').value = '';
+  document.getElementById('inv-pallets').value = 1;
+  document.getElementById('inv-cajas').value = 0;
+  document.getElementById('inv-und').value = 0;
+  llenarSelectUbicaciones(document.getElementById('inv-ubicacion'), 'A1');
+  document.getElementById('modalInv').style.display = 'flex';
+}
+function cerrarModal(){ document.getElementById('modalInv').style.display = 'none'; }
+function guardarInventario(){
+  let ubic = document.getElementById('inv-ubicacion').value;
+  let codigo = document.getElementById('inv-codigo').value.trim();
+  let pallets = parseInt(document.getElementById('inv-pallets').value||0);
+  let cajas = parseInt(document.getElementById('inv-cajas').value||0);
+  let und = parseInt(document.getElementById('inv-und').value||0);
+  let id = document.getElementById('inv-id').value;
+  if(!ubic){ alert('Elige ubicación'); return; }
+  if(!codigo){ alert('Escribe código / producto'); return; }
+  if(!id) id = Date.now().toString();
+  inventario[id] = {ubic: ubic, codigo: codigo, pallets: pallets, cajas: cajas, und: und};
+  guardarLocal();
+  cerrarModal();
+  renderInventario();
+}
+function editarInv(id){
+  let it = inventario[id]; if(!it) return;
+  document.getElementById('titulo-modal').innerText = 'EDITAR - ' + it.ubic;
+  document.getElementById('inv-id').value = id;
+  document.getElementById('inv-codigo').value = it.codigo;
+  document.getElementById('inv-pallets').value = it.pallets;
+  document.getElementById('inv-cajas').value = it.cajas;
+  document.getElementById('inv-und').value = it.und;
+  llenarSelectUbicaciones(document.getElementById('inv-ubicacion'), it.ubic);
+  document.getElementById('modalInv').style.display = 'flex';
+}
+function despachar(id){
+  let it = inventario[id]; if(!it) return;
+  let cant = prompt('¿Cuántas cajas despachas de '+it.ubic+' - '+it.codigo+'? (Tienes '+it.cajas+')');
+  if(cant===null) return;
+  cant = parseInt(cant||0);
+  if(cant<=0) return;
+  it.cajas = Math.max(0, it.cajas - cant);
+  if(it.cajas===0 && it.pallets>0){ it.pallets = Math.max(0, it.pallets-1); }
+  guardarLocal(); renderInventario();
+}
+function recibir(id){
+  let it = inventario[id]; if(!it) return;
+  let cant = prompt('¿Cuántas cajas recibes en '+it.ubic+' - '+it.codigo+'?');
+  if(cant===null) return;
+  cant = parseInt(cant||0);
+  it.cajas += cant;
+  guardarLocal(); renderInventario();
+}
+function eliminarInv(id){
+  if(!confirm('¿Eliminar este registro? Tu resto de inventario no se toca.')) return;
+  delete inventario[id];
+  guardarLocal(); renderInventario();
+}
+function filtrarTabla(){
+  let txt = document.getElementById('buscar-ubicacion').value.trim().toUpperCase();
+  let filtro = document.getElementById('filtro-letra').value;
+  let filas = document.querySelectorAll('#tbodyInventario tr');
+  let visibles = 0;
+  filas.forEach(f=>{
+    let ubic = f.getAttribute('data-ubic')||'';
+    let texto = f.innerText.toUpperCase();
+    let ok = true;
+    if(txt && !texto.includes(txt)) ok = false;
+    if(filtro==='VACIA' && ubic!=='__VACIA__') ok = false;
+    else if(filtro && filtro!=='VACIA' && !ubic.startsWith(filtro)) ok = false;
+    f.style.display = ok ? '' : 'none';
+    if(ok) visibles++;
+  });
+  document.getElementById('sin-datos').classList.toggle('hidden', visibles!==0);
+}
+function renderInventario(){
+  let tbody = document.getElementById('tbodyInventario');
+  let lista = Object.entries(inventario).map(([id,v])=>({id, ...v}));
+  // Ordenar por ubicación: A1, A2... B1... P1...
+  lista.sort((a,b)=>{
+    let order = (u)=>{ let l=u[0]; let n=parseInt(u.slice(1))||0; let base = l==='A'?0:l==='B'?1000:2000; return base+n; };
+    return order(a.ubic)-order(b.ubic);
+  });
+  let tp=0, tc=0, tu=0;
+  lista.forEach(it=>{ tp+=it.pallets; tc+=it.cajas; tu+=it.und; });
+  document.getElementById('res-pallets').innerText = tp;
+  document.getElementById('res-cajas').innerText = tc;
+  document.getElementById('res-und').innerText = tu;
+  let html = lista.map(it=>`
+    <tr class="border-b" data-ubic="${it.ubic}">
+      <td class="p-2"><span class="bg-black text-white font-black px-2 py-1 rounded text-[11px]">${it.ubic}</span></td>
+      <td class="p-2 font-bold">${it.codigo}</td>
+      <td class="p-2 text-center font-bold">${it.pallets}</td>
+      <td class="p-2 text-center font-bold">${it.cajas}</td>
+      <td class="p-2 text-center font-bold">${it.und}</td>
+      <td class="p-2 text-center whitespace-nowrap">
+        <button onclick="recibir('${it.id}')" class="bg-green-500 text-white px-2 py-1 rounded text-[10px] font-bold">+ RECIBIR</button>
+        <button onclick="despachar('${it.id}')" class="bg-orange-500 text-white px-2 py-1 rounded text-[10px] font-bold">- DESPACHAR</button>
+        <button onclick="editarInv('${it.id}')" class="bg-blue-500 text-white px-2 py-1 rounded text-[10px] font-bold">EDITAR</button>
+        <button onclick="eliminarInv('${it.id}')" class="bg-red-500 text-white px-2 py-1 rounded text-[10px] font-bold">X</button>
+      </td>
+    </tr>`).join('');
+  // Mostrar ubicaciones vacías que faltan (para que veas A3, A4, A5, A6 si solo tenías A1, A2, A7)
+  let ocupadas = new Set(lista.map(x=>x.ubic));
+  let vacias = todasUbicaciones().filter(u=>!ocupadas.has(u));
+  let htmlVacias = vacias.map(u=>`
+    <tr class="border-b bg-green-50" data-ubic="${u}">
+      <td class="p-2"><span class="bg-green-600 text-white font-black px-2 py-1 rounded text-[11px]">${u}</span> <span class="text-[9px] bg-green-100 text-green-700 px-1 rounded font-bold">VACÍA</span></td>
+      <td class="p-2 text-gray-400">Disponible para recepción</td>
+      <td class="p-2 text-center text-gray-400">-</td>
+      <td class="p-2 text-center text-gray-400">-</td>
+      <td class="p-2 text-center text-gray-400">-</td>
+      <td class="p-2 text-center"><button onclick="usarUbicacionVacia('${u}')" class="bg-black text-white px-2 py-1 rounded text-[10px] font-bold">USAR ESTA</button></td>
+    </tr>`).join('');
+  tbody.innerHTML = html + htmlVacias;
+  filtrarTabla();
+}
+function usarUbicacionVacia(u){
+  abrirModalInventario();
+  document.getElementById('inv-ubicacion').value = u;
+  document.getElementById('inv-codigo').focus();
+}
+function exportarExcel(){
+  let lista = Object.entries(inventario).map(([id,v])=>v);
+  let csv = 'UBICACION,CODIGO,PALLETS,CAJAS,UND\n' + lista.map(x=>x.ubic+','+x.codigo+','+x.pallets+','+x.cajas+','+x.und).join('\n');
+  let blob = new Blob([csv], {type:'text/csv'});
+  let a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'inventario_BSF.csv'; a.click();
+}
+renderInventario();
 </script>
 </body>
 </html>
