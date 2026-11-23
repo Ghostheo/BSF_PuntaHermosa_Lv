@@ -201,42 +201,6 @@ window.exportarPDFJefatura = function() {
   let imgTipo = getCanvasImg('chartDashTipo');
   let imgEst = getCanvasImg('chartDashEstatus');
 
-  let filasDetalle = '';
-  let unidAtendidas = 0;
-  let palAtendidos = 0;
-  let totalPalTabla = 0;
-
-  DATA.forEach(function(r, idx) {
-    let st = (r.status || '').toUpperCase();
-    let pal = parseInt(r.pallets) || 0;
-    totalPalTabla += pal;
-
-    if (st === 'ATENDIDO' || st === 'CARGADO/FACT.') {
-      unidAtendidas++;
-      palAtendidos += pal;
-    }
-
-    let badgeStyle = 'background:#e5e7eb;color:#374151';
-    if (st === 'PENDIENTE') badgeStyle = 'background:#C62828;color:#fff';
-    else if (st === 'EN PROCESO') badgeStyle = 'background:#fee2e2;color:#b91c1c';
-    else if (st === 'PEND. FACTURA') badgeStyle = 'background:#f97316;color:#fff';
-    else if (st === 'CARGADO/FACT.') badgeStyle = 'background:#dcfce7;color:#15803d';
-    else if (st === 'ATENDIDO') badgeStyle = 'background:#15803d;color:#fff';
-    else if (st === 'PERNOCTANDO') badgeStyle = 'background:#0ea5e9;color:#fff';
-
-    let prioNum = r.prioridad || (idx + 1);
-    filasDetalle += '<tr>' +
-      '<td style="text-align:center;font-weight:900">' + prioNum + '</td>' +
-      '<td style="font-weight:bold">' + (r.placa || '') + '</td>' +
-      '<td style="text-align:center;font-weight:bold">' + (r.pallets || '0') + '</td>' +
-      '<td>' + (r.trans || '') + '</td>' +
-      '<td>' + (r.proc || '') + '</td>' +
-      '<td style="color:#15803d;font-weight:bold">' + (r.tipo || '') + '</td>' +
-      '<td>' + (r.hora || '') + '</td>' +
-      '<td style="text-align:center"><span style="padding:2px 8px;border-radius:12px;font-size:8.5px;font-weight:bold;border:1px solid #000;display:inline-block;' + badgeStyle + '">' + st + '</span></td>' +
-    '</tr>';
-  });
-
   let w = window.open('', '_blank');
   if (!w) return alert('Permite las ventanas emergentes en tu navegador para ver el PDF.');
 
@@ -253,21 +217,13 @@ window.exportarPDFJefatura = function() {
     '.card-black{background:#000;color:#fff}.card-yellow{background:#fde047}' +
     '.card-title{font-size:9px;font-weight:bold;text-transform:uppercase;margin:0 0 3px}' +
     '.card-val{font-size:20px;font-weight:900;margin:0}.card-sub{font-size:9px;font-weight:bold;margin:3px 0 0}' +
-    '.chart-box{border:2px solid #000;border-radius:8px;padding:8px;text-align:center;background:#fff;page-break-inside:avoid;margin-bottom:8px}' +
+    '.chart-box{border:2px solid #000;border-radius:8px;padding:8px;text-align:center;background:#fff;page-break-inside:avoid}' +
     '.chart-box h4{margin:0 0 6px;font-size:10px;text-transform:uppercase;background:#f1f5f9;padding:4px;border-bottom:1px solid #000}' +
     '.chart-box img{max-width:100%;max-height:175px;object-fit:contain}' +
     'table{width:100%;border-collapse:collapse;font-size:10px;margin-top:4px}' +
     'th{background:#0C2340;color:#fff;padding:5px;border:1px solid #000;text-align:center}th:first-child{text-align:left}' +
     'td{padding:4px 6px;border:1px solid #000}' +
-    '.panel-titulo{font-size:12px;font-weight:900;text-transform:uppercase;margin:14px 0 6px;letter-spacing:0.5px}' +
-    '.tabla-unidades{border:2px solid #000;width:100%;border-collapse:collapse;font-size:10px}' +
-    '.tabla-unidades th{background:#fef9c3!important;color:#374151!important;font-weight:bold;text-align:left;padding:6px 8px;border:1px solid #000;font-size:9.5px}' +
-    '.tabla-unidades td{padding:5px 8px;border:1px solid #000;background:#fff}' +
-    '.resumen-atendido{margin-top:10px;border:2px solid #000;border-radius:8px;background:#f0fdf4;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;page-break-inside:avoid}' +
-    '.resumen-atendido .item{text-align:center}' +
-    '.resumen-atendido .lbl{font-size:9px;font-weight:bold;color:#166534;text-transform:uppercase}' +
-    '.resumen-atendido .num{font-size:16px;font-weight:900;color:#14532d}' +
-    '.footer{margin-top:12px;text-align:right;font-size:10px;color:#6b7280;font-style:italic;font-weight:bold}' +
+    '.footer{margin-top:10px;text-align:right;font-size:9px;color:#666;font-style:italic}' +
     '@media print{@page{size:A4 portrait;margin:8mm}body{padding:0}}' +
     '</style></head><body>' +
     '<div class="header"><div><h1>BSF PUNTA HERMOSA - REPORTE JEFATURA</h1><p>OPERACIONES LAVORO • DASHBOARD PRO</p></div>' +
@@ -298,7 +254,21 @@ window.exportarPDFJefatura = function() {
       '</div></div>' +
     '</div>' +
     '<div class="chart-box" style="text-align:left"><h4 style="text-align:left;padding-left:6px">📋 RESUMEN POR PROCEDENCIA</h4>' +
+      '<table><thead><tr><th>PROCEDENCIA</th><th>UNIDADES</th><th>PALLETS</th><th>% DEL TOTAL</th></tr></thead><tbody>' + tablaResumen + '</tbody></table>' +
+    '</div>' +
+    '<div class="footer">Desarrollado por Luis Vallejo - Operaciones Lavoro • BSF Punta Hermosa</div>' +
+    '</body></html>';
 
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+  setTimeout(function() {
+    w.focus();
+    w.print();
+  }, 500);
+};
+
+const INV_URL="https://bsf-puntahermosalv-default-rtdb.firebaseio.com/inventario_bsf.json";
 const INV_ITEM="https://bsf-puntahermosalv-default-rtdb.firebaseio.com/inventario_bsf/";
 const UCA_URL="https://bsf-puntahermosalv-default-rtdb.firebaseio.com/uca_config.json";
 const UCA_CAP_URL="https://bsf-puntahermosalv-default-rtdb.firebaseio.com/uca_capacidades.json";
