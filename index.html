@@ -201,7 +201,6 @@ window.exportarPDFJefatura = function() {
   let imgTipo = getCanvasImg('chartDashTipo');
   let imgEst = getCanvasImg('chartDashEstatus');
 
-  // Construir filas detalladas del Panel de Control de Unidades
   let filasDetalle = '';
   let unidAtendidas = 0;
   let palAtendidos = 0;
@@ -299,109 +298,7 @@ window.exportarPDFJefatura = function() {
       '</div></div>' +
     '</div>' +
     '<div class="chart-box" style="text-align:left"><h4 style="text-align:left;padding-left:6px">📋 RESUMEN POR PROCEDENCIA</h4>' +
- = function() {
-  let DATA = getDataFiltrada();
-  if (!DATA.length) return alert('No hay datos en el Dashboard para generar el reporte PDF.');
 
-  let filtroTxt = document.getElementById('dash-fecha').value === 'TODAS' ? 'TODAS LAS FECHAS' : document.getElementById('dash-fecha').value;
-  let totalUnid = document.getElementById('dash-total-unid').textContent;
-  let totalDias = document.getElementById('dash-total-dias').textContent;
-  let totalPal = document.getElementById('dash-total-pallets').textContent;
-  let promPal = document.getElementById('dash-prom-pallets').textContent;
-  let pctAte = document.getElementById('dash-pct-atendido').textContent;
-  let pendTxt = document.getElementById('dash-pendientes').textContent;
-  let compTit = document.getElementById('dash-compara').textContent;
-  let compDet = document.getElementById('dash-compara-det').textContent;
-  let tiempoProm = document.getElementById('dash-tiempo-prom').textContent;
-  let tiempoDet = document.getElementById('dash-tiempo-det').textContent;
-  let topProc = document.getElementById('dash-top-proc').textContent;
-  let topProcNum = document.getElementById('dash-top-proc-num').textContent;
-  let horaPico = document.getElementById('dash-hora-pico').textContent;
-  let horaPicoNum = document.getElementById('dash-hora-pico-num').textContent;
-  let primera = document.getElementById('dash-primera').textContent;
-  let ultima = document.getElementById('dash-ultima').textContent;
-  let tablaResumen = document.getElementById('tbodyDashResumen').innerHTML;
-
-  function getCanvasImg(id) {
-    let c = document.getElementById(id);
-    if (!c) return '';
-    try { return c.toDataURL('image/png'); } catch (e) { return ''; }
-  }
-
-  let imgProc = getCanvasImg('chartDashProc');
-  let imgPal = getCanvasImg('chartDashPallets');
-  let imgHora = getCanvasImg('chartDashHora');
-  let imgTipo = getCanvasImg('chartDashTipo');
-  let imgEst = getCanvasImg('chartDashEstatus');
-
-  let w = window.open('', '_blank');
-  if (!w) return alert('Permite las ventanas emergentes en tu navegador para ver el PDF.');
-
-  let html = '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Reporte Jefatura BSF</title>' +
-    '<style>' +
-    '*{box-sizing:border-box;font-family:Arial,sans-serif;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}' +
-    'body{margin:0;padding:16px;color:#000;background:#fff}' +
-    '.header{background:#0C2340;color:#fff;padding:14px 18px;border-radius:10px;border:2px solid #000;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}' +
-    '.header h1{margin:0;font-size:18px}.header p{margin:3px 0 0;font-size:11px;color:#fde047;font-weight:bold}' +
-    '.meta{text-align:right;font-size:11px}' +
-    '.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px}' +
-    '.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:8px}' +
-    '.card{border:2px solid #000;border-radius:8px;padding:8px;text-align:center;background:#fff}' +
-    '.card-black{background:#000;color:#fff}.card-yellow{background:#fde047}' +
-    '.card-title{font-size:9px;font-weight:bold;text-transform:uppercase;margin:0 0 3px}' +
-    '.card-val{font-size:20px;font-weight:900;margin:0}.card-sub{font-size:9px;font-weight:bold;margin:3px 0 0}' +
-    '.chart-box{border:2px solid #000;border-radius:8px;padding:8px;text-align:center;background:#fff;page-break-inside:avoid}' +
-    '.chart-box h4{margin:0 0 6px;font-size:10px;text-transform:uppercase;background:#f1f5f9;padding:4px;border-bottom:1px solid #000}' +
-    '.chart-box img{max-width:100%;max-height:175px;object-fit:contain}' +
-    'table{width:100%;border-collapse:collapse;font-size:10px;margin-top:4px}' +
-    'th{background:#0C2340;color:#fff;padding:5px;border:1px solid #000;text-align:center}th:first-child{text-align:left}' +
-    'td{padding:4px 6px;border:1px solid #000}' +
-    '.footer{margin-top:10px;text-align:right;font-size:9px;color:#666;font-style:italic}' +
-    '@media print{@page{size:A4 portrait;margin:8mm}body{padding:0}}' +
-    '</style></head><body>' +
-    '<div class="header"><div><h1>BSF PUNTA HERMOSA - REPORTE JEFATURA</h1><p>OPERACIONES LAVORO • DASHBOARD PRO</p></div>' +
-    '<div class="meta"><div><strong>Filtro:</strong> ' + filtroTxt + '</div><div><strong>Generado:</strong> ' + new Date().toLocaleString('es-PE') + '</div></div></div>' +
-    '<div class="grid-4">' +
-      '<div class="card card-black"><p class="card-title">TOTAL UNIDADES</p><p class="card-val">' + totalUnid + '</p><p class="card-sub">' + totalDias + '</p></div>' +
-      '<div class="card card-yellow"><p class="card-title">TOTAL PALLETS</p><p class="card-val">' + totalPal + '</p><p class="card-sub">Acumulado</p></div>' +
-      '<div class="card"><p class="card-title">PROM. PALLETS / UNIDAD</p><p class="card-val" style="color:#1d4ed8">' + promPal + '</p><p class="card-sub">Promedio</p></div>' +
-      '<div class="card"><p class="card-title">% ATENDIDO + CARGADO</p><p class="card-val" style="color:#15803d">' + pctAte + '</p><p class="card-sub" style="color:#dc2626">' + pendTxt + '</p></div>' +
-    '</div>' +
-    '<div class="grid-2">' +
-      '<div class="card"><p class="card-title">📈 HOY VS AYER</p><p class="card-val" style="font-size:15px">' + compTit + '</p><p class="card-sub" style="color:#4b5563">' + compDet + '</p></div>' +
-      '<div class="card"><p class="card-title">⏱️ TIEMPO PROMEDIO ATENCIÓN</p><p class="card-val" style="font-size:15px;color:#1d4ed8">' + tiempoProm + '</p><p class="card-sub" style="color:#4b5563">' + tiempoDet + '</p></div>' +
-    '</div>' +
-    '<div class="grid-4">' +
-      '<div class="card"><p class="card-title">🏆 TOP PROCEDENCIA</p><p class="card-val" style="font-size:13px">' + topProc + '</p><p class="card-sub">' + topProcNum + '</p></div>' +
-      '<div class="card"><p class="card-title">⏰ HORA PICO</p><p class="card-val" style="font-size:13px">' + horaPico + '</p><p class="card-sub">' + horaPicoNum + '</p></div>' +
-      '<div class="card"><p class="card-title">🕐 PRIMERA LLEGADA</p><p class="card-val" style="font-size:15px">' + primera + '</p></div>' +
-      '<div class="card"><p class="card-title">🕐 ÚLTIMA LLEGADA</p><p class="card-val" style="font-size:15px">' + ultima + '</p></div>' +
-    '</div>' +
-    '<div class="grid-2">' +
-      '<div class="chart-box"><h4>UNIDADES POR PROCEDENCIA</h4>' + (imgProc ? '<img src="' + imgProc + '">' : '<p>Sin gráfico</p>') + '</div>' +
-      '<div class="chart-box"><h4>PALLETS POR PROCEDENCIA</h4>' + (imgPal ? '<img src="' + imgPal + '">' : '<p>Sin gráfico</p>') + '</div>' +
-      '<div class="chart-box"><h4>UNIDADES POR HORA</h4>' + (imgHora ? '<img src="' + imgHora + '">' : '<p>Sin gráfico</p>') + '</div>' +
-      '<div class="chart-box"><h4>POR TIPO Y POR ESTATUS</h4><div style="display:flex;gap:6px;justify-content:center;align-items:center">' +
-        (imgTipo ? '<img src="' + imgTipo + '" style="width:45%;max-height:150px">' : '') +
-        (imgEst ? '<img src="' + imgEst + '" style="width:53%;max-height:150px">' : '') +
-      '</div></div>' +
-    '</div>' +
-    '<div class="chart-box" style="text-align:left"><h4 style="text-align:left;padding-left:6px">📋 RESUMEN POR PROCEDENCIA</h4>' +
-      '<table><thead><tr><th>PROCEDENCIA</th><th>UNIDADES</th><th>PALLETS</th><th>% DEL TOTAL</th></tr></thead><tbody>' + tablaResumen + '</tbody></table>' +
-    '</div>' +
-    '<div class="footer">Desarrollado por Luis Vallejo - Operaciones Lavoro • BSF Punta Hermosa</div>' +
-    '</body></html>';
-
-  w.document.open();
-  w.document.write(html);
-  w.document.close();
-  setTimeout(function() {
-    w.focus();
-    w.print();
-  }, 500);
-};
-
-const INV_URL="https://bsf-puntahermosalv-default-rtdb.firebaseio.com/inventario_bsf.json";
 const INV_ITEM="https://bsf-puntahermosalv-default-rtdb.firebaseio.com/inventario_bsf/";
 const UCA_URL="https://bsf-puntahermosalv-default-rtdb.firebaseio.com/uca_config.json";
 const UCA_CAP_URL="https://bsf-puntahermosalv-default-rtdb.firebaseio.com/uca_capacidades.json";
