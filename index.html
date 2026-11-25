@@ -485,5 +485,32 @@ function enviarAUCAPro(){
 }
 renderMB52Pro();
 </script>
+ <script>
+// SOLO ESTO - Hace que ENVIAR A UCA funcione
+function enviarAUCAPro(){
+  calcMB52Pro();
+  const r = window.__mb52Result || {};
+  const ocup = (c)=>{ const p=r[c]||{pallets:0,cajas:0,und:0}; return p.pallets+((p.cajas>0||p.und>0)?1:0); };
+  const evap = ocup('1001135')+ocup('1001273')+ocup('1001277');
+  const pan = ocup('1007119');
+  window.__ucaMB52 = {evap, pan, total: evap+pan};
+  aplicarUCA();
+  const m=document.getElementById('mb52ProMsg');
+  if(m){ m.classList.remove('hidden'); m.textContent=`✅ CONECTADO: EVAPORADA=${evap} | PANETON=${pan} | TOTAL=${evap+pan}`; }
+}
+function aplicarUCA(){
+  const u = window.__ucaMB52; if(!u) return;
+  document.querySelectorAll('tr').forEach(tr=>{
+    const t=tr.textContent, td=tr.querySelectorAll('td');
+    if(t.includes('EVAPORADA') && td.length>=8){ td[5].textContent=u.evap; td[6].textContent=(6737.4-u.evap).toFixed(1); td[7].textContent=Math.round(u.evap/6737.4*100)+'%'; }
+    if(t.includes('PANETON') && td.length>=8){ td[5].textContent=u.pan; td[6].textContent=(34.2-u.pan).toFixed(1); td[7].textContent=Math.round(u.pan/34.2*100)+'%'; }
+    if(t.includes('TOTAL GENERAL')){ const c=tr.querySelectorAll('td'); c.forEach(x=>{ if(x.textContent.includes('3898')||x.textContent.includes('3862')) x.textContent=u.total; }); }
+  });
+  // Los 2 cuadros grandes de 58%
+  document.querySelectorAll('*').forEach(e=>{ if(e.textContent.trim()==='58%' && e.children.length===0) e.textContent=Math.round(u.total/6771.6*100)+'%'; });
+}
+// Esto es lo que faltaba: cada 1 seg vuelve a poner el valor del MB52 para que el inventario no lo borre
+setInterval(aplicarUCA, 1000);
+</script>
 </body>
 </html>
