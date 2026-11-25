@@ -58,7 +58,7 @@ body.modo-cliente .prio-cell{justify-content:center!important;padding-left:0!imp
 <div class="overflow-x-auto border-2 border-black"><table class="w-full text-xs"><thead><tr class="bg-yellow-100"><th class="p-2 border border-black">CÓDIGO</th><th class="p-2 border border-black">DESCRIPCIÓN</th><th class="p-2 border border-black">UBICACIÓN</th><th class="p-2 border border-black">LOTE</th><th class="p-2 border border-black">F.VENCIMIENTO</th><th class="p-2 border border-black">PALLETS</th><th class="p-2 border border-black">CAJAS</th><th class="p-2 border border-black">UND</th><th class="p-2 border border-black">ACCIONES</th></tr></thead><tbody id="tbodyInventario"></tbody></table></div>
 <p class="text-[11px] text-gray-500 mt-2">* Solo se despacha pallet completo. Verde = ubicación vacía disponible.</p>
 <div class="mt-6 rounded-2xl overflow-hidden border-2 border-black shadow-lg">
-<div class="bg-[#0C2340] px-4 py-3"><p class="text-[10px] tracking-[2px] text-yellow-300 font-black">BSF PUNTA HERMOSA • OPERACIONES LAVORO</p><h3 class="text-white font-black text-[16px] leading-tight">📊 OCUPABILIDAD - UCA</h3></div>
+<div class="bg-[#0C2340] px-4 py-3"><p class="text-[10px] tracking-[2px] text-yellow-300 font-black">BSF PUNTA HERMOSA - OPERACIONES LAVORO</p><h3 class="text-white font-black text-[16px] leading-tight">📊 OCUPABILIDAD - UCA</h3></div>
 <div class="p-3 bg-[#F8FAFC]"><div class="overflow-x-auto rounded-xl border-2 border-black bg-white"><table class="w-full text-xs"><thead><tr class="bg-[#0C2340] text-white"><th class="p-2.5">NAVE</th><th class="p-2.5">ALMACÉN</th><th class="p-2.5">ALMACENAMIENTO</th><th class="p-2.5">CAPACIDAD<br>NOMINAL ✏️</th><th class="p-2.5">AL 95%</th><th class="p-2.5">STOCK<br>OCUPADO</th><th class="p-2.5">UBICACIONES<br>LIBRES</th><th class="p-2.5">% OCUPABILIDAD</th></tr></thead><tbody id="tbodyUCA"></tbody></table></div>
 <div class="grid md:grid-cols-2 gap-3 mt-3">
 <div class="rounded-2xl border-2 border-black p-4 bg-white shadow"><div class="flex justify-between items-center"><p class="text-[11px] font-black tracking-wider text-gray-500">UCA SIN TRÁNSITO</p><span class="text-[10px] bg-green-100 text-green-700 font-black px-2 py-1 rounded-full border">● EN VIVO</span></div><p id="uca-sin-transito-pct" class="text-[42px] leading-none font-black text-[#0C2340] mt-1">0%</p><div class="h-[26px] bg-gray-100 border-2 border-black rounded-full overflow-hidden mt-2"><div id="uca-sin-transito-bar" class="h-full text-center text-[11px] font-black text-white leading-[22px] bg-gradient-to-r from-green-500 to-emerald-700 transition-all" style="width:0%">0%</div></div><p id="uca-sin-transito-det" class="text-[11px] font-bold text-gray-500 mt-2">0 / 0 pallets</p></div>
@@ -373,7 +373,7 @@ async function guardarUCA(){document.querySelectorAll('[data-uca]').forEach(el=>
 cargarFirebase();cargarData();setInterval(cargarFirebase,15000);
 </script>
 <script>
-// MB52 PRO A COLORES - Se crea solo entre INVENTARIO y UCA, no borra nada
+
 (function(){
   function crear(){
     if(document.getElementById('mb52Original')) return;
@@ -651,12 +651,19 @@ body.modo-oscuro .text-black{color:#fff!important}
 })();
 </script>
 <script>
-// ===== AUTO DIA / NOCHE - Dia 06:00-18:00 claro, resto oscuro =====
+// ===== HORARIO EXACTO: DIA 7:00 AM - 6:00 PM / OSCURO 6:05 PM - 6:55 AM =====
 let modoTema = localStorage.getItem('temaBSF') || 'auto';
 function aplicarTema(){
-  let h = new Date().getHours();
-  let esNoche = (h < 6 || h >= 18);
-  let oscuro = (modoTema === 'oscuro') || (modoTema === 'auto' && esNoche);
+  let d = new Date();
+  let mins = d.getHours()*60 + d.getMinutes();
+  let esDia = (mins >= 420 && mins < 1080);
+  let esNoche = (mins >= 1085 || mins < 415);
+  let oscuro = false;
+  if(modoTema === 'oscuro') oscuro = true;
+  else if(modoTema === 'claro') oscuro = false;
+  else if(esDia) oscuro = false;
+  else if(esNoche) oscuro = true;
+  else oscuro = document.body.classList.contains('modo-oscuro');
   document.body.classList.toggle('modo-oscuro', oscuro);
   let b = document.getElementById('btnTema');
   if(b) b.textContent = modoTema === 'auto' ? '🌙 AUTO' : (modoTema === 'oscuro' ? '🌙 OSCURO' : '☀️ CLARO');
@@ -667,7 +674,7 @@ function cambiarTema(){
   aplicarTema();
 }
 aplicarTema();
-setInterval(aplicarTema, 60000);
+setInterval(aplicarTema, 30000);
 </script>
 </body>
 </html>
