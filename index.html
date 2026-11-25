@@ -527,5 +527,92 @@ cargarFirebase();cargarData();setInterval(cargarFirebase,15000);
   setTimeout(pintarUCA,1500);
 })();
   </script>
+  <script>
+// SOLO ENVIAR - Sin CALCULAR, solo PALLET + CAJAS, UND no se toma
+(function(){
+  const CONFIG=[
+    {cod:'1001135',cxp:80,upc:48},
+    {cod:'1001273',cxp:88,upc:24},
+    {cod:'1001277',cxp:40,upc:48},
+    {cod:'1007119',cxp:40,upc:6},
+  ];
+  function getMB52(){
+    // Tu MB52 de colores, el que tiene TOTAL PALLETS 866
+    const todos=[...document.querySelectorAll('div')];
+    return todos.find(d=>d.textContent.includes('MB52 PRO') && d.querySelectorAll('input').length>=4);
+  }
+  function actualizarPills(){
+    const mb=getMB52(); if(!mb) return;
+    const inputs=[...mb.querySelectorAll('input')].slice(0,4);
+    inputs.forEach((inp,i)=>{
+      let tot=parseInt(inp.value||'0')||0;
+      let c=CONFIG[i];
+      let por=c.cxp*c.upc;
+      let p=Math.floor(tot/por), resto=tot%por;
+      let cj=Math.floor(resto/c.upc), u=resto%c.upc;
+      // Busca la fila de este input y actualiza sus 3 pill en horizontal
+      let fila=inp.closest('div');
+      while(fila && fila.querySelectorAll('span').length<3) fila=fila.parentElement;
+      // Las 3 pill son los span con números grandes en la fila
+      const spans=[...inp.parentElement.parentElement.querySelectorAll('span')].filter(s=>/^\d+$/.test(s.textContent.trim()));
+      if(spans.length>=3){ spans[0].textContent=p; spans[1].textContent=cj; spans[2].textContent=u; }
+    });
+  }
+  function pintarUCA(evap,pan){
+    localStorage.setItem('mb52ParaUCA',JSON.stringify({evap,pan}));
+    document.querySelectorAll('tr').forEach(tr=>{
+      const tds=tr.querySelectorAll('td');
+      if(tds.length<7) return;
+      const txt=tr.textContent;
+      let val=null, al95=0;
+      if(txt.includes('NAVE 1') && txt.includes('EVAPORADA')){ val=evap; al95=6737.4; }
+      if(txt.includes('NAVE 2') && txt.includes('PANETON')){ val=pan; al95=34.2; }
+      if(val===null) return;
+      tds[5].textContent=val;
+      tds[6].textContent=(al95-val).toFixed(1);
+      const pct=Math.round(val/al95*100);
+      const b=tds[7].querySelector('span')||tds[7];
+      b.textContent=pct+'%';
+    });
+    const total=evap+pan;
+    document.querySelectorAll('tr').forEach(tr=>{
+      if(tr.textContent.includes('TOTAL GENERAL')){
+        const td=tr.querySelectorAll('td');
+        if(td.length>=6){ td[3].textContent=total; td[4].textContent=(6771.6-total).toFixed(1); td[5].textContent=Math.round(total/6771.6*100)+'%'; }
+      }
+    });
+  }
+  window.enviarAUCAPro=function(){
+    const mb=getMB52(); if(!mb) return alert('No encontré tu MB52');
+    const inputs=[...mb.querySelectorAll('input')].slice(0,4);
+    let evap=0, pan=0;
+    inputs.forEach((inp,i)=>{
+      let tot=parseInt(inp.value||'0')||0;
+      let c=CONFIG[i];
+      let por=c.cxp*c.upc;
+      let p=Math.floor(tot/por), resto=tot%por;
+      let cj=Math.floor(resto/c.upc);
+      // REGLA QUE TU QUIERES: solo PALLET + CAJAS, UND no se toma
+      let ocup=p + (cj>0?1:0);
+      if(i<3) evap+=ocup; else pan+=ocup;
+    });
+    pintarUCA(evap,pan);
+    alert(`✅ ENVIADO A UCA: EVAPORADA=${evap} | PANETON=${pan} | TOTAL=${evap+pan}\nSolo PALLET + CAJAS, UND no se toma`);
+  };
+  setTimeout(()=>{
+    const mb=getMB52(); if(!mb) return;
+    // 1. Quita el botón CALCULAR si existe, tú no lo quieres
+    [...mb.querySelectorAll('button')].forEach(b=>{ if(b.textContent.includes('CALCULAR')) b.style.display='none'; });
+    // 2. Al escribir unidades, actualiza solo en horizontal PALLET | CAJAS | UND
+    [...mb.querySelectorAll('input')].slice(0,4).forEach(inp=>{ inp.oninput=actualizarPills; });
+    // 3. Conecta el botón rojo que YA tienes
+    const btn=[...mb.querySelectorAll('button')].find(b=>b.textContent.includes('ENVIAR A UCA'));
+    if(btn) btn.onclick=window.enviarAUCAPro;
+    // 4. Si ya habías enviado, lo mantiene
+    const g=JSON.parse(localStorage.getItem('mb52ParaUCA')||'null');
+    if(g) setInterval(()=>pintarUCA(g.evap,g.pan),1000);
+  },800);
+})();
+  </script>
 </body>
 </html>
