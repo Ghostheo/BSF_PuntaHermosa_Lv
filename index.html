@@ -520,5 +520,57 @@ cargarFirebase();cargarData();setInterval(cargarFirebase,15000);
   },1000);
 })();
 </script>
+ <style>
+/* SOLO COLOR MB52 - No toca UCA, no toca cálculo, solo pintura */
+/* Caja completa */
+#mb52Original{
+  border:3px solid #0C2340 !important; box-shadow:0 10px 30px rgba(12,35,64,.25) !important;
+  border-radius:20px !important; overflow:hidden !important;
+}
+/* Cabecera azul a rojo más viva */
+#mb52Original > div:first-child{
+  background:linear-gradient(90deg,#0C2340,#2563EB,#7C3AED,#DC2626) !important;
+  padding:16px !important;
+}
+/* Las 3 cajitas TOTAL */
+#mb52TotalPallets, #mb52TotalCajas, #mb52TotalUnd{ font-size:26px !important; line-height:1 !important; }
+#mb52TotalPallets{ color:#FFFFFF !important; }
+#mb52TotalCajas{ color:#FACC15 !important; }
+#mb52TotalUnd{ color:#0C2340 !important; }
+/* Los 4 chips de arriba - cada uno un color */
+#mb52Chips span:nth-child(1){ background:#DBEAFE !important; border:2px solid #2563EB !important; color:#1E40AF !important; font-weight:900 !important; }
+#mb52Chips span:nth-child(2){ background:#FEE2E2 !important; border:2px solid #DC2626 !important; color:#991B1B !important; font-weight:900 !important; }
+#mb52Chips span:nth-child(3){ background:#FEF9C3 !important; border:2px solid #EAB308 !important; color:#854D0E !important; font-weight:900 !important; }
+#mb52Chips span:nth-child(4){ background:#DCFCE7 !important; border:2px solid #16A34A !important; color:#166534 !important; font-weight:900 !important; }
+/* Cada fila un color al costado */
+#mb52ProBody > div:nth-child(1){ background:#EFF6FF !important; border-left:6px solid #2563EB !important; border-radius:12px !important; padding-left:10px !important; }
+#mb52ProBody > div:nth-child(2){ background:#FEF2F2 !important; border-left:6px solid #DC2626 !important; border-radius:12px !important; padding-left:10px !important; }
+#mb52ProBody > div:nth-child(3){ background:#FFFBEB !important; border-left:6px solid #EAB308 !important; border-radius:12px !important; padding-left:10px !important; }
+#mb52ProBody > div:nth-child(4){ background:#F0FDF4 !important; border-left:6px solid #16A34A !important; border-radius:12px !important; padding-left:10px !important; }
+/* Código */
+#mb52ProBody > div span.border{ background:white !important; border:2px solid #0C2340 !important; color:#0C2340 !important; }
+/* Input UNIDADES SAP - que se vea que se escribe ahí */
+#mb52Original input[data-cod]{
+  background:#FFFFFF !important; border:3px solid #2563EB !important; border-radius:12px !important;
+  font-size:18px !important; color:#0C2340 !important; box-shadow:0 3px 0 #2563EB !important;
+}
+#mb52Original input[data-cod]:focus{ background:#FEF9C3 !important; border-color:#EAB308 !important; outline:none !important; }
+/* Pills PALLET | CAJAS | UND - más grandes y vivos */
+[id^="p-"]{ background:linear-gradient(180deg,#3B82F6,#1D4ED8) !important; color:white !important; font-size:16px !important; padding:8px 14px !important; border-radius:12px !important; box-shadow:0 3px 0 #1E40AF !important; min-width:48px !important; text-align:center; }
+[id^="cj-"]{ background:linear-gradient(180deg,#334155,#0F172A) !important; color:white !important; font-size:16px !important; padding:8px 14px !important; border-radius:12px !important; box-shadow:0 3px 0 #000 !important; min-width:48px !important; text-align:center; }
+[id^="u-"]{ background:linear-gradient(180deg,#FACC15,#EAB308) !important; color:#0C2340 !important; font-size:16px !important; padding:8px 14px !important; border-radius:12px !important; box-shadow:0 3px 0 #A16207 !important; min-width:48px !important; text-align:center; }
+/* Botones */
+#mb52Original button{ transition:.2s; }
+#mb52Original button:hover{ transform:scale(1.05); }
+#mb52Original button:last-child{
+  background:linear-gradient(90deg,#DC2626,#B91C1C) !important; box-shadow:0 4px 0 #7F1D1D !important;
+  font-size:14px !important; padding:12px 22px !important;
+}
+/* Mensaje verde de ENVIADO */
+#mb52ProMsg{
+  background:linear-gradient(90deg,#DCFCE7,#BBF7D0) !important; border:2px solid #16A34A !important; color:#166534 !important;
+  font-size:14px !important; border-radius:14px !important;
+}
+</style> 
 </body>
 </html>
