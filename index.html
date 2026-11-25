@@ -617,5 +617,26 @@ setInterval(aplicarUCA,1000);
 setTimeout(()=>{ const mb=document.getElementById('mb52Original'); if(mb) document.body.prepend(mb); },300);
 renderMB52Pro();
 </script>
+ <script>
+// ARREGLA MB52 - Quita duplicados, pone cajitas y sube arriba
+setTimeout(()=>{
+  // 1. Borra todos los MB52 y deja solo el último
+  const todos = [...document.querySelectorAll('#mb52Original')];
+  todos.slice(0,-1).forEach(e=>e.remove());
+  const mb = document.querySelector('#mb52Original');
+  if(mb) document.body.prepend(mb);
+
+  // 2. Vuelve a dibujar las cajitas de UNIDADES
+  const body = document.getElementById('mb52ProBody');
+  if(body && body.innerHTML.trim()===''){
+    body.innerHTML = MB52_CONFIG.map(c=>`
+    <div class="flex items-center gap-2 py-2 border-b">
+      <div class="w-[110px]"><div class="font-bold text-[12px]">${c.cod}</div><div class="text-[10px] text-gray-500">${c.desc}</div><div class="text-[10px] text-gray-400">${c.cxp} CJ/Pallet • ${c.upc} UND/CJ</div></div>
+      <input data-cod="${c.cod}" type="number" placeholder="UNIDADES SAP" class="w-[110px] border rounded-lg px-2 py-1 text-[13px]" oninput="calcMB52Pro()">
+      <div class="flex-1 text-[12px] font-bold text-right"><span id="res-${c.cod}">0 P / 0 C / 0 U</span></div>
+    </div>`).join('');
+  }
+}, 800);
+ </script>
 </body>
 </html>
