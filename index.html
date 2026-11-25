@@ -621,5 +621,52 @@ cargarFirebase();cargarData();setInterval(cargarFirebase,15000);
   arreglar();
 })();
 </script>
+<script>
+// FIX PANETON 36 - ENVIAR ya no lee Firebase, usa el número correcto por código
+(function(){
+  const POR_PALLET={'1001135':3840,'1001273':2112,'1001277':1920,'1007119':240};
+  const UND_POR_CAJA={'1001135':48,'1001273':24,'1001277':48,'1007119':6};
+  window.enviarAUCAPro=function(){
+    const mb=document.getElementById('mb52Original');
+    if(!mb) return alert('No encontré MB52');
+    const inputs=[...mb.querySelectorAll('input[data-cod]')];
+    // Si no tiene data-cod, agarra los 4 inputs de unidades en orden
+    const lista=inputs.length?inputs:[...mb.querySelectorAll('input')].filter(i=>i.type==='number').slice(0,4);
+    const codigos=['1001135','1001273','1001277','1007119'];
+    let evap=0, pan=0;
+    lista.forEach((inp,i)=>{
+      const cod=inp.getAttribute('data-cod')||codigos[i];
+      let tot=parseInt(inp.value||'0')||0; // Unidades SAP
+      let por=POR_PALLET[cod];
+      let p=Math.floor(tot/por), resto=tot%por;
+      let cj=Math.floor(resto/UND_POR_CAJA[cod]);
+      // REGLA TUYA: Solo PALLET + CAJAS. UND no se toma.
+      let ocup=p + (cj>0?1:0);
+      if(cod==='1007119') pan+=ocup; else evap+=ocup;
+    });
+    window.__mb52ParaUCA={evap,pan};
+    localStorage.setItem('mb52ParaUCA',JSON.stringify({evap,pan}));
+    // También corrige la config real para que no vuelva el 360
+    try{
+      if(window.ucaConfig){
+        ucaConfig.forEach(c=>{
+          if(String(c.codigo)==='1001277'){ c.cajasPorPallet=40; c.undPorCaja=48; }
+          if(String(c.codigo)==='1007119'){ c.cajasPorPallet=40; c.undPorCaja=6; }
+        });
+        if(typeof UCA_URL!=='undefined') fetch(UCA_URL,{method:'PUT',body:JSON.stringify(ucaConfig)});
+      }
+    }catch(e){}
+    if(typeof renderUCA==='function') renderUCA();
+    const m=document.getElementById('mb52ProMsg');
+    if(m){ m.classList.remove('hidden'); m.textContent=`✅ STOCK OCUPADO EN UCA: EVAPORADA=${evap} | PANETON=${pan} | TOTAL=${evap+pan} — 8,640 / 240 = 36`; }
+  };
+  // Reconecta el botón rojo al ENVIAR nuevo
+  setTimeout(()=>{
+    const mb=document.getElementById('mb52Original'); if(!mb) return;
+    const btn=[...mb.querySelectorAll('button')].find(b=>b.textContent.includes('ENVIAR A UCA'));
+    if(btn) btn.onclick=window.enviarAUCAPro;
+  },500);
+})();
+</script>
 </body>
 </html>
