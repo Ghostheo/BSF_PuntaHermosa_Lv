@@ -572,5 +572,54 @@ cargarFirebase();cargarData();setInterval(cargarFirebase,15000);
   font-size:14px !important; border-radius:14px !important;
 }
 </style> 
+<style>
+/* COLORES UCA - Solo pintura, no toca cálculo */
+#tbodyUCA tr:nth-child(1){ background:linear-gradient(90deg,#EFF6FF,#DBEAFE) !important; border-left:6px solid #2563EB !important; }
+#tbodyUCA tr:nth-child(2){ background:linear-gradient(90deg,#FFF7ED,#FFEDD5) !important; border-left:6px solid #F97316 !important; }
+#tbodyUCA tr:nth-child(3){ background:linear-gradient(90deg,#ECFEFF,#CFFAFE) !important; border-left:6px solid #06B6D4 !important; }
+#tbodyUCA td:nth-child(6){ background:#0C2340 !important; color:#FACC15 !important; font-size:20px !important; font-weight:900 !important; border-radius:12px !important; }
+#tbodyUCA td:nth-child(7){ color:#15803D !important; font-weight:900 !important; }
+#tbodyUCA .cap-input{ background:#FEF9C3 !important; border:2px solid #EAB308 !important; font-weight:900 !important; border-radius:10px !important; }
+#tbodyUCA td:nth-child(8) span{ font-size:14px !important; padding:6px 14px !important; box-shadow:0 3px 8px rgba(0,0,0,.25) !important; border:2px solid white !important; }
+#tbodyUCA tr:last-child{ background:linear-gradient(90deg,#0C2340,#1E3A8A,#DC2626) !important; }
+#tbodyUCA tr:last-child td{ color:white !important; }
+#tbodyUCA tr:last-child td:nth-child(6){ background:#FACC15 !important; color:#0C2340 !important; }
+#uca-sin-transito-pct{ color:#16A34A !important; }
+#uca-con-transito-pct{ color:#2563EB !important; }
+#uca-sin-transito-bar{ background:linear-gradient(90deg,#22C55E,#15803D) !important; }
+#uca-con-transito-bar{ background:linear-gradient(90deg,#3B82F6,#0C2340) !important; }
+</style>
+<script>
+// CORRIGE CONFIG REAL: 1001277=1920, 1007119=240 - Y lo guarda en Firebase
+(function(){
+  function arreglar(){
+    if(typeof ucaConfig==='undefined') return setTimeout(arreglar,500);
+    let cambio=false;
+    ucaConfig.forEach(c=>{
+      if(String(c.codigo)==='1001277' && (c.cajasPorPallet!==40 || c.undPorCaja!==48)){ c.cajasPorPallet=40; c.undPorCaja=48; cambio=true; }
+      if(String(c.codigo)==='1007119' && (c.cajasPorPallet!==40 || c.undPorCaja!==6)){ c.cajasPorPallet=40; c.undPorCaja=6; cambio=true; }
+    });
+    // Actualiza los chips y los textos chiquitos del MB52
+    document.querySelectorAll('#mb52Chips span').forEach(s=>{
+      if(s.textContent.includes('1001277')) s.textContent='✦ 1 PALLET 1001277 = 1,920 UND';
+      if(s.textContent.includes('1007119')) s.textContent='✦ 1 PALLET 1007119 = 240 UND';
+    });
+    // Actualiza el "40 cj/pallet" debajo del código
+    document.querySelectorAll('#mb52ProBody > div').forEach((fila,i)=>{
+      const txt=fila.textContent;
+      if(txt.includes('1001277')){ const d=fila.querySelector('.text-gray-400'); if(d) d.textContent='40 cj/pallet • 48 und/cj'; }
+      if(txt.includes('1007119')){ const d=fila.querySelector('.text-gray-400'); if(d) d.textContent='40 cj/pallet • 6 und/cj'; }
+    });
+    if(cambio && typeof UCA_URL!=='undefined'){
+      fetch(UCA_URL,{method:'PUT',body:JSON.stringify(ucaConfig)}).then(()=>{ if(typeof calcMB52Pro==='function') calcMB52Pro(); });
+    } else if(typeof calcMB52Pro==='function'){
+      calcMB52Pro();
+    }
+    // Deja el cálculo viejo con la config nueva también
+    window.__cfgMB52Corregido=true;
+  }
+  arreglar();
+})();
+</script>
 </body>
 </html>
