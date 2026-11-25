@@ -458,5 +458,74 @@ cargarFirebase();cargarData();setInterval(cargarFirebase,15000);
   listo();
 })();
      </script>
+  <script>
+// SOLO CONECTA TU MB52 DE COLORES - No cambia diseño, no crea otro
+(function(){
+  const CONFIG=[
+    {cod:'1001135',cxp:80,upc:48},
+    {cod:'1001273',cxp:88,upc:24},
+    {cod:'1001277',cxp:40,upc:48},
+    {cod:'1007119',cxp:40,upc:6},
+  ];
+  function leerMB52(){
+    // Tus 4 cajitas en orden: 1001135, 1001273, 1001277, 1007119
+    const bloque=[...document.querySelectorAll('div')].find(d=>d.textContent.includes('MB52 PRO'));
+    const inputs=bloque?[...bloque.querySelectorAll('input[type="number"]')]:[];
+    // Las primeras 4 son las de UNIDADES SAP
+    const vals=inputs.slice(0,4).map(i=>parseInt(i.value||'0')||0);
+    const r={};
+    CONFIG.forEach((c,i)=>{
+      let tot=vals[i]||0;
+      let por=c.cxp*c.upc;
+      let p=Math.floor(tot/por), resto=tot%por;
+      let cj=Math.floor(resto/c.upc), u=resto%c.upc;
+      r[c.cod]={pallets:p,cajas:cj,und:u};
+    });
+    return r;
+  }
+  function pintarUCA(){
+    const g=JSON.parse(localStorage.getItem('mb52ParaUCA')||'null');
+    if(!g) return;
+    document.querySelectorAll('tr').forEach(tr=>{
+      const t=tr.textContent;
+      const celdas=tr.querySelectorAll('td');
+      if(celdas.length<8) return;
+      let val=null, al95=0;
+      if(t.includes('EVAPORADA')){ val=g.evap; al95=6737.4; }
+      if(t.includes('PANETON')){ val=g.pan; al95=34.2; }
+      if(val===null) return;
+      celdas[5].textContent=val;
+      celdas[6].textContent=(al95-val).toFixed(1);
+      const pct=Math.round(val/al95*100);
+      const badge=celdas[7].querySelector('span')||celdas[7];
+      badge.textContent=pct+'%';
+    });
+    // Total general
+    const total=g.evap+g.pan;
+    document.querySelectorAll('tr').forEach(tr=>{
+      if(tr.textContent.includes('TOTAL GENERAL')){
+        const td=tr.querySelectorAll('td');
+        if(td.length>=6){ td[3].textContent=total; td[4].textContent=(6771.6-total).toFixed(1); td[5].textContent=Math.round(total/6771.6*100)+'%'; }
+      }
+    });
+  }
+  window.enviarAUCAPro=function(){
+    const r=leerMB52();
+    const ocup=(cod)=>{ const p=r[cod]||{pallets:0,cajas:0,und:0}; return (p.pallets||0)+(((p.cajas||0)>0||(p.und||0)>0)?1:0); };
+    const evap=ocup('1001135')+ocup('1001273')+ocup('1001277');
+    const pan=ocup('1007119');
+    localStorage.setItem('mb52ParaUCA',JSON.stringify({evap,pan}));
+    pintarUCA();
+    alert(`✅ ENVIADO A UCA: EVAPORADA=${evap} | PANETON=${pan} | TOTAL=${evap+pan}\nRegla: 1 P + 1 C + 0 U = 2`);
+  };
+  setInterval(pintarUCA,800);
+  setTimeout(()=>{
+    const btn=[...document.querySelectorAll('button')].find(b=>b.textContent.includes('ENVIAR A UCA'));
+    if(btn) btn.onclick=window.enviarAUCAPro;
+  },1000);
+  // Recupera si ya habías enviado antes
+  setTimeout(pintarUCA,1500);
+})();
+  </script>
 </body>
 </html>
