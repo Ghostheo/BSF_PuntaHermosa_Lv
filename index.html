@@ -653,21 +653,19 @@ body.modo-oscuro .text-black{color:#fff!important}
 <script>
 // ===== HORARIO EXACTO: DIA 7:00 AM - 6:00 PM / OSCURO 6:05 PM - 6:55 AM =====
 let modoTema = localStorage.getItem('temaBSF') || 'auto';
-function aplicarTema(){
-  let d = new Date();
-  let mins = d.getHours()*60 + d.getMinutes();
-  let esDia = (mins >= 420 && mins < 1080);
-  let esNoche = (mins >= 1085 || mins < 415);
+
+  function aplicarTema(){
+  let h = new Date().getHours() + new Date().getMinutes()/60;
+  let esNoche = (h >= 18.08 || h < 6.91);
   let oscuro = false;
   if(modoTema === 'oscuro') oscuro = true;
   else if(modoTema === 'claro') oscuro = false;
-  else if(esDia) oscuro = false;
-  else if(esNoche) oscuro = true;
-  else oscuro = document.body.classList.contains('modo-oscuro');
+  else oscuro = esNoche;
   document.body.classList.toggle('modo-oscuro', oscuro);
   let b = document.getElementById('btnTema');
-  if(b) b.textContent = modoTema === 'auto' ? '🌙 AUTO' : (modoTema === 'oscuro' ? '🌙 OSCURO' : '☀️ CLARO');
+  if(b) b.textContent = modoTema === 'auto' ? '🌙 AUTO' : (modoTema === 'oscuro' ? '🌑 OSCURO' : '☀️ CLARO');
 }
+
 function cambiarTema(){
   modoTema = modoTema === 'auto' ? 'oscuro' : (modoTema === 'oscuro' ? 'claro' : 'auto');
   localStorage.setItem('temaBSF', modoTema);
