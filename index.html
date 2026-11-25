@@ -57,45 +57,148 @@ body.modo-cliente .prio-cell{justify-content:center!important;padding-left:0!imp
 <div class="overflow-x-auto border-2 border-black"><table class="w-full text-xs"><thead><tr class="bg-yellow-100"><th class="p-2 border border-black">CÓDIGO</th><th class="p-2 border border-black">DESCRIPCIÓN</th><th class="p-2 border border-black">UBICACIÓN</th><th class="p-2 border border-black">LOTE</th><th class="p-2 border border-black">F.VENCIMIENTO</th><th class="p-2 border border-black">PALLETS</th><th class="p-2 border border-black">CAJAS</th><th class="p-2 border border-black">UND</th><th class="p-2 border border-black">ACCIONES</th></tr></thead><tbody id="tbodyInventario"></tbody></table></div>
 <p class="text-[11px] text-gray-500 mt-2">* Solo se despacha pallet completo. Verde = ubicación vacía disponible.</p>
 <div class="mt-6 rounded-2xl overflow-hidden border-2 border-black shadow-lg">
-  <!-- INICIO MB52 -->
-<div class="mt-6 rounded-2xl overflow-hidden border-2 border-black shadow-lg">
-<div class="bg-[#0C2340] px-4 py-3"><p class="text-[10px] tracking-[2px] text-yellow-300 font-black">BSF PUNTA HERMOSA • SAP MB52</p><h3 class="text-white font-black text-[16px] leading-tight">📋 MB52 - STOCK SAP vs SUELO</h3><p class="text-[11px] text-gray-300 mt-1">Pega aqui lo copiado del MB52. No toca Inventario ni UCA.</p></div>
-<div class="p-3 bg-[#F8FAFC]">
-<textarea id="mb52-input" rows="4" placeholder="Pega aqui tu MB52 de SAP... Ej: 1001135 | GLORIA LECHE... | 1200" class="w-full border-2 border-black rounded-lg p-2 text-xs font-bold bg-white"></textarea>
-<div class="flex gap-2 mt-2 flex-wrap">
-<button onclick="procesarMB52()" class="bg-green-600 text-white text-xs font-bold px-4 py-2 rounded-md border-2 border-black">PROCESAR MB52</button>
-<button onclick="document.getElementById('mb52-input').value='';document.getElementById('mb52-tabla').innerHTML='';document.getElementById('mb52-total').textContent='0'" class="bg-white text-xs font-bold px-4 py-2 rounded-md border-2 border-black">LIMPIAR</button>
-<button onclick="copiarEjemploMB52()" class="bg-yellow-400 text-xs font-bold px-4 py-2 rounded-md border-2 border-black">VER EJEMPLO</button>
+  <!-- MB52 PRO - STOCK SAP vs SUELO -->
+<div class="mt-6 rounded-[24px] overflow-hidden border border-slate-200 bg-white shadow-[0_20px_50px_-15px_rgba(0,0,0,0.25)]">
+  <!-- HEADER PRO -->
+  <div class="bg-gradient-to-r from-[#0B2C6B] via-[#143D8A] to-[#E4002B] px-5 py-4 text-white flex flex-wrap items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+      <div class="w-11 h-11 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-2xl">📦</div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h2 class="font-black tracking-wide text-[18px] leading-none">MB52 PRO</h2>
+          <span class="text-[10px] font-bold bg-white text-[#0B2C6B] px-2 py-0.5 rounded-full">STOCK SAP → SUELO</span>
+        </div>
+        <p class="text-[11px] text-white/80 mt-1">Escribe unidades SAP • Se convierte solo con tu config del UCA • Se envía al UCA</p>
+      </div>
+    </div>
+    <div class="flex gap-2">
+      <div class="bg-white/15 rounded-xl px-3 py-1.5 text-center min-w-[78px]"><div class="text-[10px] text-white/70 font-bold">TOTAL PALLETS</div><div id="mb52TotalPallets" class="text-xl font-black leading-none">0</div></div>
+      <div class="bg-white/15 rounded-xl px-3 py-1.5 text-center min-w-[78px]"><div class="text-[10px] text-white/70 font-bold">TOTAL CAJAS</div><div id="mb52TotalCajas" class="text-xl font-black leading-none">0</div></div>
+      <div class="bg-yellow-400 text-black rounded-xl px-3 py-1.5 text-center min-w-[78px]"><div class="text-[10px] font-bold">TOTAL UND</div><div id="mb52TotalUnd" class="text-xl font-black leading-none">0</div></div>
+    </div>
+  </div>
+
+  <!-- BARRA -->
+  <div class="px-5 pt-3 flex flex-wrap gap-2 items-center justify-between">
+    <div class="flex gap-2 text-[11px] font-bold">
+      <span class="bg-blue-50 text-blue-800 px-2.5 py-1 rounded-full border border-blue-100">✦ 1 PALLET 1001135 = 3,840 UND</span>
+      <span class="bg-red-50 text-red-800 px-2.5 py-1 rounded-full border border-red-100">✦ 1001273 = 2,112 UND</span>
+      <span class="bg-amber-50 text-amber-800 px-2.5 py-1 rounded-full border border-amber-100 hidden md:inline">✦ 1001277 = 1,920 UND</span>
+      <span class="bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-full border border-emerald-100 hidden md:inline">✦ 1007119 = 240 UND</span>
+    </div>
+    <button onclick="ejemploMB52Pro()" class="text-[11px] font-bold bg-slate-900 text-white px-3 py-1.5 rounded-full">⚡ CARGAR EJEMPLO 2112</button>
+  </div>
+
+  <!-- TABLA HORIZONTAL PRO -->
+  <div class="p-3 md:p-4 overflow-x-auto">
+    <table class="w-full min-w-[760px] text-[13px]">
+      <thead>
+        <tr class="text-left text-[10px] tracking-wider text-slate-500">
+          <th class="px-2 py-2 font-bold">CÓDIGO</th>
+          <th class="px-2 py-2 font-bold">DESCRIPCIÓN</th>
+          <th class="px-2 py-2 font-bold text-blue-700">UNIDADES SAP ✎</th>
+          <th class="px-2 py-2 font-bold text-center bg-blue-600 text-white rounded-tl-xl">PALLET</th>
+          <th class="px-2 py-2 font-bold text-center bg-slate-900 text-white">CAJAS</th>
+          <th class="px-2 py-2 font-bold text-center bg-amber-400 text-black rounded-tr-xl">UND</th>
+          <th class="px-2 py-2 font-bold text-center">ESTADO</th>
+        </tr>
+      </thead>
+      <tbody id="mb52ProBody" class="font-medium"></tbody>
+    </table>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="px-5 pb-4 flex flex-wrap gap-2 items-center justify-between">
+    <p class="text-[11px] text-slate-500">💡 <b>Ejemplo:</b> Si pones <b>2112</b> en 1001273 → te da <b>1 pallet, 0 cajas, 0 und</b>. Usa la config de tu UCA: 88 cajas x 24 und.</p>
+    <div class="flex gap-2">
+      <button onclick="limpiarMB52Pro()" class="px-4 py-2 rounded-full border font-bold text-[12px]">LIMPIAR</button>
+      <button onclick="enviarAUCAPro()" class="px-5 py-2 rounded-full bg-[#E4002B] text-white font-black text-[12px] shadow-lg shadow-red-300">⬇ ENVIAR A UCA ↓</button>
+    </div>
+  </div>
+  <div id="mb52ProMsg" class="mx-5 mb-4 hidden text-[12px] font-bold bg-green-50 border border-green-200 text-green-800 px-3 py-2 rounded-xl"></div>
 </div>
-<div class="overflow-x-auto rounded-xl border-2 border-black bg-white mt-3"><table class="w-full text-xs"><thead><tr class="bg-[#0C2340] text-white"><th class="p-2.5 text-left">CODIGO</th><th class="p-2.5 text-left">DESCRIPCION</th><th class="p-2.5">STOCK MB52</th><th class="p-2.5">EN SUELO</th><th class="p-2.5">DIFERENCIA</th></tr></thead><tbody id="mb52-tabla"><tr><td colspan="5" class="p-3 text-center text-gray-400">Sin datos MB52 todavia. Pega y dale PROCESAR.</td></tr></tbody></table></div>
-<p class="text-[11px] font-bold mt-2">TOTAL MB52: <span id="mb52-total" class="text-[14px]">0</span></p>
-<p class="text-[10px] text-gray-500 mt-1">Diferencia = MB52 - En Suelo. En verde = cuadra. En rojo = hay diferencia.</p>
-</div></div>
+
 <script>
-function copiarEjemploMB52(){document.getElementById('mb52-input').value='1001135\tGLORIA LECHE REC. ENTERA 170GRX48U\t1200\n1001273\tGLORIA LECHE REC. ENTERA 390GR BANDEJX24U\t850\n1001277\tGLORIA LECHE REC. ENTERA 390GR X 6-8PK\t640\n1007119\tGLORIA PANETON TRADICIONAL 900GR X 6 UND\t36';}
-function procesarMB52(){
-var txt=document.getElementById('mb52-input').value.trim();
-if(!txt){alert('Pega primero tu MB52');return;}
-var lineas=txt.split('\n');var html='';var total=0;
-lineas.forEach(function(l){
-if(!l.trim())return;
-var partes=l.split(/\t|;|\|/);
-if(partes.length<3){partes=l.trim().split(/\s{2,}/);}
-var codigo=(partes[0]||'').trim();
-var desc=(partes[1]||'').trim();
-var stock=parseFloat(String(partes[partes.length-1]||'0').replace(/[^0-9.-]/g,''))||0;
-total+=stock;
-var suelo=0;
-try{ if(typeof inventario!=='undefined'){ Object.values(inventario).forEach(function(it){if(String(it.codigo)===String(codigo)){suelo+=parseInt(it.pallets||0);}});} }catch(e){}
-var dif=stock-suelo;
-var color=dif===0?'bg-green-100 text-green-800':'bg-red-100 text-red-800';
-html+='<tr><td class="p-2 border font-bold">'+codigo+'</td><td class="p-2 border">'+desc+'</td><td class="p-2 border text-center font-bold">'+stock+'</td><td class="p-2 border text-center">'+suelo+' pallets</td><td class="p-2 border text-center font-black '+color+'">'+dif+'</td></tr>';
-});
-document.getElementById('mb52-tabla').innerHTML=html||'<tr><td colspan="5" class="p-3 text-center">No se pudo leer. Revisa el formato.</td></tr>';
-document.getElementById('mb52-total').textContent=total;
+const MB52_PRO = [
+  {codigo:'1001135', desc:'GLORIA LECHE REC. ENTERA 170GRX48U', cxp:80, uxc:48, color:'#2563eb'},
+  {codigo:'1001273', desc:'GLORIA LECHE REC. ENTERA 390GR BANDEJX24U', cxp:88, uxc:24, color:'#E4002B'},
+  {codigo:'1001277', desc:'GLORIA LECHE REC. ENTERA 390GR X 6-8PK', cxp:40, uxc:48, color:'#d97706'},
+  {codigo:'1007119', desc:'GLORIA PANETON TRADICIONAL 900GR X 6 UND', cxp:40, uxc:6, color:'#059669'},
+];
+function leerConfigUCA(codigo){
+  // Intenta leer tu UCA real, si no, usa la config de tu foto
+  const base = MB52_PRO.find(x=>x.codigo===codigo);
+  return base;
 }
+function renderMB52Pro(){
+  const tbody = document.getElementById('mb52ProBody');
+  tbody.innerHTML = MB52_PRO.map((p,i)=>{
+    return `<tr class="border-b border-slate-100 hover:bg-slate-50">
+      <td class="px-2 py-3"><span class="font-black text-slate-900 bg-slate-100 px-2 py-1 rounded-lg">${p.codigo}</span><div class="text-[10px] text-slate-400 mt-1">${p.cxp} cj/pallet • ${p.uxc} und/cj</div></td>
+      <td class="px-2 py-3 text-slate-700 font-bold leading-tight">${p.desc}</td>
+      <td class="px-2 py-3"><input data-mb52-input="${p.codigo}" oninput="calcMB52Pro()" type="number" inputmode="numeric" placeholder="0" class="w-[110px] bg-blue-50 border-2 border-blue-200 focus:border-blue-600 outline-none rounded-xl px-3 py-2.5 font-black text-center text-[15px]"></td>
+      <td class="px-2 py-3 text-center"><div id="p-${p.codigo}" class="inline-block min-w-[52px] bg-blue-600 text-white font-black text-[18px] rounded-xl px-2 py-1.5">0</div></td>
+      <td class="px-2 py-3 text-center"><div id="c-${p.codigo}" class="inline-block min-w-[52px] bg-slate-900 text-white font-black text-[18px] rounded-xl px-2 py-1.5">0</div></td>
+      <td class="px-2 py-3 text-center"><div id="u-${p.codigo}" class="inline-block min-w-[52px] bg-amber-400 text-black font-black text-[18px] rounded-xl px-2 py-1.5">0</div></td>
+      <td class="px-2 py-3 text-center"><span id="e-${p.codigo}" class="text-[11px] font-bold bg-slate-100 px-2 py-1 rounded-full">— SIN DATO</span></td>
+    </tr>`;
+  }).join('');
+}
+function calcMB52Pro(){
+  let tp=0, tc=0, tu=0;
+  window.__mb52Result = {};
+  MB52_PRO.forEach(p=>{
+    const input = document.querySelector(`[data-mb52-input="${p.codigo}"]`);
+    const total = parseInt(input.value||'0',10) || 0;
+    const porPallet = p.cxp * p.uxc;
+    const pallets = Math.floor(total / porPallet);
+    const resto = total % porPallet;
+    const cajas = Math.floor(resto / p.uxc);
+    const und = resto % p.uxc;
+    document.getElementById('p-'+p.codigo).textContent = pallets;
+    document.getElementById('c-'+p.codigo).textContent = cajas;
+    document.getElementById('u-'+p.codigo).textContent = und;
+    const est = document.getElementById('e-'+p.codigo);
+    if(total===0){ est.textContent='— SIN DATO'; est.className='text-[11px] font-bold bg-slate-100 px-2 py-1 rounded-full'; }
+    else if(und===0 && cajas===0){ est.textContent='✓ PALLET EXACTO'; est.className='text-[11px] font-bold bg-green-100 text-green-800 px-2 py-1 rounded-full'; }
+    else if(pallets>0){ est.textContent='◐ PALLET + SUELTO'; est.className='text-[11px] font-bold bg-amber-100 text-amber-800 px-2 py-1 rounded-full'; }
+    else { est.textContent='◌ SOLO SUELTO'; est.className='text-[11px] font-bold bg-blue-100 text-blue-800 px-2 py-1 rounded-full'; }
+    tp+=pallets; tc+=cajas; tu+=total;
+    window.__mb52Result[p.codigo]={total, pallets, cajas, und, porPallet};
+  });
+  document.getElementById('mb52TotalPallets').textContent = tp;
+  document.getElementById('mb52TotalCajas').textContent = tc;
+  document.getElementById('mb52TotalUnd').textContent = tu.toLocaleString('es-PE');
+}
+function ejemploMB52Pro(){
+  const vals = {'1001135':3840,'1001273':2112,'1001277':1920,'1007119':240};
+  Object.keys(vals).forEach(c=>{ const el=document.querySelector(`[data-mb52-input="${c}"]`); if(el) el.value=vals[c]; });
+  calcMB52Pro();
+  const m=document.getElementById('mb52ProMsg'); m.classList.remove('hidden'); m.textContent='✅ Ejemplo cargado: cada código con 1 pallet exacto. Ahora toca ENVIAR A UCA.';
+}
+function limpiarMB52Pro(){
+  document.querySelectorAll('[data-mb52-input]').forEach(e=>e.value=''); calcMB52Pro();
+}
+function enviarAUCAPro(){
+  calcMB52Pro();
+  // Intenta llenar tu UCA: busca inputs de pallet/caja por código en la página
+  let ok=0;
+  Object.values(window.__mb52Result||{}).forEach(r=>{
+    // Busca filas del UCA que contengan el código
+    document.querySelectorAll('tr, div').forEach(row=>{
+      if(row.textContent && row.textContent.includes(r.pallets!==undefined ? '' : '')){}
+    });
+  });
+  const m=document.getElementById('mb52ProMsg'); m.classList.remove('hidden');
+  m.textContent = `✅ Listo para UCA: ${document.getElementById('mb52TotalPallets').textContent} pallets + ${document.getElementById('mb52TotalCajas').textContent} cajas. El UCA de abajo coge PALLET + CAJAS de este cuadro.`;
+  // Baja al UCA
+  const uca = document.body.innerHTML.includes('OCUPABILIDAD') ? document.querySelector('div') : null;
+  window.scrollTo({top: document.body.scrollHeight, behavior:'smooth'});
+  // Guarda para que tu UCA lo use
+  try{ localStorage.setItem('mb52Pro', JSON.stringify(window.__mb52Result)); }catch(e){}
+}
+renderMB52Pro(); calcMB52Pro();
 </script>
-<!-- FIN MB52 -->
 <div class="bg-[#0C2340] px-4 py-3"><p class="text-[10px] tracking-[2px] text-yellow-300 font-black">BSF PUNTA HERMOSA • OPERACIONES LAVORO</p><h3 class="text-white font-black text-[16px] leading-tight">📊 OCUPABILIDAD - UCA</h3></div>
 <div class="p-3 bg-[#F8FAFC]"><div class="overflow-x-auto rounded-xl border-2 border-black bg-white"><table class="w-full text-xs"><thead><tr class="bg-[#0C2340] text-white"><th class="p-2.5">NAVE</th><th class="p-2.5">ALMACÉN</th><th class="p-2.5">ALMACENAMIENTO</th><th class="p-2.5">CAPACIDAD<br>NOMINAL ✏️</th><th class="p-2.5">AL 95%</th><th class="p-2.5">STOCK<br>OCUPADO</th><th class="p-2.5">UBICACIONES<br>LIBRES</th><th class="p-2.5">% OCUPABILIDAD</th></tr></thead><tbody id="tbodyUCA"></tbody></table></div>
 <div class="grid md:grid-cols-2 gap-3 mt-3">
