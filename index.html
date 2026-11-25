@@ -37,7 +37,6 @@ body.modo-cliente .prio-cell{justify-content:center!important;padding-left:0!imp
 <div><img src="logo.png" class="ocultar-en-cliente h-10 md:h-12 object-contain mb-2"><h1 class="text-xl md:text-2xl font-bold mt-2">Status BSF PUNTA HERMOSA</h1><p id="fecha" class="text-xs text-gray-500 mt-1"></p><p class="text-xs text-green-600 font-bold mt-1 flex items-center gap-1 ocultar-en-cliente"><span class="dot-green"></span> Sincronizado en vivo - DATA compartida</p></div>
 <div class="flex gap-2 flex-wrap justify-end">
 <button id="btnCaptura" onclick="toggleCaptura()" class="bg-black text-white border-2 border-black rounded-xl px-4 py-2 text-[11px] font-bold">📸 MODO CAPTURA BSF</button>
-<button id="btnTema" onclick="cambiarTema()" class="bg-white border-2 border-black rounded-xl px-4 py-2 text-[11px] font-bold">🌙 AUTO</button>
 <button onclick="abrirAdminPass()" class="ocultar-en-cliente bg-white border-2 border-black rounded-xl px-4 py-2 text-[11px] font-bold">🔒 ADMIN</button>
 <button onclick="guardarDiaBSF()" class="ocultar-en-cliente bg-green-600 text-white border-2 border-black rounded-xl px-4 py-2 text-[11px] font-bold">📥 GUARDAR DÍA → DATA</button>
 <button onclick="mostrarInventario()" class="ocultar-en-cliente bg-orange-500 text-white border-2 border-black rounded-xl px-4 py-2 text-[11px] font-bold">📦 INVENTARIO</button>
@@ -58,7 +57,7 @@ body.modo-cliente .prio-cell{justify-content:center!important;padding-left:0!imp
 <div class="overflow-x-auto border-2 border-black"><table class="w-full text-xs"><thead><tr class="bg-yellow-100"><th class="p-2 border border-black">CÓDIGO</th><th class="p-2 border border-black">DESCRIPCIÓN</th><th class="p-2 border border-black">UBICACIÓN</th><th class="p-2 border border-black">LOTE</th><th class="p-2 border border-black">F.VENCIMIENTO</th><th class="p-2 border border-black">PALLETS</th><th class="p-2 border border-black">CAJAS</th><th class="p-2 border border-black">UND</th><th class="p-2 border border-black">ACCIONES</th></tr></thead><tbody id="tbodyInventario"></tbody></table></div>
 <p class="text-[11px] text-gray-500 mt-2">* Solo se despacha pallet completo. Verde = ubicación vacía disponible.</p>
 <div class="mt-6 rounded-2xl overflow-hidden border-2 border-black shadow-lg">
-<div class="bg-[#0C2340] px-4 py-3"><p class="text-[10px] tracking-[2px] text-yellow-300 font-black">BSF PUNTA HERMOSA - OPERACIONES LAVORO</p><h3 class="text-white font-black text-[16px] leading-tight">📊 OCUPABILIDAD - UCA</h3></div>
+<div class="bg-[#0C2340] px-4 py-3"><p class="text-[10px] tracking-[2px] text-yellow-300 font-black">BSF PUNTA HERMOSA • OPERACIONES LAVORO</p><h3 class="text-white font-black text-[16px] leading-tight">📊 OCUPABILIDAD - UCA</h3></div>
 <div class="p-3 bg-[#F8FAFC]"><div class="overflow-x-auto rounded-xl border-2 border-black bg-white"><table class="w-full text-xs"><thead><tr class="bg-[#0C2340] text-white"><th class="p-2.5">NAVE</th><th class="p-2.5">ALMACÉN</th><th class="p-2.5">ALMACENAMIENTO</th><th class="p-2.5">CAPACIDAD<br>NOMINAL ✏️</th><th class="p-2.5">AL 95%</th><th class="p-2.5">STOCK<br>OCUPADO</th><th class="p-2.5">UBICACIONES<br>LIBRES</th><th class="p-2.5">% OCUPABILIDAD</th></tr></thead><tbody id="tbodyUCA"></tbody></table></div>
 <div class="grid md:grid-cols-2 gap-3 mt-3">
 <div class="rounded-2xl border-2 border-black p-4 bg-white shadow"><div class="flex justify-between items-center"><p class="text-[11px] font-black tracking-wider text-gray-500">UCA SIN TRÁNSITO</p><span class="text-[10px] bg-green-100 text-green-700 font-black px-2 py-1 rounded-full border">● EN VIVO</span></div><p id="uca-sin-transito-pct" class="text-[42px] leading-none font-black text-[#0C2340] mt-1">0%</p><div class="h-[26px] bg-gray-100 border-2 border-black rounded-full overflow-hidden mt-2"><div id="uca-sin-transito-bar" class="h-full text-center text-[11px] font-black text-white leading-[22px] bg-gradient-to-r from-green-500 to-emerald-700 transition-all" style="width:0%">0%</div></div><p id="uca-sin-transito-det" class="text-[11px] font-bold text-gray-500 mt-2">0 / 0 pallets</p></div>
@@ -373,7 +372,7 @@ async function guardarUCA(){document.querySelectorAll('[data-uca]').forEach(el=>
 cargarFirebase();cargarData();setInterval(cargarFirebase,15000);
 </script>
 <script>
-
+// MB52 PRO A COLORES - Se crea solo entre INVENTARIO y UCA, no borra nada
 (function(){
   function crear(){
     if(document.getElementById('mb52Original')) return;
@@ -383,8 +382,8 @@ cargarFirebase();cargarData();setInterval(cargarFirebase,15000);
     div.className='mx-5 my-4 bg-white rounded-2xl shadow overflow-hidden';
     div.innerHTML=`
     <div class="bg-gradient-to-r from-blue-900 via-indigo-800 to-red-600 text-white p-4 flex justify-between items-center">
-      <div><p class="text-[10px] tracking-[2px] text-yellow-300 font-black">STOCK BSF - PUNTA HERMOSA • OPERACIONES LAVORO</p><div class="font-black text-[16px]">📦 MB52 - PRO <span class="bg-white text-blue-900 text-[10px] px-2 py-1 rounded-full ml-1">STOCK SAP → SUELO</span></div>
-<div class="text-[11px] opacity-90">Escribe unidades SAP • Se convierte solo • Se envía al UCA</div></div>
+      <div><div class="font-black text-[16px]">📦 MB52 PRO <span class="bg-white text-blue-900 text-[10px] px-2 py-1 rounded-full ml-1">STOCK SAP → SUELO</span></div>
+      <div class="text-[11px] opacity-90">Escribe unidades SAP • Se convierte solo • Se envía al UCA</div></div>
       <div class="flex gap-2 text-center">
         <div class="bg-white/20 rounded-lg px-2 py-1"><div class="text-[9px]">TOTAL PALLETS</div><div class="font-black" id="mb52TotalPallets">0</div></div>
         <div class="bg-black/30 rounded-lg px-2 py-1"><div class="text-[9px]">TOTAL CAJAS</div><div class="font-black" id="mb52TotalCajas">0</div></div>
@@ -520,56 +519,75 @@ cargarFirebase();cargarData();setInterval(cargarFirebase,15000);
     try{ const g=JSON.parse(localStorage.getItem('mb52ParaUCA')||'null'); if(g){ window.__mb52ParaUCA=g; if(typeof renderUCA==='function') renderUCA(); } }catch(e){}
   },1000);
 })();
+</script>
+ <style>
+/* SOLO COLOR MB52 - No toca UCA, no toca cálculo, solo pintura */
+/* Caja completa */
+#mb52Original{
+  border:3px solid #0C2340 !important; box-shadow:0 10px 30px rgba(12,35,64,.25) !important;
+  border-radius:20px !important; overflow:hidden !important;
+}
+/* Cabecera azul a rojo más viva */
+#mb52Original > div:first-child{
+  background:linear-gradient(90deg,#0C2340,#2563EB,#7C3AED,#DC2626) !important;
+  padding:16px !important;
+}
+/* Las 3 cajitas TOTAL */
+#mb52TotalPallets, #mb52TotalCajas, #mb52TotalUnd{ font-size:26px !important; line-height:1 !important; }
+#mb52TotalPallets{ color:#FFFFFF !important; }
+#mb52TotalCajas{ color:#FACC15 !important; }
+#mb52TotalUnd{ color:#0C2340 !important; }
+/* Los 4 chips de arriba - cada uno un color */
+#mb52Chips span:nth-child(1){ background:#DBEAFE !important; border:2px solid #2563EB !important; color:#1E40AF !important; font-weight:900 !important; }
+#mb52Chips span:nth-child(2){ background:#FEE2E2 !important; border:2px solid #DC2626 !important; color:#991B1B !important; font-weight:900 !important; }
+#mb52Chips span:nth-child(3){ background:#FEF9C3 !important; border:2px solid #EAB308 !important; color:#854D0E !important; font-weight:900 !important; }
+#mb52Chips span:nth-child(4){ background:#DCFCE7 !important; border:2px solid #16A34A !important; color:#166534 !important; font-weight:900 !important; }
+/* Cada fila un color al costado */
+#mb52ProBody > div:nth-child(1){ background:#EFF6FF !important; border-left:6px solid #2563EB !important; border-radius:12px !important; padding-left:10px !important; }
+#mb52ProBody > div:nth-child(2){ background:#FEF2F2 !important; border-left:6px solid #DC2626 !important; border-radius:12px !important; padding-left:10px !important; }
+#mb52ProBody > div:nth-child(3){ background:#FFFBEB !important; border-left:6px solid #EAB308 !important; border-radius:12px !important; padding-left:10px !important; }
+#mb52ProBody > div:nth-child(4){ background:#F0FDF4 !important; border-left:6px solid #16A34A !important; border-radius:12px !important; padding-left:10px !important; }
+/* Código */
+#mb52ProBody > div span.border{ background:white !important; border:2px solid #0C2340 !important; color:#0C2340 !important; }
+/* Input UNIDADES SAP - que se vea que se escribe ahí */
+#mb52Original input[data-cod]{
+  background:#FFFFFF !important; border:3px solid #2563EB !important; border-radius:12px !important;
+  font-size:18px !important; color:#0C2340 !important; box-shadow:0 3px 0 #2563EB !important;
+}
+#mb52Original input[data-cod]:focus{ background:#FEF9C3 !important; border-color:#EAB308 !important; outline:none !important; }
+/* Pills PALLET | CAJAS | UND - más grandes y vivos */
+[id^="p-"]{ background:linear-gradient(180deg,#3B82F6,#1D4ED8) !important; color:white !important; font-size:16px !important; padding:8px 14px !important; border-radius:12px !important; box-shadow:0 3px 0 #1E40AF !important; min-width:48px !important; text-align:center; }
+[id^="cj-"]{ background:linear-gradient(180deg,#334155,#0F172A) !important; color:white !important; font-size:16px !important; padding:8px 14px !important; border-radius:12px !important; box-shadow:0 3px 0 #000 !important; min-width:48px !important; text-align:center; }
+[id^="u-"]{ background:linear-gradient(180deg,#FACC15,#EAB308) !important; color:#0C2340 !important; font-size:16px !important; padding:8px 14px !important; border-radius:12px !important; box-shadow:0 3px 0 #A16207 !important; min-width:48px !important; text-align:center; }
+/* Botones */
+#mb52Original button{ transition:.2s; }
+#mb52Original button:hover{ transform:scale(1.05); }
+#mb52Original button:last-child{
+  background:linear-gradient(90deg,#DC2626,#B91C1C) !important; box-shadow:0 4px 0 #7F1D1D !important;
+  font-size:14px !important; padding:12px 22px !important;
+}
+/* Mensaje verde de ENVIADO */
+#mb52ProMsg{
+  background:linear-gradient(90deg,#DCFCE7,#BBF7D0) !important; border:2px solid #16A34A !important; color:#166534 !important;
+  font-size:14px !important; border-radius:14px !important;
+}
+</style> 
 <style>
-/* ===== DISEÑO EXACTO FOTO 1 DIA / FOTO 2 NOCHE - Solo pintura, no toca cálculo ===== */
-#mb52Original{border:3px solid #0C2340!important;border-radius:20px!important;overflow:hidden!important;background:#fff!important}
-#mb52Original > div:first-child{background:linear-gradient(90deg,#0C2340,#2563EB,#7C3AED,#DC2626)!important}
-#mb52TotalPallets,#mb52TotalCajas,#mb52TotalUnd{font-size:26px!important;line-height:1!important}
-#mb52TotalPallets{color:#fff!important}
-#mb52TotalCajas{color:#FACC15!important}
-#mb52TotalUnd{color:#0C2340!important}
-#mb52Chips span:nth-child(1){background:#DBEAFE!important;border:2px solid #2563EB!important;color:#1E40AF!important;font-weight:900!important}
-#mb52Chips span:nth-child(2){background:#FEE2E2!important;border:2px solid #DC2626!important;color:#991B1B!important;font-weight:900!important}
-#mb52Chips span:nth-child(3){background:#FEF9C3!important;border:2px solid #EAB308!important;color:#854D0E!important;font-weight:900!important}
-#mb52Chips span:nth-child(4){background:#DCFCE7!important;border:2px solid #16A34A!important;color:#166534!important;font-weight:900!important}
-#mb52ProBody > div:nth-child(1){background:#EFF6FF!important;border-left:6px solid #2563EB!important;border-radius:12px!important}
-#mb52ProBody > div:nth-child(2){background:#FEF2F2!important;border-left:6px solid #DC2626!important;border-radius:12px!important}
-#mb52ProBody > div:nth-child(3){background:#FFFBEB!important;border-left:6px solid #EAB308!important;border-radius:12px!important}
-#mb52ProBody > div:nth-child(4){background:#F0FDF4!important;border-left:6px solid #16A34A!important;border-radius:12px!important}
-#mb52Original input[data-cod]{background:#fff!important;border:3px solid #2563EB!important;border-radius:12px!important;font-size:18px!important;color:#0C2340!important}
-[id^="p-"]{background:linear-gradient(180deg,#3B82F6,#1D4ED8)!important;color:#fff!important}
-[id^="cj-"]{background:linear-gradient(180deg,#334155,#0F172A)!important;color:#fff!important}
-[id^="u-"]{background:linear-gradient(180deg,#FACC15,#EAB308)!important;color:#0C2340!important}
-#tbodyUCA tr:nth-child(1){background:linear-gradient(90deg,#EFF6FF,#DBEAFE)!important}
-#tbodyUCA tr:nth-child(2){background:linear-gradient(90deg,#FFF7ED,#FFEDD5)!important}
-#tbodyUCA tr:nth-child(3){background:linear-gradient(90deg,#ECFEFF,#CFFAFE)!important}
-#tbodyUCA td:nth-child(6){background:#0C2340!important;color:#FACC15!important;font-size:20px!important;font-weight:900!important}
-#tbodyUCA tr:last-child{background:linear-gradient(90deg,#0C2340,#1E3A8A,#DC2626)!important}
-#tbodyUCA tr:last-child td{color:#fff!important}
-#tbodyUCA tr:last-child td:nth-child(6){background:#FACC15!important;color:#0C2340!important}
-
-/* ===== FOTO 2 - MODO OSCURO, MISMO TEXTO, MISMO ORDEN ===== */
-body.modo-oscuro{background:#000!important}
-body.modo-oscuro .max-w-7xl, body.modo-oscuro #main-header{background:#0B1220!important;color:#fff!important}
-body.modo-oscuro #main-header h1{color:#fff!important}
-body.modo-oscuro #main-header #fecha{color:#94A3B8!important}
-body.modo-oscuro #vistaInventario, body.modo-oscuro #vistaUnidades{background:#0B1220!important;color:#E2E8F0!important}
-body.modo-oscuro .bg-white, body.modo-oscuro .kpi-card{background:#1E293B!important;color:#E2E8F0!important;border-color:#334155!important}
-body.modo-oscuro #mb52Original{background:#1E293B!important;border-color:#334155!important}
-body.modo-oscuro #mb52Original > div:first-child{background:#0F172A!important}
-body.modo-oscuro #mb52ProBody > div:nth-child(1), body.modo-oscuro #mb52ProBody > div:nth-child(2), body.modo-oscuro #mb52ProBody > div:nth-child(3), body.modo-oscuro #mb52ProBody > div:nth-child(4){background:#273449!important;color:#fff!important}
-body.modo-oscuro #mb52ProBody > div{color:#fff!important}
-body.modo-oscuro #mb52Chips span{filter:brightness(.9)}
-body.modo-oscuro #mb52Original input[data-cod]{background:#0F172A!important;color:#fff!important}
-body.modo-oscuro #mb52ProMsg{background:#14532D!important;color:#fff!important;border-color:#22C55E!important}
-body.modo-oscuro table{background:#1E293B!important;color:#E2E8F0!important}
-body.modo-oscuro th{background:#0F172A!important;color:#fff!important}
-body.modo-oscuro #tbodyUCA tr:nth-child(1), body.modo-oscuro #tbodyUCA tr:nth-child(2), body.modo-oscuro #tbodyUCA tr:nth-child(3){background:#273449!important}
-body.modo-oscuro #tbodyUCA td{background:#273449!important;color:#E2E8F0!important}
-body.modo-oscuro #tbodyUCA td:nth-child(6){background:#0F172A!important;color:#FACC15!important}
-body.modo-oscuro input, body.modo-oscuro select{background:#0F172A!important;color:#fff!important;border-color:#334155!important}
-body.modo-oscuro .text-gray-500, body.modo-oscuro .text-gray-600, body.modo-oscuro .text-gray-400{color:#94A3B8!important}
-body.modo-oscuro .text-black{color:#fff!important}
+/* COLORES UCA - Solo pintura, no toca cálculo */
+#tbodyUCA tr:nth-child(1){ background:linear-gradient(90deg,#EFF6FF,#DBEAFE) !important; border-left:6px solid #2563EB !important; }
+#tbodyUCA tr:nth-child(2){ background:linear-gradient(90deg,#FFF7ED,#FFEDD5) !important; border-left:6px solid #F97316 !important; }
+#tbodyUCA tr:nth-child(3){ background:linear-gradient(90deg,#ECFEFF,#CFFAFE) !important; border-left:6px solid #06B6D4 !important; }
+#tbodyUCA td:nth-child(6){ background:#0C2340 !important; color:#FACC15 !important; font-size:20px !important; font-weight:900 !important; border-radius:12px !important; }
+#tbodyUCA td:nth-child(7){ color:#15803D !important; font-weight:900 !important; }
+#tbodyUCA .cap-input{ background:#FEF9C3 !important; border:2px solid #EAB308 !important; font-weight:900 !important; border-radius:10px !important; }
+#tbodyUCA td:nth-child(8) span{ font-size:14px !important; padding:6px 14px !important; box-shadow:0 3px 8px rgba(0,0,0,.25) !important; border:2px solid white !important; }
+#tbodyUCA tr:last-child{ background:linear-gradient(90deg,#0C2340,#1E3A8A,#DC2626) !important; }
+#tbodyUCA tr:last-child td{ color:white !important; }
+#tbodyUCA tr:last-child td:nth-child(6){ background:#FACC15 !important; color:#0C2340 !important; }
+#uca-sin-transito-pct{ color:#16A34A !important; }
+#uca-con-transito-pct{ color:#2563EB !important; }
+#uca-sin-transito-bar{ background:linear-gradient(90deg,#22C55E,#15803D) !important; }
+#uca-con-transito-bar{ background:linear-gradient(90deg,#3B82F6,#0C2340) !important; }
 </style>
 <script>
 // CORRIGE CONFIG REAL: 1001277=1920, 1007119=240 - Y lo guarda en Firebase
@@ -650,37 +668,5 @@ body.modo-oscuro .text-black{color:#fff!important}
   },500);
 })();
 </script>
-<script>
-// ===== HORARIO EXACTO: DIA 7:00 AM - 6:00 PM / OSCURO 6:05 PM - 6:55 AM =====
-let modoTema = localStorage.getItem('temaBSF') || 'auto';
-function aplicarTema(){
-let h = new Date().getHours();
-let btn = document.getElementById('btnTema');
-let esOscuro = false;
-if(modoTema==='claro'){ esOscuro = false; btn.textContent='☀️ CLARO'; }
-else if(modoTema==='oscuro'){ esOscuro = true; btn.textContent='🌑 OSCURO'; }
-else { esOscuro = (h>=18 || h<6); btn.textContent='🔄 AUTO'; }
-document.body.classList.toggle('modo-oscuro', esOscuro);
-if(esOscuro){
-document.body.classList.remove('bg-gray-100');
-document.body.style.background='#0f172a';
-document.body.style.color='#f1f5f9';
-document.querySelectorAll('.bg-white').forEach(e=>{ e.style.background='#1e293b'; });
-} else {
-document.body.classList.add('bg-gray-100');
-document.body.style.background='';
-document.body.style.color='';
-document.querySelectorAll('.bg-white').forEach(e=>{ e.style.background=''; });
-}
-}
-  function cambiarTema(){
-  modoTema = modoTema === 'auto' ? 'oscuro' : (modoTema === 'oscuro' ? 'claro' : 'auto');
-  localStorage.setItem('temaBSF', modoTema);
-  aplicarTema();
-}
-aplicarTema();
-setInterval(aplicarTema, 30000);
-</script>
 </body>
 </html>
-
