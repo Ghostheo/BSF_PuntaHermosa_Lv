@@ -57,6 +57,45 @@ body.modo-cliente .prio-cell{justify-content:center!important;padding-left:0!imp
 <div class="overflow-x-auto border-2 border-black"><table class="w-full text-xs"><thead><tr class="bg-yellow-100"><th class="p-2 border border-black">CÓDIGO</th><th class="p-2 border border-black">DESCRIPCIÓN</th><th class="p-2 border border-black">UBICACIÓN</th><th class="p-2 border border-black">LOTE</th><th class="p-2 border border-black">F.VENCIMIENTO</th><th class="p-2 border border-black">PALLETS</th><th class="p-2 border border-black">CAJAS</th><th class="p-2 border border-black">UND</th><th class="p-2 border border-black">ACCIONES</th></tr></thead><tbody id="tbodyInventario"></tbody></table></div>
 <p class="text-[11px] text-gray-500 mt-2">* Solo se despacha pallet completo. Verde = ubicación vacía disponible.</p>
 <div class="mt-6 rounded-2xl overflow-hidden border-2 border-black shadow-lg">
+  <!-- INICIO MB52 -->
+<div class="mt-6 rounded-2xl overflow-hidden border-2 border-black shadow-lg">
+<div class="bg-[#0C2340] px-4 py-3"><p class="text-[10px] tracking-[2px] text-yellow-300 font-black">BSF PUNTA HERMOSA • SAP MB52</p><h3 class="text-white font-black text-[16px] leading-tight">📋 MB52 - STOCK SAP vs SUELO</h3><p class="text-[11px] text-gray-300 mt-1">Pega aqui lo copiado del MB52. No toca Inventario ni UCA.</p></div>
+<div class="p-3 bg-[#F8FAFC]">
+<textarea id="mb52-input" rows="4" placeholder="Pega aqui tu MB52 de SAP... Ej: 1001135 | GLORIA LECHE... | 1200" class="w-full border-2 border-black rounded-lg p-2 text-xs font-bold bg-white"></textarea>
+<div class="flex gap-2 mt-2 flex-wrap">
+<button onclick="procesarMB52()" class="bg-green-600 text-white text-xs font-bold px-4 py-2 rounded-md border-2 border-black">PROCESAR MB52</button>
+<button onclick="document.getElementById('mb52-input').value='';document.getElementById('mb52-tabla').innerHTML='';document.getElementById('mb52-total').textContent='0'" class="bg-white text-xs font-bold px-4 py-2 rounded-md border-2 border-black">LIMPIAR</button>
+<button onclick="copiarEjemploMB52()" class="bg-yellow-400 text-xs font-bold px-4 py-2 rounded-md border-2 border-black">VER EJEMPLO</button>
+</div>
+<div class="overflow-x-auto rounded-xl border-2 border-black bg-white mt-3"><table class="w-full text-xs"><thead><tr class="bg-[#0C2340] text-white"><th class="p-2.5 text-left">CODIGO</th><th class="p-2.5 text-left">DESCRIPCION</th><th class="p-2.5">STOCK MB52</th><th class="p-2.5">EN SUELO</th><th class="p-2.5">DIFERENCIA</th></tr></thead><tbody id="mb52-tabla"><tr><td colspan="5" class="p-3 text-center text-gray-400">Sin datos MB52 todavia. Pega y dale PROCESAR.</td></tr></tbody></table></div>
+<p class="text-[11px] font-bold mt-2">TOTAL MB52: <span id="mb52-total" class="text-[14px]">0</span></p>
+<p class="text-[10px] text-gray-500 mt-1">Diferencia = MB52 - En Suelo. En verde = cuadra. En rojo = hay diferencia.</p>
+</div></div>
+<script>
+function copiarEjemploMB52(){document.getElementById('mb52-input').value='1001135\tGLORIA LECHE REC. ENTERA 170GRX48U\t1200\n1001273\tGLORIA LECHE REC. ENTERA 390GR BANDEJX24U\t850\n1001277\tGLORIA LECHE REC. ENTERA 390GR X 6-8PK\t640\n1007119\tGLORIA PANETON TRADICIONAL 900GR X 6 UND\t36';}
+function procesarMB52(){
+var txt=document.getElementById('mb52-input').value.trim();
+if(!txt){alert('Pega primero tu MB52');return;}
+var lineas=txt.split('\n');var html='';var total=0;
+lineas.forEach(function(l){
+if(!l.trim())return;
+var partes=l.split(/\t|;|\|/);
+if(partes.length<3){partes=l.trim().split(/\s{2,}/);}
+var codigo=(partes[0]||'').trim();
+var desc=(partes[1]||'').trim();
+var stock=parseFloat(String(partes[partes.length-1]||'0').replace(/[^0-9.-]/g,''))||0;
+total+=stock;
+var suelo=0;
+try{ if(typeof inventario!=='undefined'){ Object.values(inventario).forEach(function(it){if(String(it.codigo)===String(codigo)){suelo+=parseInt(it.pallets||0);}});} }catch(e){}
+var dif=stock-suelo;
+var color=dif===0?'bg-green-100 text-green-800':'bg-red-100 text-red-800';
+html+='<tr><td class="p-2 border font-bold">'+codigo+'</td><td class="p-2 border">'+desc+'</td><td class="p-2 border text-center font-bold">'+stock+'</td><td class="p-2 border text-center">'+suelo+' pallets</td><td class="p-2 border text-center font-black '+color+'">'+dif+'</td></tr>';
+});
+document.getElementById('mb52-tabla').innerHTML=html||'<tr><td colspan="5" class="p-3 text-center">No se pudo leer. Revisa el formato.</td></tr>';
+document.getElementById('mb52-total').textContent=total;
+}
+</script>
+<!-- FIN MB52 -->
 <div class="bg-[#0C2340] px-4 py-3"><p class="text-[10px] tracking-[2px] text-yellow-300 font-black">BSF PUNTA HERMOSA • OPERACIONES LAVORO</p><h3 class="text-white font-black text-[16px] leading-tight">📊 OCUPABILIDAD - UCA</h3></div>
 <div class="p-3 bg-[#F8FAFC]"><div class="overflow-x-auto rounded-xl border-2 border-black bg-white"><table class="w-full text-xs"><thead><tr class="bg-[#0C2340] text-white"><th class="p-2.5">NAVE</th><th class="p-2.5">ALMACÉN</th><th class="p-2.5">ALMACENAMIENTO</th><th class="p-2.5">CAPACIDAD<br>NOMINAL ✏️</th><th class="p-2.5">AL 95%</th><th class="p-2.5">STOCK<br>OCUPADO</th><th class="p-2.5">UBICACIONES<br>LIBRES</th><th class="p-2.5">% OCUPABILIDAD</th></tr></thead><tbody id="tbodyUCA"></tbody></table></div>
 <div class="grid md:grid-cols-2 gap-3 mt-3">
