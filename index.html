@@ -462,5 +462,63 @@ cargarFirebase();cargarData();setInterval(cargarFirebase,15000);
   crear();
 })();
 </script>
+  <script>
+// MB52 = STOCK OCUPADO - El UCA cambia con lo del MB52, no se suma al inventario
+(function(){
+  // 1. El UCA ya no usa inventario cuando hay MB52 enviado, usa el MB52
+  function parchar(){
+    if(window.__mb52Parchado) return;
+    if(typeof calcStockPorGrupo!=='function') return setTimeout(parchar,500);
+    const orig=calcStockPorGrupo;
+    window.calcStockPorGrupo=function(){
+      // Si ya enviaste MB52, ese es el STOCK OCUPADO
+      if(window.__mb52ParaUCA){
+        return {ev:window.__mb52ParaUCA.evap, pan:window.__mb52ParaUCA.pan, total:window.__mb52ParaUCA.evap+window.__mb52ParaUCA.pan};
+      }
+      return orig();
+    };
+    window.__mb52Parchado=true;
+  }
+  parchar();
+  window.enviarAUCAPro=function(){
+    const mb=document.getElementById('mb52Original');
+    if(!mb) return alert('No encontré MB52');
+    const inputs=[...mb.querySelectorAll('input')].filter(i=>i.type==='number');
+    // Config real de tu UCA
+    const cfg=[{cxp:80,upc:48},{cxp:88,upc:24},{cxp:72,upc:48},{cxp:60,upc:6}];
+    try{ if(window.ucaConfig && ucaConfig.length>=4){ for(let i=0;i<4;i++){ cfg[i]={cxp:ucaConfig[i].cajasPorPallet, upc:ucaConfig[i].undPorCaja}; } } }catch(e){}
+    let evap=0, pan=0;
+    inputs.slice(0,4).forEach((inp,i)=>{
+      let tot=parseInt(inp.value||'0')||0; // Unidades SAP = STOCK
+      let por=cfg[i].cxp*cfg[i].upc;
+      let p=Math.floor(tot/por), resto=tot%por;
+      let cj=Math.floor(resto/cfg[i].upc);
+      // REGLA TUYA: Solo PALLET + CAJAS = STOCK OCUPADO. UND no se toma.
+      let ocup=p + (cj>0?1:0);
+      if(i<3) evap+=ocup; // 1001135 + 1001273 + 1001277 = EVAPORADA
+      else pan+=ocup; // 1007119 = PANETON
+    });
+    // Esto es lo que se pone en STOCK OCUPADO abajo
+    window.__mb52ParaUCA={evap,pan};
+    localStorage.setItem('mb52ParaUCA',JSON.stringify({evap,pan}));
+    if(typeof renderUCA==='function') renderUCA();
+    const m=document.getElementById('mb52ProMsg');
+    if(m){ m.classList.remove('hidden'); m.textContent=`✅ STOCK OCUPADO EN UCA: EVAPORADA=${evap} | PANETON=${pan} | TOTAL=${evap+pan} — Solo PALLET + CAJAS`; }
+    else alert(`✅ STOCK OCUPADO: EVAPORADA=${evap} | PANETON=${pan}`);
+  };
+  window.limpiarMB52=function(){
+    document.querySelectorAll('input[data-cod]').forEach(i=>i.value='');
+    window.__mb52ParaUCA=null; localStorage.removeItem('mb52ParaUCA');
+    if(typeof calcMB52Pro==='function') calcMB52Pro();
+    if(typeof renderUCA==='function') renderUCA();
+  };
+  setTimeout(()=>{
+    const mb=document.getElementById('mb52Original'); if(!mb) return;
+    const btn=[...mb.querySelectorAll('button')].find(b=>b.textContent.includes('ENVIAR A UCA'));
+    if(btn) btn.onclick=window.enviarAUCAPro;
+    try{ const g=JSON.parse(localStorage.getItem('mb52ParaUCA')||'null'); if(g){ window.__mb52ParaUCA=g; if(typeof renderUCA==='function') renderUCA(); } }catch(e){}
+  },1000);
+})();
+</script>
 </body>
 </html>
