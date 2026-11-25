@@ -653,20 +653,27 @@ body.modo-oscuro .text-black{color:#fff!important}
 <script>
 // ===== HORARIO EXACTO: DIA 7:00 AM - 6:00 PM / OSCURO 6:05 PM - 6:55 AM =====
 let modoTema = localStorage.getItem('temaBSF') || 'auto';
-
-  function aplicarTema(){
-  let h = new Date().getHours() + new Date().getMinutes()/60;
-  let esNoche = (h >= 18.08 || h < 6.91);
-  let oscuro = false;
-  if(modoTema === 'oscuro') oscuro = true;
-  else if(modoTema === 'claro') oscuro = false;
-  else oscuro = esNoche;
-  document.body.classList.toggle('modo-oscuro', oscuro);
-  let b = document.getElementById('btnTema');
-  if(b) b.textContent = modoTema === 'auto' ? '🌙 AUTO' : (modoTema === 'oscuro' ? '🌑 OSCURO' : '☀️ CLARO');
+function aplicarTema(){
+let h = new Date().getHours();
+let btn = document.getElementById('btnTema');
+let esOscuro = false;
+if(modoTema==='claro'){ esOscuro = false; btn.textContent='☀️ CLARO'; }
+else if(modoTema==='oscuro'){ esOscuro = true; btn.textContent='🌑 OSCURO'; }
+else { esOscuro = (h>=18 || h<6); btn.textContent='🔄 AUTO'; }
+document.body.classList.toggle('modo-oscuro', esOscuro);
+if(esOscuro){
+document.body.classList.remove('bg-gray-100');
+document.body.style.background='#0f172a';
+document.body.style.color='#f1f5f9';
+document.querySelectorAll('.bg-white').forEach(e=>{ e.style.background='#1e293b'; e.style.color='#f1f5f9'; });
+} else {
+document.body.classList.add('bg-gray-100');
+document.body.style.background='';
+document.body.style.color='';
+document.querySelectorAll('.bg-white').forEach(e=>{ e.style.background=''; e.style.color=''; });
 }
-
-function cambiarTema(){
+}
+  function cambiarTema(){
   modoTema = modoTema === 'auto' ? 'oscuro' : (modoTema === 'oscuro' ? 'claro' : 'auto');
   localStorage.setItem('temaBSF', modoTema);
   aplicarTema();
