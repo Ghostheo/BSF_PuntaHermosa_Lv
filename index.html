@@ -424,5 +424,66 @@ function cerrarUCA(){let m=document.getElementById('modalUCA');m.classList.add('
 async function guardarUCA(){document.querySelectorAll('[data-uca]').forEach(el=>{let i=parseInt(el.getAttribute('data-uca'));let k=el.getAttribute('data-k');ucaConfig[i][k]=parseFloat(el.value)||0;});await fetch(UCA_URL,{method:'PUT',body:JSON.stringify(ucaConfig)});cerrarUCA();await cargarInventario();alert('✅ UCA guardada');}
 cargarFirebase();cargarData();setInterval(cargarFirebase,15000);
 </script>
+ <!-- MB52 PRO + UCA - PEGAR AL FINAL ANTES DE </body> -->
+<div class="mx-5 my-4 bg-white rounded-2xl shadow p-4" id="mb52Restaurado">
+  <h2 class="font-black text-[16px]">📦 MB52 PRO - Convertidor SAP</h2>
+  <p class="text-[11px] text-gray-500">Escribe CAJAS SAP y te da PALLET / CAJA / UND</p>
+  <div id="mb52ProBody"></div>
+  <div class="flex gap-2 mt-3">
+    <button onclick="calcMB52Pro()" class="flex-1 bg-blue-600 text-white font-bold py-2 rounded-xl text-[13px]">CALCULAR</button>
+    <button onclick="enviarAUCAPro()" class="flex-1 bg-green-600 text-white font-bold py-2 rounded-xl text-[13px]">↓ ENVIAR A UCA ↓</button>
+  </div>
+  <div id="mb52ProMsg" class="hidden mt-2 text-[12px] font-bold bg-green-50 border px-3 py-2 rounded-xl"></div>
+  <div class="mt-2 text-[12px] font-bold">TOTAL PALLETS: <span id="mb52TotalPallets">0</span></div>
+</div>
+<script>
+const MB52_CONFIG=[
+ {cod:'1001135',desc:'EVAP. 170GRX48U',cxp:80},
+ {cod:'1001273',desc:'EVAP. 390GR BANDEJAX24U',cxp:88},
+ {cod:'1001277',desc:'EVAP. 390GR X 6-8PK',cxp:40},
+ {cod:'1007119',desc:'PANETON 900G',cxp:40},
+];
+function renderMB52Pro(){
+  document.getElementById('mb52ProBody').innerHTML=MB52_CONFIG.map(c=>`
+  <div class="flex items-center gap-2 py-1 border-b">
+    <div class="w-[95px]"><div class="font-bold text-[12px]">${c.cod}</div><div class="text-[10px] text-gray-500">${c.desc}</div></div>
+    <input data-cod="${c.cod}" type="number" placeholder="Cajas SAP" class="w-[90px] border rounded-lg px-2 py-1 text-[13px]" oninput="calcMB52Pro()">
+    <div class="flex-1 text-[12px] font-bold text-right"><span id="res-${c.cod}">0 P / 0 C / 0 U</span></div>
+  </div>`).join('');
+}
+function calcMB52Pro(){
+  window.__mb52Result={}; let totalP=0;
+  MB52_CONFIG.forEach(c=>{
+    const inp=document.querySelector(`input[data-cod="${c.cod}"]`);
+    let totalCajas=parseInt(inp?.value||'0')||0;
+    let pallets=Math.floor(totalCajas/c.cxp);
+    let cajas=totalCajas % c.cxp;
+    window.__mb52Result[c.cod]={pallets,cajas,und:0};
+    totalP+=pallets;
+    const el=document.getElementById(`res-${c.cod}`);
+    if(el) el.textContent=`${pallets} P / ${cajas} C / 0 U`;
+  });
+  const tp=document.getElementById('mb52TotalPallets'); if(tp) tp.textContent=totalP;
+  return window.__mb52Result;
+}
+function enviarAUCAPro(){
+  calcMB52Pro();
+  const r=window.__mb52Result||{};
+  const ocup=(c)=>{const p=r[c]||{pallets:0,cajas:0,und:0}; return p.pallets+((p.cajas>0||p.und>0)?1:0);};
+  const evap=ocup('1001135')+ocup('1001273')+ocup('1001277');
+  const pan=ocup('1007119');
+  document.querySelectorAll('tr').forEach(tr=>{
+    const t=tr.textContent, td=tr.querySelectorAll('td');
+    if(td.length<6) return;
+    if(t.includes('EVAPORADA')&&td[5]) td[5].textContent=evap.toFixed(1);
+    if(t.includes('PANETON')&&td[5]) td[5].textContent=pan.toFixed(1);
+    if(t.includes('TOTAL GENERAL')&&td[5]) td[5].textContent=(evap+pan).toFixed(1);
+  });
+  const m=document.getElementById('mb52ProMsg'); m.classList.remove('hidden');
+  m.textContent=`✅ CONECTADO: EVAPORADA=${evap} | PANETON=${pan} | TOTAL=${evap+pan} - Sube y mira el UCA`;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+renderMB52Pro();
+</script>
 </body>
 </html>
