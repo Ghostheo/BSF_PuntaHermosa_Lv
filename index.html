@@ -543,5 +543,79 @@ function aplicarUCA(){
 }
 setInterval(aplicarUCA, 1000);
 </script>
+ <!-- MB52 PRO ORIGINAL - COMPLETO Y BONITO - Pegar al final antes de </body> -->
+<div id="mb52Original" class="mx-5 my-4 bg-white rounded-2xl shadow overflow-hidden">
+  <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4">
+    <div class="font-black text-[16px]">📦 MB52 PRO - Convertidor SAP</div>
+    <div class="text-[11px] opacity-90">Ingresa solo UNIDADES SAP y convierte a PALLET / CAJA / UND</div>
+    <div class="text-[11px] opacity-90">Verificación Rápida MB52</div>
+  </div>
+  <div class="p-4" id="mb52ProBody"></div>
+  <div class="px-4 pb-2 text-[12px] font-bold">TOTAL PALLETS: <span id="mb52TotalPallets">0</span> &nbsp; | &nbsp; UNIDADES TOTALES: <span id="mb52TotalUnd">0</span></div>
+  <div class="p-4 flex gap-2">
+    <button onclick="calcMB52Pro()" class="flex-1 bg-blue-600 text-white font-bold py-2 rounded-xl text-[13px]">CALCULAR</button>
+    <button onclick="enviarAUCAPro()" class="flex-1 bg-green-600 text-white font-bold py-2 rounded-xl text-[13px]">↓ ENVIAR A UCA ↓</button>
+    <button onclick="limpiarMB52()" class="px-4 bg-gray-200 font-bold py-2 rounded-xl text-[13px]">LIMPIAR</button>
+  </div>
+  <div id="mb52ProMsg" class="hidden mx-4 mb-4 text-[12px] font-bold bg-green-50 border border-green-200 text-green-800 px-3 py-2 rounded-xl"></div>
+</div>
+<script>
+// MB52 PRO - UNIDADES SAP
+const MB52_CONFIG=[
+ {cod:'1001135',desc:'EVAP. 170GRX48U',cxp:80,upc:48},
+ {cod:'1001273',desc:'EVAP. 390GR BANDEJAX24U',cxp:88,upc:24},
+ {cod:'1001277',desc:'EVAP. 390GR X 6-8PK',cxp:40,upc:48},
+ {cod:'1007119',desc:'PANETON 900G',cxp:40,upc:6},
+];
+function renderMB52Pro(){
+  document.getElementById('mb52ProBody').innerHTML=MB52_CONFIG.map(c=>`
+  <div class="flex items-center gap-2 py-2 border-b">
+    <div class="w-[110px]"><div class="font-bold text-[12px]">${c.cod}</div><div class="text-[10px] text-gray-500">${c.desc}</div><div class="text-[10px] text-gray-400">${c.cxp} CJ/Pallet • ${c.upc} UND/CJ</div></div>
+    <input data-cod="${c.cod}" type="number" placeholder="UNIDADES SAP" class="w-[110px] border rounded-lg px-2 py-1 text-[13px]" oninput="calcMB52Pro()">
+    <div class="flex-1 text-[12px] font-bold text-right"><span id="res-${c.cod}">0 P / 0 C / 0 U</span></div>
+  </div>`).join('');
+}
+function calcMB52Pro(){
+  window.__mb52Result={}; let tp=0, tu=0;
+  MB52_CONFIG.forEach(c=>{
+    const inp=document.querySelector(`input[data-cod="${c.cod}"]`);
+    let undTotales=parseInt(inp?.value||'0')||0; tu+=undTotales;
+    let porPallet=c.cxp*c.upc;
+    let pallets=Math.floor(undTotales/porPallet);
+    let resto=undTotales%porPallet;
+    let cajas=Math.floor(resto/c.upc);
+    let und=resto%c.upc;
+    window.__mb52Result[c.cod]={pallets,cajas,und};
+    tp+=pallets;
+    const el=document.getElementById(`res-${c.cod}`); if(el) el.textContent=`${pallets} P / ${cajas} C / ${und} U`;
+  });
+  document.getElementById('mb52TotalPallets').textContent=tp;
+  document.getElementById('mb52TotalUnd').textContent=tu.toLocaleString('es-PE');
+  return window.__mb52Result;
+}
+function limpiarMB52(){ document.querySelectorAll('input[data-cod]').forEach(i=>i.value=''); calcMB52Pro(); }
+function enviarAUCAPro(){
+  calcMB52Pro();
+  const r=window.__mb52Result||{};
+  const ocup=(c)=>{const p=r[c]||{pallets:0,cajas:0,und:0}; return (p.pallets||0)+(((p.cajas||0)>0||(p.und||0)>0)?1:0);};
+  const evap=ocup('1001135')+ocup('1001273')+ocup('1001277');
+  const pan=ocup('1007119');
+  window.__ucaMB52={evap,pan,total:evap+pan};
+  aplicarUCA();
+  const m=document.getElementById('mb52ProMsg'); if(m){m.classList.remove('hidden'); m.textContent=`✅ CONECTADO: EVAPORADA=${evap} | PANETON=${pan} | TOTAL=${evap+pan}`;}
+}
+function aplicarUCA(){
+  const u=window.__ucaMB52; if(!u) return;
+  document.querySelectorAll('tr').forEach(tr=>{
+    const t=tr.textContent, td=tr.querySelectorAll('td');
+    if(t.includes('EVAPORADA')&&td.length>=8){td[5].textContent=u.evap; td[6].textContent=(6737.4-u.evap).toFixed(1); td[7].textContent=Math.round(u.evap/6737.4*100)+'%';}
+    if(t.includes('PANETON')&&td.length>=8){td[5].textContent=u.pan; td[6].textContent=(34.2-u.pan).toFixed(1); td[7].textContent=Math.round(u.pan/34.2*100)+'%';}
+  });
+}
+setInterval(aplicarUCA,1000);
+// Sube el MB52 arriba solo, como lo querías
+setTimeout(()=>{ const mb=document.getElementById('mb52Original'); if(mb) document.body.prepend(mb); },300);
+renderMB52Pro();
+</script>
 </body>
 </html>
