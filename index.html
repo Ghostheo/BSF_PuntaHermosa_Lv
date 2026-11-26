@@ -8,23 +8,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  body.modo-cliente input{
-  display:inline-block !important;
-  visibility:visible !important;
-  color:#000 !important;
-  -webkit-text-fill-color:#000 !important;
-  opacity:1 !important;
-  background:#fef08a !important;
-}
-body.modo-cliente #input-transito-uca{
-  display:inline-block !important;
-  visibility:visible !important;
-  background:#fff !important;
-}
-/* Que el TRANSITO no se esconda en la captura aunque esté fuera de la sección */
-body.solo-uca #input-transito-uca{
-  visibility:visible !important;
-}
+
 <style>
 body.solo-uca *{visibility:hidden}
 body.solo-uca #seccionUCA, body.solo-uca #seccionUCA *{visibility:visible}
@@ -53,6 +37,12 @@ input.cap-input{width:90px;border:2px solid #000;border-radius:6px;padding:4px;t
 .prio-flechas button:hover{transform:scale(1.3)}
 body.modo-cliente .prio-flechas{display:none!important}
 body.modo-cliente .prio-cell{justify-content:center!important;padding-left:0!important}
+  .cap-espejo{display:none}
+.transito-espejo{display:none}
+body.solo-uca .cap-input{display:none !important}
+body.solo-uca .cap-espejo{display:block !important; background:#fef08a; border:1px solid #d4a017; border-radius:6px; padding:6px; font-weight:700; text-align:center}
+body.solo-uca #input-transito-uca{display:none !important}
+body.solo-uca .transito-espejo{display:inline-block !important; visibility:visible !important; background:#fff; border:1px solid #000; border-radius:6px; padding:6px 10px; font-weight:700; color:#b91c1c}
 </style>
 </head>
 <body class="bg-gray-100 p-2 md:p-6">
@@ -814,6 +804,24 @@ document.addEventListener('click', function(e){
   }
 });
 setInterval(sincronizarParaCaptura, 1000);
+  function crearEspejos(){
+  document.querySelectorAll('.cap-input').forEach(inp=>{
+    if(!inp.nextElementSibling || !inp.nextElementSibling.classList.contains('cap-espejo')){
+      let e=document.createElement('div'); e.className='cap-espejo'; inp.after(e);
+    }
+    inp.nextElementSibling.textContent = inp.value || inp.placeholder;
+  });
+  let t=document.getElementById('input-transito-uca');
+  if(t){
+    if(!t.nextElementSibling || !t.nextElementSibling.classList.contains('transito-espejo')){
+      let e=document.createElement('div'); e.className='transito-espejo'; t.after(e);
+    }
+    t.nextElementSibling.textContent = t.value || '0';
+  }
+}
+crearEspejos();
+setInterval(crearEspejos, 500);
+document.addEventListener('input', crearEspejos);
 </script>
 </body>
 </html>
