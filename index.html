@@ -8,6 +8,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
+body.solo-uca *{visibility:hidden}
+body.solo-uca #seccionUCA, body.solo-uca #seccionUCA *{visibility:visible}
+body.solo-uca #seccionUCA{position:fixed;top:0;left:0;width:100%;z-index:9999;background:white;padding:10px}
 .card-bordered{border:2px solid #000}.dot-green{width:8px;height:8px;background:#22c55e;border-radius:50%;display:inline-block;animation:pulse 2s infinite}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.7)}70%{box-shadow:0 0 0 6px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
 .modal-bg{background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}.tab-active{background:#0C2340;color:#fff}.tab-inactive{background:#e5e7eb;color:#000}
@@ -37,6 +40,9 @@ body.modo-cliente .prio-cell{justify-content:center!important;padding-left:0!imp
 <div><img src="logo.png" class="ocultar-en-cliente h-10 md:h-12 object-contain mb-2"><h1 class="text-xl md:text-2xl font-bold mt-2">Status BSF PUNTA HERMOSA</h1><p id="fecha" class="text-xs text-gray-500 mt-1"></p><p class="text-xs text-green-600 font-bold mt-1 flex items-center gap-1 ocultar-en-cliente"><span class="dot-green"></span> Sincronizado en vivo - DATA compartida</p></div>
 <div class="flex gap-2 flex-wrap justify-end">
 <button id="btnCaptura" onclick="toggleCaptura()" class="bg-black text-white border-2 border-black rounded-xl px-4 py-2 text-[11px] font-bold">📸 MODO CAPTURA BSF</button>
+<button onclick="capturarSoloUCAPro()" class="w-full text-left px-3 py-2 bg-blue-600 text-white font-bold rounded hover:bg-blue-700">
+  📸 MODO CAPTURA UCA - PRO
+</button>
 <button onclick="abrirAdminPass()" class="ocultar-en-cliente bg-white border-2 border-black rounded-xl px-4 py-2 text-[11px] font-bold">🔒 ADMIN</button>
 <button onclick="guardarDiaBSF()" class="ocultar-en-cliente bg-green-600 text-white border-2 border-black rounded-xl px-4 py-2 text-[11px] font-bold">📥 GUARDAR DÍA → DATA</button>
 <button onclick="mostrarInventario()" class="ocultar-en-cliente bg-orange-500 text-white border-2 border-black rounded-xl px-4 py-2 text-[11px] font-bold">📦 INVENTARIO</button>
@@ -56,7 +62,7 @@ body.modo-cliente .prio-cell{justify-content:center!important;padding-left:0!imp
 <div id="inv-resumen-codigos" class="flex gap-2 flex-wrap mb-3"></div>
 <div class="overflow-x-auto border-2 border-black"><table class="w-full text-xs"><thead><tr class="bg-yellow-100"><th class="p-2 border border-black">CÓDIGO</th><th class="p-2 border border-black">DESCRIPCIÓN</th><th class="p-2 border border-black">UBICACIÓN</th><th class="p-2 border border-black">LOTE</th><th class="p-2 border border-black">F.VENCIMIENTO</th><th class="p-2 border border-black">PALLETS</th><th class="p-2 border border-black">CAJAS</th><th class="p-2 border border-black">UND</th><th class="p-2 border border-black">ACCIONES</th></tr></thead><tbody id="tbodyInventario"></tbody></table></div>
 <p class="text-[11px] text-gray-500 mt-2">* Solo se despacha pallet completo. Verde = ubicación vacía disponible.</p>
-<div class="mt-6 rounded-2xl overflow-hidden border-2 border-black shadow-lg">
+<div id="seccionUCA" class="mt-6 rounded-2xl overflow-hidden border-2 border-black shadow-lg">
 <div class="bg-[#0C2340] px-4 py-3"><p class="text-[10px] tracking-[2px] text-yellow-300 font-black">BSF PUNTA HERMOSA • OPERACIONES LAVORO</p><h3 class="text-white font-black text-[16px] leading-tight">📊 OCUPABILIDAD - UCA</h3></div>
 <div class="p-3 bg-[#F8FAFC]"><div class="overflow-x-auto rounded-xl border-2 border-black bg-white"><table class="w-full text-xs"><thead><tr class="bg-[#0C2340] text-white"><th class="p-2.5">NAVE</th><th class="p-2.5">ALMACÉN</th><th class="p-2.5">ALMACENAMIENTO</th><th class="p-2.5">CAPACIDAD<br>NOMINAL ✏️</th><th class="p-2.5">AL 95%</th><th class="p-2.5">STOCK<br>OCUPADO</th><th class="p-2.5">UBICACIONES<br>LIBRES</th><th class="p-2.5">% OCUPABILIDAD</th></tr></thead><tbody id="tbodyUCA"></tbody></table></div>
 <div class="grid md:grid-cols-2 gap-3 mt-3">
@@ -117,6 +123,18 @@ let database={},editId=null,deleteId=null,filtroEstatus=null,confirmAction=null,
 let charts={};
 function mkChart(id,type,labels,vals){let el=document.getElementById(id);if(!el)return;if(charts[id])charts[id].destroy();let cols=['#0C2340','#22c55e','#f59e0b','#a855f7','#ef4444','#f97316','#6b7280','#0ea5e9'];charts[id]=new Chart(el,{type:type,data:{labels:labels,datasets:[{data:vals,backgroundColor:cols,borderColor:'#000',borderWidth:1}]},options:{responsive:true,plugins:{legend:{display:type==='doughnut'}}}});}
 function toggleCaptura(){document.body.classList.toggle('modo-cliente');window.scrollTo(0,0);}
+async function capturarSoloUCAPro(){
+  const seccion = document.getElementById('seccionUCA');
+  if(!seccion){ alert('No encuentro la sección UCA'); return; }
+  document.body.classList.add('solo-uca');
+  await new Promise(r => setTimeout(r, 300));
+  const canvas = await html2canvas(seccion, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
+  document.body.classList.remove('solo-uca');
+  const link = document.createElement('a');
+  link.download = 'UCA-PRO-' + new Date().toISOString().slice(0,10) + '.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.body.classList.contains('modo-cliente'))toggleCaptura();});
 function getEstatusBadge(s){let e=(s||'').toUpperCase();if(e==='PENDIENTE')return '<span class="badge bg-[#C62828] text-white">PENDIENTE</span>';if(e==='EN PROCESO')return '<span class="badge bg-red-100 text-red-700">EN PROCESO</span>';if(e==='PEND. FACTURA')return '<span class="badge bg-orange-500 text-white">PEND. FACTURA</span>';if(e==='CARGADO/FACT.')return '<span class="badge bg-green-100 text-green-700">CARGADO/FACT.</span>';if(e==='ATENDIDO')return '<span class="badge bg-green-700 text-white">ATENDIDO</span>';if(e==='NO EN CD')return '<span class="badge bg-gray-200 text-gray-700">NO EN CD</span>';if(e==='PERNOCTANDO')return '<span class="badge bg-sky-500 text-white">PERNOCTANDO</span>';return '<span class="badge bg-gray-200">'+s+'</span>';}
 function setFiltro(s){filtroEstatus=(filtroEstatus===s)?null:s;updateDashboard();}
