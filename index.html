@@ -921,33 +921,72 @@ document.addEventListener('input', crearEspejos);
     });
   }
 })();
-// ===== SOLO TRANSITO QUE NO SE BORRE AL ACTUALIZAR =====
+// ===== TRANSITO V2 - QUE NO SE BORRE NI LO PISE LA APP =====
 (function(){
-  function getTransito(){
-    let lab = Array.from(document.querySelectorAll('*')).find(e=>e.textContent && e.textContent.trim().startsWith('TRANSITO'));
-    if(!lab) return null;
-    return lab.parentElement ? lab.parentElement.querySelector('input') : null;
+  function buscarTransito(){
+    // Busca el texto TRANSITO y agarra el primer input que viene después
+    let todos = Array.from(document.querySelectorAll('input'));
+    // El input de tránsito es el que está justo debajo de la tabla UCA
+    // Lo identificamos porque en el HTML está cerca de la palabra TRANSITO
+    let html = document.body.innerHTML;
+    let pos = html.indexOf('TRANSITO');
+    if(pos === -1) pos = html.indexOf('Tránsito');
+    if(pos === -1) return null;
+
+    // El input de tránsito es el único input que está en la sección UCA
+    // Buscamos el input que esté después de la tabla TOTAL GENERAL
+    let totalPos = html.indexOf('TOTAL GENERAL');
+    // Recorremos inputs y nos quedamos con el que está después del TOTAL
+    // En tu app ese es el de TRÁNSITO
+    let inputs = todos;
+    // Truco: el input de tránsito es el que tiene al lado el texto "TRANSITO:"
+    for(let inp of inputs){
+      let p = inp.parentElement;
+      for(let i=0;i<3 && p;i++){ 
+        if(p.textContent && p.textContent.includes('TRANSITO')) return inp;
+        p = p.parentElement;
+      }
+    }
+    return null;
   }
 
   function guardar(){
-    let t = getTransito();
-    if(t) localStorage.setItem('transito_fijo', t.value);
+    let t = buscarTransito();
+    if(t && t.value && t.value !== '0' && t.value !== ''){
+      localStorage.setItem('transito_fijo_v2', t.value);
+      // console.log('Transito guardado:', t.value);
+    }
   }
 
   function restaurar(){
-    let v = localStorage.getItem('transito_fijo');
-    let t = getTransito();
-    if(t && v !== null && v !== '' && v !== '0'){
+    let v = localStorage.getItem('transito_fijo_v2');
+    let t = buscarTransito();
+    if(t && v && v !== '0' && v !== '' && t.value !== v){
       let setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype,'value').set;
       setter.call(t, v);
       t.dispatchEvent(new Event('input',{bubbles:true}));
       t.dispatchEvent(new Event('change',{bubbles:true}));
+      t.dispatchEvent(new Event('keyup',{bubbles:true}));
     }
   }
 
-  document.addEventListener('input', ()=> setTimeout(guardar, 200));
-  setTimeout(restaurar, 800);
-  setTimeout(restaurar, 2000);
+  // Guarda cada vez que escribes
+  document.addEventListener('input', ()=> setTimeout(guardar, 100));
+  document.addEventListener('keyup', ()=> setTimeout(guardar, 100));
+  document.addEventListener('change', ()=> setTimeout(guardar, 100));
+
+  // Restaura terco: cada 1 seg por 15 seg, por si la app lo pisa
+  let veces = 0;
+  let timer = setInterval(()=>{
+    restaurar();
+    veces++;
+    if(veces > 15) clearInterval(timer);
+  }, 1000);
+
+  // También al cargar
+  setTimeout(restaurar, 500);
+  setTimeout(restaurar, 1500);
+  setTimeout(restaurar, 3000);
 })();
 </script>
 </body>
