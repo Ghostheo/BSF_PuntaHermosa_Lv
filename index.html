@@ -8,6 +8,23 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  body.modo-cliente input{
+  display:inline-block !important;
+  visibility:visible !important;
+  color:#000 !important;
+  -webkit-text-fill-color:#000 !important;
+  opacity:1 !important;
+  background:#fef08a !important;
+}
+body.modo-cliente #input-transito-uca{
+  display:inline-block !important;
+  visibility:visible !important;
+  background:#fff !important;
+}
+/* Que el TRANSITO no se esconda en la captura aunque esté fuera de la sección */
+body.solo-uca #input-transito-uca{
+  visibility:visible !important;
+}
 <style>
 body.solo-uca *{visibility:hidden}
 body.solo-uca #seccionUCA, body.solo-uca #seccionUCA *{visibility:visible}
@@ -780,6 +797,23 @@ function cargarSAP(){
 }
 document.addEventListener('input', guardarSAP);
 setTimeout(cargarSAP, 500);
+  // Que NOMINAL y TRANSITO sí salgan en la captura
+function sincronizarParaCaptura(){
+  document.querySelectorAll('input').forEach(inp => {
+    inp.setAttribute('value', inp.value);
+    // Si el input está dentro de un cuadrito amarillo, deja el número escrito en el cuadrito
+    if(inp.parentElement){
+      inp.parentElement.setAttribute('data-valor', inp.value);
+    }
+  });
+}
+// Cada vez que entras a MODO CAPTURA, primero sincroniza
+document.addEventListener('click', function(e){
+  if(e.target && e.target.textContent && e.target.textContent.includes('MODO CAPTURA')){
+    sincronizarParaCaptura();
+  }
+});
+setInterval(sincronizarParaCaptura, 1000);
 </script>
 </body>
 </html>
