@@ -140,26 +140,8 @@ let charts={};
 function mkChart(id,type,labels,vals){let el=document.getElementById(id);if(!el)return;if(charts[id])charts[id].destroy();let cols=['#0C2340','#22c55e','#f59e0b','#a855f7','#ef4444','#f97316','#6b7280','#0ea5e9'];charts[id]=new Chart(el,{type:type,data:{labels:labels,datasets:[{data:vals,backgroundColor:cols,borderColor:'#000',borderWidth:1}]},options:{responsive:true,plugins:{legend:{display:type==='doughnut'}}}});}
 function toggleCaptura(){document.body.classList.toggle('modo-cliente');window.scrollTo(0,0);}
 async function capturaUCA_PRO(){
-  const el = document.getElementById('seccionUCA');
-  const canvas = await html2canvas(el, {
-    scale: 3,
-    useCORS: true,
-    backgroundColor: '#ffffff',
-    windowWidth: el.scrollWidth + 30,
-    windowHeight: el.scrollHeight + 30,
-    onclone: (doc) => {
-      const c = doc.getElementById('seccionUCA');
-      c.style.overflow = 'visible';
-      c.style.padding = '12px';
-      c.querySelectorAll('*').forEach(n => {
-        n.style.overflow = 'visible';
-      });
-    }
-  });
-  const link = document.createElement('a');
-  link.download = 'UCA-PRO-2026-11-26.png';
-  link.href = canvas.toDataURL('image/png', 1.0);
-  link.click();
+  document.body.classList.toggle('solo-uca');
+  window.scrollTo(0,0);
 }
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.body.classList.contains('modo-cliente'))toggleCaptura();});
 function getEstatusBadge(s){let e=(s||'').toUpperCase();if(e==='PENDIENTE')return '<span class="badge bg-[#C62828] text-white">PENDIENTE</span>';if(e==='EN PROCESO')return '<span class="badge bg-red-100 text-red-700">EN PROCESO</span>';if(e==='PEND. FACTURA')return '<span class="badge bg-orange-500 text-white">PEND. FACTURA</span>';if(e==='CARGADO/FACT.')return '<span class="badge bg-green-100 text-green-700">CARGADO/FACT.</span>';if(e==='ATENDIDO')return '<span class="badge bg-green-700 text-white">ATENDIDO</span>';if(e==='NO EN CD')return '<span class="badge bg-gray-200 text-gray-700">NO EN CD</span>';if(e==='PERNOCTANDO')return '<span class="badge bg-sky-500 text-white">PERNOCTANDO</span>';return '<span class="badge bg-gray-200">'+s+'</span>';}
