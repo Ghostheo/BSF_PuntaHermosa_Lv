@@ -11,7 +11,7 @@
 
 <style>
 /* ===== ARREGLO NO SE CORTA - CELULAR Y PC ===== */
-html,body{max-width:100%;overflow-x:hidden}
+
 *{box-sizing:border-box}
 .max-w-7xl{max-width:1450px!important;width:100%!important}
 #main-header{flex-wrap:wrap!important;gap:12px!important}
@@ -24,7 +24,12 @@ table.w-full{min-width:720px}
   input.cap-input{width:70px!important}
   #main-header h1{font-size:19px!important}
 }
-.modal-bg>div{max-width:calc(100vw - 24px)!important;max-height:90vh;overflow:auto}
+/* FIX MODO CAPTURA UCA */
+body.solo_uca #main-header,
+body.solo_uca #unidades-section,
+body.solo_uca #inventario-section,
+body.solo_uca #data-section{ display:none!important; }
+body:not(.solo_uca) #uca-captura{ display:none!important; }
 body.solo-uca #seccionUCA{position:fixed !important; top:0 !important; left:0 !important; right:0 !important; z-index:9999 !important; background:white !important; height:100vh !important; overflow:auto !important}
 body.solo-uca #seccionUCA, body.solo-uca #seccionUCA *{visibility:visible}
 body.solo-uca #seccionUCA{
