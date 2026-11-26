@@ -804,113 +804,59 @@ setInterval(sincronizarParaCaptura, 1000);
 crearEspejos();
 setInterval(crearEspejos, 500);
 document.addEventListener('input', crearEspejos);
-// ===== MB52 V2 - SE QUEDA HASTA LIMPIAR =====
+// ===== CAPACIDAD V3 - POR FILA, NO POR ORDEN =====
 (function(){
-  function buscarInputsMB52(){
-    let todos = Array.from(document.querySelectorAll('input'));
-    // El MB52 son los 4 inputs que están cerca del texto 1001135 y 1007119
-    // Los buscamos subiendo 6 niveles desde cada input y viendo si ahí está el MB52
-    let encontrados = [];
-    for(let inp of todos){
-      let p = inp;
-      for(let i=0;i<7;i++){ p = p.parentElement; if(!p) break;
-        if(p.textContent && p.textContent.includes('MB52 - PRO') && p.textContent.includes('1001135')){
-          encontrados.push(inp);
-          break;
-        }
+  function setCapacidadPorNave(nombreNave, valor){
+    // Busca la fila <tr> que dice NAVE 1, NAVE 2 o NAVE 3
+    let filas = Array.from(document.querySelectorAll('tr'));
+    let fila = filas.find(tr => tr.textContent.includes(nombreNave));
+    if(!fila) return false;
+    let inp = fila.querySelector('input');
+    if(!inp) return false;
+    inp.value = valor;
+    inp.dispatchEvent(new Event('input',{bubbles:true}));
+    inp.dispatchEvent(new Event('change',{bubbles:true}));
+    return true;
+  }
+
+  function setTransito(valor){
+    // El input de TRÁNSITO es el que está justo después del texto TRÁNSITO:
+    let labels = Array.from(document.querySelectorAll('*')).filter(e=>e.textContent && e.textContent.trim() === 'TRANSITO:');
+    if(!labels.length) labels = Array.from(document.querySelectorAll('*')).filter(e=>e.textContent && e.textContent.trim().startsWith('TRANSITO'));
+    for(let lab of labels){
+      let cont = lab.parentElement;
+      let inp = cont ? cont.querySelector('input') : null;
+      if(inp){
+        inp.value = valor;
+        inp.dispatchEvent(new Event('input',{bubbles:true}));
+        inp.dispatchEvent(new Event('change',{bubbles:true}));
+        return true;
       }
     }
-    // Quitamos duplicados y nos quedamos con los 4 primeros en orden
-    let unicos = [...new Set(encontrados)];
-    // Los 4 de UNIDADES SAP son los que están en la columna de inputs grandes
-    // En tu pantalla son los 4 que aparecen seguidos
-    return unicos.slice(0,4);
+    return false;
   }
 
-  function guardar(){
-    let inputs = buscarInputsMB52();
-    if(inputs.length===4){
-      localStorage.setItem('mb52_pro_guardado', JSON.stringify(inputs.map(i=>i.value)));
-      console.log('MB52 guardado', inputs.map(i=>i.value));
-    }
+  function restaurarTodo(){
+    // Limpia el guardado viejo que estaba mal
+    localStorage.removeItem('capacidad_fija');
+    localStorage.removeItem('capacidad_nominal_fija');
+    // 1. Corrige capacidades por fila
+    setCapacidadPorNave('NAVE 1', 7092);
+    setCapacidadPorNave('NAVE 2', 36);
+    setCapacidadPorNave('NAVE 3', 0);
+    // 2. Tránsito en 0, no en 36
+    setTransito(0);
   }
 
-  function restaurar(){
-    let g = localStorage.getItem('mb52_pro_guardado');
-    if(!g) return;
-    try{
-      let vals = JSON.parse(g);
-      let inputs = buscarInputsMB52();
-      if(inputs.length===4){
-        inputs.forEach((inp,i)=>{
-          inp.value = vals[i] || '';
-          inp.dispatchEvent(new Event('input',{bubbles:true}));
-          inp.dispatchEvent(new Event('change',{bubbles:true}));
-        });
-        console.log('MB52 restaurado', vals);
-      }
-    }catch(e){}
-  }
+  setTimeout(restaurarTodo, 1200);
+  setTimeout(restaurarTodo, 2800);
 
-  document.addEventListener('input', e=>{
-    let inputs = buscarInputsMB52();
-    if(inputs.includes(e.target)) guardar();
-  });
-
-  // Restaurar con retraso, porque tu página carga el MB52 después
-  setTimeout(restaurar, 1200);
-  setTimeout(restaurar, 2200);
-  setTimeout(restaurar, 3500);
-
-  let btnLimpiar = Array.from(document.querySelectorAll('button')).find(b=>b.textContent.includes('LIMPIAR'));
-  if(btnLimpiar) btnLimpiar.addEventListener('click', ()=> localStorage.removeItem('mb52_pro_guardado'));
-})();
-// ===== RESTAURAR CAPACIDAD NOMINAL FIJA =====
-(function(){
-  const CAPACIDADES = [7092, 36, 0]; // NAVE1, NAVE2, NAVE3
-
-  function buscarInputsCapacidad(){
-    // Son los 3 inputs amarillos de la columna CAPACIDAD NOMINAL
-    let todos = Array.from(document.querySelectorAll('input'));
-    let encontrados = [];
-    for(let inp of todos){
-      let p = inp;
-      for(let i=0;i<7;i++){ p = p.parentElement; if(!p) break;
-        if(p.textContent && p.textContent.includes('CAPACIDAD NOMINAL') && p.textContent.includes('NAVE 1')){
-          encontrados.push(inp);
-          break;
-        }
-      }
-    }
-    return [...new Set(encontrados)].slice(0,3);
-  }
-
-  function restaurar(){
-    let inputs = buscarInputsCapacidad();
-    if(inputs.length === 3){
-      inputs.forEach((inp,i)=>{
-        if(!inp.value || parseFloat(inp.value) === 0){
-          inp.value = CAPACIDADES[i];
-          inp.dispatchEvent(new Event('input',{bubbles:true}));
-          inp.dispatchEvent(new Event('change',{bubbles:true}));
-        }
-      });
-      // Guarda para que no se pierda nunca más
-      localStorage.setItem('capacidad_fija', JSON.stringify(CAPACIDADES));
-    }
-  }
-
-  // Restaura al cargar
-  setTimeout(restaurar, 1000);
-  setTimeout(restaurar, 2500);
-  setTimeout(restaurar, 4000);
-
-  // Después de LIMPIAR, vuelve a poner la capacidad
+  // Después de LIMPIAR, vuelve a poner capacidad, pero tránsito queda en 0
   let btns = Array.from(document.querySelectorAll('button')).filter(b=>b.textContent.includes('LIMPIAR'));
   btns.forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      setTimeout(restaurar, 600);
-      setTimeout(restaurar, 1200);
+      setTimeout(restaurarTodo, 600);
+      setTimeout(restaurarTodo, 1300);
     });
   });
 })();
