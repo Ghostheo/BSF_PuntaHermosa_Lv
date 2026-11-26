@@ -921,34 +921,30 @@ document.addEventListener('input', crearEspejos);
     });
   }
 })();
-// ===== TRANSITO V3 - BUSCA POR ORDEN, NO POR PADRE =====
+// ===== TRANSITO V4 - YA CON LIMPIAR INTEGRADO =====
 (function(){
   function buscarTransito(){
-    // Recorre toda la página en orden y se queda con el input que viene JUSTO DESPUÉS del texto TRANSITO
     let walker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
     let node;
-    let vistoTransito = false;
+    let visto = false;
     while(node = walker.nextNode()){
-      if(node.tagName !== 'INPUT' && node.textContent && node.textContent.trim() === 'TRANSITO:' ){
-        vistoTransito = true;
+      if(node.tagName !== 'INPUT' && node.textContent && node.textContent.trim() === 'TRANSITO:'){
+        visto = true;
       }
-      if(vistoTransito && node.tagName === 'INPUT'){
-        return node;
-      }
-      // Si pasaron más de 5 elementos sin encontrar input, resetea
-      if(vistoTransito && node.tagName !== 'INPUT'){
-        // sigue buscando, el input está cerquita
-      }
+      if(visto && node.tagName === 'INPUT') return node;
     }
-    // Plan B: el input de tránsito es el último input de número que está debajo de la tabla UCA
-    // En tu captura es el que tiene 0 en rojo
     let inputs = Array.from(document.querySelectorAll('input'));
-    // Es el input número 8 en toda la página: 4 de MB52 + 3 de capacidad + 1 de tránsito
     if(inputs.length >= 8) return inputs[inputs.length - 1];
     return null;
   }
 
+  function buscarLimpiar(){
+    return Array.from(document.querySelectorAll('button')).find(b=>b.textContent && b.textContent.includes('LIMPIAR'));
+  }
+
   function guardar(){
+    // Si acabas de darle LIMPIAR, NO guardes
+    if(localStorage.getItem('transito_borrado') === '1') return;
     let t = buscarTransito();
     if(t && t.value && t.value !== '0' && t.value !== ''){
       localStorage.setItem('transito_v3', t.value);
@@ -956,30 +952,51 @@ document.addEventListener('input', crearEspejos);
   }
 
   function restaurar(){
+    // Si se limpió, no restaures
+    if(localStorage.getItem('transito_borrado') === '1') return;
     let v = localStorage.getItem('transito_v3');
     let t = buscarTransito();
     if(t && v && v !== '0' && t.value !== v){
-      // Para React / apps que controlan el input
-      let proto = window.HTMLInputElement.prototype;
-      let setter = Object.getOwnPropertyDescriptor(proto, 'value').set;
+      let setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype,'value').set;
       setter.call(t, v);
       t.dispatchEvent(new Event('input',{bubbles:true}));
       t.dispatchEvent(new Event('change',{bubbles:true}));
-      // Forzar recálculo: simula que saliste del campo
       t.dispatchEvent(new Event('blur',{bubbles:true}));
     }
   }
 
-  document.addEventListener('input', ()=> setTimeout(guardar, 100));
+  function limpiarMemoria(){
+    localStorage.removeItem('transito_v3');
+    localStorage.removeItem('transito_fijo_v2');
+    localStorage.removeItem('transito_fijo');
+    localStorage.setItem('transito_borrado', '1');
+    // Después de 2 seg, quita la bandera para que puedas volver a poner un tránsito nuevo
+    setTimeout(()=> localStorage.removeItem('transito_borrado'), 2000);
+  }
+
+  // Cuando escribes un tránsito NUEVO, quita la bandera de borrado
+  document.addEventListener('input', ()=>{
+    let t = buscarTransito();
+    if(t && t.value && t.value !== '0') localStorage.removeItem('transito_borrado');
+    setTimeout(guardar, 100);
+  });
   document.addEventListener('change', ()=> setTimeout(guardar, 100));
 
-  // Prueba de diagnóstico: si guardó, te va a salir un aviso
+  // LIMPIAR: lo agarra aunque le des clic al texto de adentro del botón
+  document.addEventListener('click', (e)=>{
+    let btn = e.target.closest ? e.target.closest('button') : null;
+    if(btn && btn.textContent.includes('LIMPIAR')){
+      limpiarMemoria();
+    }
+  }, true);
+
+  // También directo al botón, por si acaso
   setTimeout(()=>{
-    let v = localStorage.getItem('transito_v3');
-    if(v) console.log('Transito guardado en memoria: ' + v);
-    restaurar();
+    let b = buscarLimpiar();
+    if(b) b.addEventListener('click', limpiarMemoria, true);
   }, 1000);
 
+  setTimeout(restaurar, 1000);
   let veces = 0;
   let timer = setInterval(()=>{
     restaurar();
