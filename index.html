@@ -921,6 +921,34 @@ document.addEventListener('input', crearEspejos);
     });
   }
 })();
+// ===== SOLO TRANSITO QUE NO SE BORRE AL ACTUALIZAR =====
+(function(){
+  function getTransito(){
+    let lab = Array.from(document.querySelectorAll('*')).find(e=>e.textContent && e.textContent.trim().startsWith('TRANSITO'));
+    if(!lab) return null;
+    return lab.parentElement ? lab.parentElement.querySelector('input') : null;
+  }
+
+  function guardar(){
+    let t = getTransito();
+    if(t) localStorage.setItem('transito_fijo', t.value);
+  }
+
+  function restaurar(){
+    let v = localStorage.getItem('transito_fijo');
+    let t = getTransito();
+    if(t && v !== null && v !== '' && v !== '0'){
+      let setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype,'value').set;
+      setter.call(t, v);
+      t.dispatchEvent(new Event('input',{bubbles:true}));
+      t.dispatchEvent(new Event('change',{bubbles:true}));
+    }
+  }
+
+  document.addEventListener('input', ()=> setTimeout(guardar, 200));
+  setTimeout(restaurar, 800);
+  setTimeout(restaurar, 2000);
+})();
 </script>
 </body>
 </html>
