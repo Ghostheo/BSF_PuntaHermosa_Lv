@@ -70,6 +70,14 @@ body.modo-cliente .prio-cell{justify-content:center!important;padding-left:0!imp
 <div class="bg-[#0C2340] px-4 py-3"><p class="text-[10px] tracking-[2px] text-yellow-300 font-black">BSF PUNTA HERMOSA • OPERACIONES LAVORO</p><h3 class="text-white font-black text-[16px] leading-tight">📊 OCUPABILIDAD - UCA</h3></div>
 <div class="p-3 bg-[#F8FAFC]"><div class="overflow-x-auto rounded-xl border-2 border-black bg-white"><table class="w-full text-xs"><thead><tr class="bg-[#0C2340] text-white"><th class="p-2.5">NAVE</th><th class="p-2.5">ALMACÉN</th><th class="p-2.5">ALMACENAMIENTO</th><th class="p-2.5">CAPACIDAD<br>NOMINAL ✏️</th><th class="p-2.5">AL 95%</th><th class="p-2.5">STOCK<br>OCUPADO</th><th class="p-2.5">UBICACIONES<br>LIBRES</th><th class="p-2.5">% OCUPABILIDAD</th></tr></thead><tbody id="tbodyUCA"></tbody></table></div>
   <div class="flex items-center gap-2 mt-3 mb-1 px-1">
+<!-- RESUMEN PARA CAPTURA - QUE EL CLIENTE VEA LA CUENTA -->
+<div style="margin:8px 2px 2px; padding:8px 10px; border:2px solid #000; border-radius:8px; background:#fff; font-size:11px; font-weight:bold; text-align:center; line-height:1.5;">
+  CAPACIDAD NOMINAL TOTAL: <span id="cap-nominal-captura">7,128</span> &nbsp;|&nbsp;
+  AL 95%: <span id="cap-95-captura">6,771.6</span> &nbsp;|&nbsp;
+  STOCK OCUPADO: <span id="stock-captura">4,149</span> &nbsp;|&nbsp;
+  <span style="color:#15803d;">SIN TRÁNSITO = STOCK / AL 95%</span> &nbsp;|&nbsp;
+  <span style="color:#1d4ed8;">CON TRÁNSITO = (STOCK + TRÁNSITO) / AL 95%</span>
+</div>
 <span class="text-[13px] font-black text-[#0C2340]">TRANSITO:</span>
 <input id="input-transito-uca" type="number" min="0" value="0" oninput="guardarTransitoUCA(this.value)" class="w-[90px] border-2 border-black rounded px-2 py-1 text-center font-black text-red-600 bg-white">
 </div>
@@ -740,6 +748,23 @@ if(typeof _renderUCAOriginal === 'function' && !_renderUCAOriginal._conTransito)
   window.renderUCA._conTransito = true;
 }
 setTimeout(aplicarTransitoUCA, 800);
+  // Mostrar capacidad en captura
+function actualizarResumenCaptura(){
+  let cap95 = document.getElementById('uca-sin-transito-det');
+  if(!cap95) return;
+  // cap95 tiene "4149 / 6771.6 pallets"
+  let partes = cap95.textContent.split('/');
+  let stock = (partes[0]||'').trim();
+  let al95 = (partes[1]||'').replace('pallets','').trim();
+  let nominal = (parseFloat(al95) / 0.95).toFixed(0);
+  let elNom = document.getElementById('cap-nominal-captura');
+  let el95 = document.getElementById('cap-95-captura');
+  let elStock = document.getElementById('stock-captura');
+  if(elNom) elNom.textContent = Number(nominal).toLocaleString('en-US');
+  if(el95) el95.textContent = al95;
+  if(elStock) elStock.textContent = stock;
+}
+setInterval(actualizarResumenCaptura, 1000);
 </script>
 </body>
 </html>
