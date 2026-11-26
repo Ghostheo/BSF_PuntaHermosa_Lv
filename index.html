@@ -70,14 +70,7 @@ body.modo-cliente .prio-cell{justify-content:center!important;padding-left:0!imp
 <div class="bg-[#0C2340] px-4 py-3"><p class="text-[10px] tracking-[2px] text-yellow-300 font-black">BSF PUNTA HERMOSA • OPERACIONES LAVORO</p><h3 class="text-white font-black text-[16px] leading-tight">📊 OCUPABILIDAD - UCA</h3></div>
 <div class="p-3 bg-[#F8FAFC]"><div class="overflow-x-auto rounded-xl border-2 border-black bg-white"><table class="w-full text-xs"><thead><tr class="bg-[#0C2340] text-white"><th class="p-2.5">NAVE</th><th class="p-2.5">ALMACÉN</th><th class="p-2.5">ALMACENAMIENTO</th><th class="p-2.5">CAPACIDAD<br>NOMINAL ✏️</th><th class="p-2.5">AL 95%</th><th class="p-2.5">STOCK<br>OCUPADO</th><th class="p-2.5">UBICACIONES<br>LIBRES</th><th class="p-2.5">% OCUPABILIDAD</th></tr></thead><tbody id="tbodyUCA"></tbody></table></div>
   <div class="flex items-center gap-2 mt-3 mb-1 px-1">
-<!-- RESUMEN PARA CAPTURA - QUE EL CLIENTE VEA LA CUENTA -->
-<div style="margin:8px 2px 2px; padding:8px 10px; border:2px solid #000; border-radius:8px; background:#fff; font-size:11px; font-weight:bold; text-align:center; line-height:1.5;">
-  CAPACIDAD NOMINAL TOTAL: <span id="cap-nominal-captura">7,128</span> &nbsp;|&nbsp;
-  AL 95%: <span id="cap-95-captura">6,771.6</span> &nbsp;|&nbsp;
-  STOCK OCUPADO: <span id="stock-captura">4,149</span> &nbsp;|&nbsp;
-  <span style="color:#15803d;">SIN TRÁNSITO = STOCK / AL 95%</span> &nbsp;|&nbsp;
-  <span style="color:#1d4ed8;">CON TRÁNSITO = (STOCK + TRÁNSITO) / AL 95%</span>
-</div>
+
 <span class="text-[13px] font-black text-[#0C2340]">TRANSITO:</span>
 <input id="input-transito-uca" type="number" min="0" value="0" oninput="guardarTransitoUCA(this.value)" class="w-[90px] border-2 border-black rounded px-2 py-1 text-center font-black text-red-600 bg-white">
 </div>
@@ -765,6 +758,28 @@ function actualizarResumenCaptura(){
   if(elStock) elStock.textContent = stock;
 }
 setInterval(actualizarResumenCaptura, 1000);
+  // Que las UNIDADES SAP no se borren al actualizar, como el TRANSITO
+function guardarSAP(){
+  let inputs = document.querySelectorAll('input[type="number"], input[type="text"]');
+  inputs.forEach((inp, i) => {
+    if(inp.id === 'input-transito-uca') return;
+    if(inp.closest('table') && inp.closest('table').textContent.includes('CÓDIGO')) {
+      localStorage.setItem('sap_' + i, inp.value);
+    }
+  });
+}
+function cargarSAP(){
+  let inputs = document.querySelectorAll('input[type="number"], input[type="text"]');
+  inputs.forEach((inp, i) => {
+    if(inp.id === 'input-transito-uca') return;
+    if(inp.closest('table') && inp.closest('table').textContent.includes('CÓDIGO')) {
+      let v = localStorage.getItem('sap_' + i);
+      if(v !== null && v !== ''){ inp.value = v; inp.dispatchEvent(new Event('input')); }
+    }
+  });
+}
+document.addEventListener('input', guardarSAP);
+setTimeout(cargarSAP, 500);
 </script>
 </body>
 </html>
