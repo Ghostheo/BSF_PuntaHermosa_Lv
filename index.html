@@ -69,6 +69,10 @@ body.modo-cliente .prio-cell{justify-content:center!important;padding-left:0!imp
 <div id="seccionUCA" class="mt-6 rounded-2xl overflow-hidden border-2 border-black shadow-lg">
 <div class="bg-[#0C2340] px-4 py-3"><p class="text-[10px] tracking-[2px] text-yellow-300 font-black">BSF PUNTA HERMOSA • OPERACIONES LAVORO</p><h3 class="text-white font-black text-[16px] leading-tight">📊 OCUPABILIDAD - UCA</h3></div>
 <div class="p-3 bg-[#F8FAFC]"><div class="overflow-x-auto rounded-xl border-2 border-black bg-white"><table class="w-full text-xs"><thead><tr class="bg-[#0C2340] text-white"><th class="p-2.5">NAVE</th><th class="p-2.5">ALMACÉN</th><th class="p-2.5">ALMACENAMIENTO</th><th class="p-2.5">CAPACIDAD<br>NOMINAL ✏️</th><th class="p-2.5">AL 95%</th><th class="p-2.5">STOCK<br>OCUPADO</th><th class="p-2.5">UBICACIONES<br>LIBRES</th><th class="p-2.5">% OCUPABILIDAD</th></tr></thead><tbody id="tbodyUCA"></tbody></table></div>
+  <div class="flex items-center gap-2 mt-3 mb-1 px-1">
+<span class="text-[13px] font-black text-[#0C2340]">TRANSITO:</span>
+<input id="input-transito-uca" type="number" min="0" value="0" oninput="guardarTransitoUCA(this.value)" class="w-[90px] border-2 border-black rounded px-2 py-1 text-center font-black text-red-600 bg-white">
+</div>
 <div class="grid md:grid-cols-2 gap-3 mt-3">
 <div class="rounded-2xl border-2 border-black p-4 bg-white shadow"><div class="flex justify-between items-center"><p class="text-[11px] font-black tracking-wider text-gray-500">UCA SIN TRÁNSITO</p><span class="text-[10px] bg-green-100 text-green-700 font-black px-2 py-1 rounded-full border">● EN VIVO</span></div><p id="uca-sin-transito-pct" class="text-[42px] leading-[1.2] pb-1 font-black text-[#0C2340] mt-1">0%</p><div class="h-[26px] bg-gray-100 border-2 border-black rounded-full overflow-hidden mt-4"><div id="uca-sin-transito-bar" class="h-full text-center text-[11px] font-black text-white leading-[22px] bg-gradient-to-r from-green-500 to-emerald-700 transition-all duration-500 rounded-full"" style="width:0%">0%</div></div><p id="uca-sin-transito-det" class="text-[11px] font-bold text-gray-500 mt-2">0 / 0 pallets</p></div>
 <div class="rounded-2xl border-2 border-black p-4 bg-white shadow"><div class="flex justify-between items-center"><p class="text-[11px] font-black tracking-wider text-gray-500">UCA CON TRÁNSITO</p><span class="text-[10px] bg-blue-100 text-blue-700 font-black px-2 py-1 rounded-full border">● EN VIVO</span></div><p id="uca-con-transito-pct" class="text-[42px] leading-[1.2] pb-1 font-black text-[#0C2340] mt-1">0%</p><div class="h-[26px] bg-gray-100 border-2 border-black rounded-full overflow-hidden mt-2"><div id="uca-con-transito-bar" class="h-full text-center text-[11px] font-black text-white leading-[22px] bg-gradient-to-r from-green-500 to-emerald-700 transition-all duration-500 rounded-full"" style="width:0%">0%</div></div><p id="uca-con-transito-det" class="text-[11px] font-bold text-gray-500 mt-2">0 / 0 pallets</p></div>
@@ -699,6 +703,43 @@ cargarFirebase();cargarData();setInterval(cargarFirebase,15000);
     if(btn) btn.onclick=window.enviarAUCAPro;
   },500);
 })();
+// ===== TRÁNSITO UCA - engancha con tu renderUCA actual =====
+let transitoUCA = Number(localStorage.getItem('transito_uca') || 0);
+
+function guardarTransitoUCA(valor){
+  transitoUCA = Number(valor) || 0;
+  localStorage.setItem('transito_uca', transitoUCA);
+  aplicarTransitoUCA();
+}
+
+function aplicarTransitoUCA(){
+  let input = document.getElementById('input-transito-uca');
+  if(input && document.activeElement !== input) input.value = transitoUCA;
+
+  // Lee el stock que YA calculó tu renderUCA, no lo recalcula
+  let detSin = document.getElementById('uca-sin-transito-det');
+  if(!detSin) return;
+  let stock = parseInt((detSin.textContent || '').split('/')[0]) || 0;
+  let capacidad = 6771.6;
+
+  let conTotal = stock + transitoUCA;
+  let conPct = Math.round(conTotal / capacidad * 100);
+
+  let elConPct = document.getElementById('uca-con-transito-pct');
+  let elConBar = document.getElementById('uca-con-transito-bar');
+  let elConDet = document.getElementById('uca-con-transito-det');
+  if(elConPct) elConPct.textContent = conPct + '%';
+  if(elConBar){ elConBar.style.width = conPct + '%'; elConBar.textContent = conPct + '%'; }
+  if(elConDet) elConDet.textContent = conTotal + ' / ' + capacidad + ' pallets (Tránsito: ' + transitoUCA + ')';
+}
+
+// Cada vez que tu renderUCA se ejecuta, aplica el tránsito encima
+let _renderUCAOriginal = window.renderUCA;
+if(typeof _renderUCAOriginal === 'function' && !_renderUCAOriginal._conTransito){
+  window.renderUCA = function(){ _renderUCAOriginal(); aplicarTransitoUCA(); };
+  window.renderUCA._conTransito = true;
+}
+setTimeout(aplicarTransitoUCA, 800);
 </script>
 </body>
 </html>
