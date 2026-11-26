@@ -10,6 +10,21 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <style>
+/* ===== ARREGLO NO SE CORTA - CELULAR Y PC ===== */
+html,body{max-width:100%;overflow-x:hidden}
+*{box-sizing:border-box}
+.max-w-7xl{max-width:1450px!important;width:100%!important}
+#main-header{flex-wrap:wrap!important;gap:12px!important}
+#main-header>div:last-child{width:100%}
+@media(min-width:768px){ #main-header>div:last-child{width:auto} }
+.overflow-x-auto{overflow-x:auto!important;-webkit-overflow-scrolling:touch;max-width:100%}
+table.w-full{min-width:720px}
+@media(max-width:640px){
+  .grid-cols-3{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  input.cap-input{width:70px!important}
+  #main-header h1{font-size:19px!important}
+}
+.modal-bg>div{max-width:calc(100vw - 24px)!important;max-height:90vh;overflow:auto}
 body.solo-uca #seccionUCA{position:fixed !important; top:0 !important; left:0 !important; right:0 !important; z-index:9999 !important; background:white !important; height:100vh !important; overflow:auto !important}
 body.solo-uca #seccionUCA, body.solo-uca #seccionUCA *{visibility:visible}
 body.solo-uca #seccionUCA{
@@ -49,7 +64,7 @@ body.solo-uca .transito-espejo{display:inline-block !important; visibility:visib
 <div class="max-w-7xl mx-auto bg-white rounded-xl shadow overflow-hidden card-bordered">
 <div id="main-header" class="p-4 md:p-6 border-b flex justify-between items-start">
 <div><img src="logo.png" class="ocultar-en-cliente h-10 md:h-12 object-contain mb-2"><h1 class="text-xl md:text-2xl font-bold mt-2">Status BSF PUNTA HERMOSA</h1><p id="fecha" class="text-xs text-gray-500 mt-1"></p><p class="text-xs text-green-600 font-bold mt-1 flex items-center gap-1 ocultar-en-cliente"><span class="dot-green"></span> Sincronizado en vivo - DATA compartida</p></div>
-<div class="flex gap-2 flex-wrap justify-end">
+<div class="flex gap-2 flex-wrap justify-start md:justify-end"
 <button id="btnCaptura" onclick="toggleCaptura()" data-html2canvas-ignore="true" class="bg-black text-white border-2 border-black rounded-xl px-4 py-2 text-[11px] font-bold">📸 MODO CAPTURA BSF</button>
 <button onclick="capturaUCA_PRO()" data-html2canvas-ignore="true" class="w-full text-left px-3 py-2 bg-blue-600 ...
   📸 MODO CAPTURA UCA - PRO
