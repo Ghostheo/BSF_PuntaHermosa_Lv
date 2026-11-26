@@ -123,7 +123,7 @@ let database={},editId=null,deleteId=null,filtroEstatus=null,confirmAction=null,
 let charts={};
 function mkChart(id,type,labels,vals){let el=document.getElementById(id);if(!el)return;if(charts[id])charts[id].destroy();let cols=['#0C2340','#22c55e','#f59e0b','#a855f7','#ef4444','#f97316','#6b7280','#0ea5e9'];charts[id]=new Chart(el,{type:type,data:{labels:labels,datasets:[{data:vals,backgroundColor:cols,borderColor:'#000',borderWidth:1}]},options:{responsive:true,plugins:{legend:{display:type==='doughnut'}}}});}
 function toggleCaptura(){document.body.classList.toggle('modo-cliente');window.scrollTo(0,0);}
-async function capturarSoloUCAPro(){
+async function capturaUCA_PRO(){
   const seccion = document.getElementById('seccionUCA');
   if(!seccion){ alert('No encuentro la sección UCA'); return; }
   document.body.classList.add('solo-uca');
