@@ -921,72 +921,71 @@ document.addEventListener('input', crearEspejos);
     });
   }
 })();
-// ===== TRANSITO V2 - QUE NO SE BORRE NI LO PISE LA APP =====
+// ===== TRANSITO V3 - BUSCA POR ORDEN, NO POR PADRE =====
 (function(){
   function buscarTransito(){
-    // Busca el texto TRANSITO y agarra el primer input que viene después
-    let todos = Array.from(document.querySelectorAll('input'));
-    // El input de tránsito es el que está justo debajo de la tabla UCA
-    // Lo identificamos porque en el HTML está cerca de la palabra TRANSITO
-    let html = document.body.innerHTML;
-    let pos = html.indexOf('TRANSITO');
-    if(pos === -1) pos = html.indexOf('Tránsito');
-    if(pos === -1) return null;
-
-    // El input de tránsito es el único input que está en la sección UCA
-    // Buscamos el input que esté después de la tabla TOTAL GENERAL
-    let totalPos = html.indexOf('TOTAL GENERAL');
-    // Recorremos inputs y nos quedamos con el que está después del TOTAL
-    // En tu app ese es el de TRÁNSITO
-    let inputs = todos;
-    // Truco: el input de tránsito es el que tiene al lado el texto "TRANSITO:"
-    for(let inp of inputs){
-      let p = inp.parentElement;
-      for(let i=0;i<3 && p;i++){ 
-        if(p.textContent && p.textContent.includes('TRANSITO')) return inp;
-        p = p.parentElement;
+    // Recorre toda la página en orden y se queda con el input que viene JUSTO DESPUÉS del texto TRANSITO
+    let walker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
+    let node;
+    let vistoTransito = false;
+    while(node = walker.nextNode()){
+      if(node.tagName !== 'INPUT' && node.textContent && node.textContent.trim() === 'TRANSITO:' ){
+        vistoTransito = true;
+      }
+      if(vistoTransito && node.tagName === 'INPUT'){
+        return node;
+      }
+      // Si pasaron más de 5 elementos sin encontrar input, resetea
+      if(vistoTransito && node.tagName !== 'INPUT'){
+        // sigue buscando, el input está cerquita
       }
     }
+    // Plan B: el input de tránsito es el último input de número que está debajo de la tabla UCA
+    // En tu captura es el que tiene 0 en rojo
+    let inputs = Array.from(document.querySelectorAll('input'));
+    // Es el input número 8 en toda la página: 4 de MB52 + 3 de capacidad + 1 de tránsito
+    if(inputs.length >= 8) return inputs[inputs.length - 1];
     return null;
   }
 
   function guardar(){
     let t = buscarTransito();
     if(t && t.value && t.value !== '0' && t.value !== ''){
-      localStorage.setItem('transito_fijo_v2', t.value);
-      // console.log('Transito guardado:', t.value);
+      localStorage.setItem('transito_v3', t.value);
     }
   }
 
   function restaurar(){
-    let v = localStorage.getItem('transito_fijo_v2');
+    let v = localStorage.getItem('transito_v3');
     let t = buscarTransito();
-    if(t && v && v !== '0' && v !== '' && t.value !== v){
-      let setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype,'value').set;
+    if(t && v && v !== '0' && t.value !== v){
+      // Para React / apps que controlan el input
+      let proto = window.HTMLInputElement.prototype;
+      let setter = Object.getOwnPropertyDescriptor(proto, 'value').set;
       setter.call(t, v);
       t.dispatchEvent(new Event('input',{bubbles:true}));
       t.dispatchEvent(new Event('change',{bubbles:true}));
-      t.dispatchEvent(new Event('keyup',{bubbles:true}));
+      // Forzar recálculo: simula que saliste del campo
+      t.dispatchEvent(new Event('blur',{bubbles:true}));
     }
   }
 
-  // Guarda cada vez que escribes
   document.addEventListener('input', ()=> setTimeout(guardar, 100));
-  document.addEventListener('keyup', ()=> setTimeout(guardar, 100));
   document.addEventListener('change', ()=> setTimeout(guardar, 100));
 
-  // Restaura terco: cada 1 seg por 15 seg, por si la app lo pisa
+  // Prueba de diagnóstico: si guardó, te va a salir un aviso
+  setTimeout(()=>{
+    let v = localStorage.getItem('transito_v3');
+    if(v) console.log('Transito guardado en memoria: ' + v);
+    restaurar();
+  }, 1000);
+
   let veces = 0;
   let timer = setInterval(()=>{
     restaurar();
     veces++;
-    if(veces > 15) clearInterval(timer);
+    if(veces > 20) clearInterval(timer);
   }, 1000);
-
-  // También al cargar
-  setTimeout(restaurar, 500);
-  setTimeout(restaurar, 1500);
-  setTimeout(restaurar, 3000);
 })();
 </script>
 </body>
