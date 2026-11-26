@@ -804,64 +804,66 @@ setInterval(sincronizarParaCaptura, 1000);
 crearEspejos();
 setInterval(crearEspejos, 500);
 document.addEventListener('input', crearEspejos);
-// ===== MB52 SE QUEDA HASTA QUE LE DES A LIMPIAR =====
+// ===== MB52 V2 - SE QUEDA HASTA LIMPIAR =====
 (function(){
-  // 1. Busca la tabla de MB52-PRO
-  function getInputsMB52(){
-    // Busca el cuadro que dice MB52 - PRO
-    let titulos = Array.from(document.querySelectorAll('*')).filter(e => e.textContent && e.textContent.includes('MB52 - PRO'));
-    if(!titulos.length) return [];
-    let caja = titulos[0].closest('div').parentElement;
-    // Los 4 inputs de UNIDADES SAP
-    let inputs = caja.querySelectorAll('input[type="number"], input[type="text"]');
-    return Array.from(inputs).slice(0,4);
+  function buscarInputsMB52(){
+    let todos = Array.from(document.querySelectorAll('input'));
+    // El MB52 son los 4 inputs que están cerca del texto 1001135 y 1007119
+    // Los buscamos subiendo 6 niveles desde cada input y viendo si ahí está el MB52
+    let encontrados = [];
+    for(let inp of todos){
+      let p = inp;
+      for(let i=0;i<7;i++){ p = p.parentElement; if(!p) break;
+        if(p.textContent && p.textContent.includes('MB52 - PRO') && p.textContent.includes('1001135')){
+          encontrados.push(inp);
+          break;
+        }
+      }
+    }
+    // Quitamos duplicados y nos quedamos con los 4 primeros en orden
+    let unicos = [...new Set(encontrados)];
+    // Los 4 de UNIDADES SAP son los que están en la columna de inputs grandes
+    // En tu pantalla son los 4 que aparecen seguidos
+    return unicos.slice(0,4);
   }
 
-  // 2. Al abrir, vuelve a poner lo que tenías
-  function restaurarMB52(){
-    let guardado = localStorage.getItem('mb52_pro_guardado');
-    if(!guardado) return;
+  function guardar(){
+    let inputs = buscarInputsMB52();
+    if(inputs.length===4){
+      localStorage.setItem('mb52_pro_guardado', JSON.stringify(inputs.map(i=>i.value)));
+      console.log('MB52 guardado', inputs.map(i=>i.value));
+    }
+  }
+
+  function restaurar(){
+    let g = localStorage.getItem('mb52_pro_guardado');
+    if(!g) return;
     try{
-      let vals = JSON.parse(guardado);
-      let inputs = getInputsMB52();
-      inputs.forEach((inp,i)=>{
-        if(vals[i] !== undefined) inp.value = vals[i];
-        inp.dispatchEvent(new Event('input',{bubbles:true}));
-        inp.dispatchEvent(new Event('change',{bubbles:true}));
-      });
+      let vals = JSON.parse(g);
+      let inputs = buscarInputsMB52();
+      if(inputs.length===4){
+        inputs.forEach((inp,i)=>{
+          inp.value = vals[i] || '';
+          inp.dispatchEvent(new Event('input',{bubbles:true}));
+          inp.dispatchEvent(new Event('change',{bubbles:true}));
+        });
+        console.log('MB52 restaurado', vals);
+      }
     }catch(e){}
   }
 
-  // 3. Cada vez que escribes, guárdalo
-  document.addEventListener('input', function(e){
-    let inputs = getInputsMB52();
-    if(inputs.includes(e.target)){
-      let vals = inputs.map(inp=>inp.value);
-      localStorage.setItem('mb52_pro_guardado', JSON.stringify(vals));
-    }
+  document.addEventListener('input', e=>{
+    let inputs = buscarInputsMB52();
+    if(inputs.includes(e.target)) guardar();
   });
 
-  // 4. Cuando le das a ENVIAR A UCA, también guárdalo
-  let btnEnviar = Array.from(document.querySelectorAll('button')).find(b=>b.textContent.includes('ENVIAR A UCA'));
-  if(btnEnviar){
-    btnEnviar.addEventListener('click', ()=>{
-      let inputs = getInputsMB52();
-      let vals = inputs.map(inp=>inp.value);
-      localStorage.setItem('mb52_pro_guardado', JSON.stringify(vals));
-    });
-  }
+  // Restaurar con retraso, porque tu página carga el MB52 después
+  setTimeout(restaurar, 1200);
+  setTimeout(restaurar, 2200);
+  setTimeout(restaurar, 3500);
 
-  // 5. Cuando le das a LIMPIAR, sí bórralo todo
-  let btnLimpiar = Array.from(document.querySelectorAll('button')).find(b=>b.textContent.includes('LIMPIAR MB52'));
-  if(btnLimpiar){
-    btnLimpiar.addEventListener('click', ()=>{
-      localStorage.removeItem('mb52_pro_guardado');
-    });
-  }
-
-  // 6. Al cargar la página, restaura
-  document.addEventListener('DOMContentLoaded', ()=> setTimeout(restaurarMB52, 600));
-  setTimeout(restaurarMB52, 800);
+  let btnLimpiar = Array.from(document.querySelectorAll('button')).find(b=>b.textContent.includes('LIMPIAR'));
+  if(btnLimpiar) btnLimpiar.addEventListener('click', ()=> localStorage.removeItem('mb52_pro_guardado'));
 })();
 </script>
 </body>
