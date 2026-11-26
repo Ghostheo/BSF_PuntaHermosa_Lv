@@ -33,8 +33,8 @@ body.modo-cliente .prio-cell{justify-content:center!important;padding-left:0!imp
 </head>
 <body class="bg-gray-100 p-2 md:p-6">
 <div class="max-w-7xl mx-auto bg-white rounded-xl shadow overflow-hidden card-bordered">
-<div id="main-header" class="p-4 md:p-6 border-b flex justify-between items-start bg-gradient-to-r from-[#0C2340] to-blue-600 text-white">
-<div><img src="logo.png" class="ocultar-en-cliente h-10 md:h-12 object-contain mb-2"><h1 class="text-xl md:text-2xl font-bold mt-2 text-white">STOCK BSF - PUNTA HERMOSA OPERACIONES LAVORO</h1><p class="text-sm font-bold text-white mt-1">MB52 - PRO</p><p id="fecha" class="text-xs text-gray-500 mt-1"></p><p class="text-xs text-green-600 font-bold mt-1 flex items-center gap-1 ocultar-en-cliente"><span class="dot-green"></span> Sincronizado en vivo - DATA compartida</p></div>
+<div id="main-header" class="p-4 md:p-6 border-b flex justify-between items-start">
+<div><img src="logo.png" class="ocultar-en-cliente h-10 md:h-12 object-contain mb-2"><h1 class="text-xl md:text-2xl font-bold mt-2">Status BSF PUNTA HERMOSA</h1><p id="fecha" class="text-xs text-gray-500 mt-1"></p><p class="text-xs text-green-600 font-bold mt-1 flex items-center gap-1 ocultar-en-cliente"><span class="dot-green"></span> Sincronizado en vivo - DATA compartida</p></div>
 <div class="flex gap-2 flex-wrap justify-end">
 <button id="btnCaptura" onclick="toggleCaptura()" class="bg-black text-white border-2 border-black rounded-xl px-4 py-2 text-[11px] font-bold">📸 MODO CAPTURA BSF</button>
 <button onclick="abrirAdminPass()" class="ocultar-en-cliente bg-white border-2 border-black rounded-xl px-4 py-2 text-[11px] font-bold">🔒 ADMIN</button>
@@ -381,8 +381,8 @@ cargarFirebase();cargarData();setInterval(cargarFirebase,15000);
     div.id='mb52Original';
     div.className='mx-5 my-4 bg-white rounded-2xl shadow overflow-hidden';
     div.innerHTML=`
-    <div class="bg-gradient-to-r from-blue-900 via-indigo-800 to-red-600 text-white p-4 flex justify-between items-center">
-      <div><div class="font-black text-[16px]">📦 MB52 PRO <span class="bg-white text-blue-900 text-[10px] px-2 py-1 rounded-full ml-1">STOCK SAP → SUELO</span></div>
+    <div class="bg-gradient-to-r from-blue-900 to-blue-600 text-white p-4 flex justify-between items-center">
+      <div><div class="font-black text-[16px]">📦 MB52 - PRO <span class="bg-white text-blue-900 text-[10px] px-2 py-1 rounded-full ml-1">STOCK BSF - PUNTA HERMOSA OPERACIONES LAVORO</span></div>
       <div class="text-[11px] opacity-90">Escribe unidades SAP • Se convierte solo • Se envía al UCA</div></div>
       <div class="flex gap-2 text-center">
         <div class="bg-white/20 rounded-lg px-2 py-1"><div class="text-[9px]">TOTAL PALLETS</div><div class="font-black" id="mb52TotalPallets">0</div></div>
