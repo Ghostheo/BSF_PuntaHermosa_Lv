@@ -860,6 +860,67 @@ document.addEventListener('input', crearEspejos);
     });
   });
 })();
+// ===== MB52 QUE NO SE BORRE AL ACTUALIZAR =====
+(function(){
+  function inputsMB52(){
+    // Los 4 inputs de UNIDADES SAP del MB52
+    let todos = Array.from(document.querySelectorAll('input'));
+    // Son los que están dentro de la tarjeta MB52 - PRO
+    let zona = document.body.innerHTML.includes('MB52 - PRO');
+    return todos.filter(inp=>{
+      let card = inp.closest('div');
+      return card && inp.placeholder === '' && inp.type === 'text' || inp.type === 'number';
+    }).slice(0,4);
+  }
+
+  function guardar(){
+    let inputs = document.querySelectorAll('input');
+    // Buscamos los 4 de MB52 por su posición: son los 4 que tienen 0 y están arriba de LIMPIAR
+    let btnLimpiar = Array.from(document.querySelectorAll('button')).find(b=>b.textContent.includes('LIMPIAR'));
+    if(!btnLimpiar) return;
+    let cont = btnLimpiar.closest('div').parentElement;
+    let lista = cont ? cont.querySelectorAll('input') : [];
+    let valores = Array.from(lista).map(i=>i.value);
+    localStorage.setItem('mb52_guardado', JSON.stringify(valores));
+  }
+
+  function restaurar(){
+    let guardado = localStorage.getItem('mb52_guardado');
+    if(!guardado) return;
+    try{
+      let valores = JSON.parse(guardado);
+      let btnLimpiar = Array.from(document.querySelectorAll('button')).find(b=>b.textContent.includes('LIMPIAR'));
+      if(!btnLimpiar) return;
+      let cont = btnLimpiar.closest('div').parentElement;
+      let lista = cont ? cont.querySelectorAll('input') : [];
+      lista.forEach((inp, i)=>{
+        if(valores[i] !== undefined && valores[i] !== '' && valores[i] !== '0'){
+          let setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+          setter.call(inp, valores[i]);
+          inp.dispatchEvent(new Event('input', {bubbles:true}));
+          inp.dispatchEvent(new Event('change', {bubbles:true}));
+        }
+      });
+    }catch(e){}
+  }
+
+  // Guarda cada vez que escribes
+  document.addEventListener('input', (e)=>{
+    if(e.target.tagName === 'INPUT') setTimeout(guardar, 200);
+  });
+
+  // Al cargar, restaura
+  setTimeout(restaurar, 800);
+  setTimeout(restaurar, 2000);
+
+  // Cuando le des LIMPIAR, también borra lo guardado
+  let btn = Array.from(document.querySelectorAll('button')).find(b=>b.textContent.includes('LIMPIAR'));
+  if(btn){
+    btn.addEventListener('click', ()=>{
+      setTimeout(()=>localStorage.removeItem('mb52_guardado'), 300);
+    });
+  }
+})();
 </script>
 </body>
 </html>
