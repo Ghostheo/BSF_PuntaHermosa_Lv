@@ -865,6 +865,49 @@ document.addEventListener('input', crearEspejos);
   let btnLimpiar = Array.from(document.querySelectorAll('button')).find(b=>b.textContent.includes('LIMPIAR'));
   if(btnLimpiar) btnLimpiar.addEventListener('click', ()=> localStorage.removeItem('mb52_pro_guardado'));
 })();
+// ===== LIMPIAR TAMBIÉN DEJA TRÁNSITO EN 0 =====
+(function(){
+  let btnLimpiar = Array.from(document.querySelectorAll('button')).find(b=>b.textContent.includes('LIMPIAR MB52') || b.textContent.includes('LIMPIAR'));
+  if(!btnLimpiar) return;
+
+  btnLimpiar.addEventListener('click', ()=>{
+    // 1. Borra lo guardado del MB52
+    localStorage.removeItem('mb52_pro_guardado');
+
+    // 2. Borra lo guardado del TRÁNSITO
+    Object.keys(localStorage).forEach(k=>{
+      let kl = k.toLowerCase();
+      if(kl.includes('transit') || kl.includes('tránsito') || kl.includes('transito')){
+        localStorage.removeItem(k);
+      }
+    });
+
+    // 3. Busca el input de TRÁNSITO y ponlo en 0
+    // Es el input que está cerca del texto TRÁNSITO
+    let todos = Array.from(document.querySelectorAll('input'));
+    for(let inp of todos){
+      let p = inp;
+      for(let i=0;i<6;i++){ p = p.parentElement; if(!p) break;
+        if(p.textContent && p.textContent.toUpperCase().includes('TRÁNSITO')){
+          // Solo el input de tránsito, no los de MB52
+          if(!p.textContent.includes('MB52 - PRO')){
+            inp.value = 0;
+            inp.dispatchEvent(new Event('input',{bubbles:true}));
+            inp.dispatchEvent(new Event('change',{bubbles:true}));
+            break;
+          }
+        }
+      }
+    }
+
+    // 4. Si hay una función para recalcular UCA, la llamamos
+    setTimeout(()=>{
+      if(typeof actualizarUCA === 'function') actualizarUCA();
+      if(typeof calcularUCA === 'function') calcularUCA();
+      if(typeof renderUCA === 'function') renderUCA();
+    }, 300);
+  });
+})();
 </script>
 </body>
 </html>
