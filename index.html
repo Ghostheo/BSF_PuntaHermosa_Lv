@@ -10,7 +10,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <style>
-body.solo-uca *{visibility:hidden}
+body.solo-uca > *:not(#seccionUCA){display:none !important}
+body.solo-uca{margin:0 !important; padding:0 !important}
+body.solo-uca #seccionUCA{display:block !important; margin:0 !important}
 body.solo-uca #seccionUCA, body.solo-uca #seccionUCA *{visibility:visible}
 body.solo-uca #seccionUCA{
   overflow: visible !important;
