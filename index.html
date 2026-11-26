@@ -125,15 +125,17 @@ let charts={};
 function mkChart(id,type,labels,vals){let el=document.getElementById(id);if(!el)return;if(charts[id])charts[id].destroy();let cols=['#0C2340','#22c55e','#f59e0b','#a855f7','#ef4444','#f97316','#6b7280','#0ea5e9'];charts[id]=new Chart(el,{type:type,data:{labels:labels,datasets:[{data:vals,backgroundColor:cols,borderColor:'#000',borderWidth:1}]},options:{responsive:true,plugins:{legend:{display:type==='doughnut'}}}});}
 function toggleCaptura(){document.body.classList.toggle('modo-cliente');window.scrollTo(0,0);}
 async function capturaUCA_PRO(){
-  const seccion = document.getElementById('seccionUCA');
-  if(!seccion){ alert('No encuentro la sección UCA'); return; }
-  document.body.classList.add('solo-uca');
-  await new Promise(r => setTimeout(r, 300));
-  const canvas = await html2canvas(seccion, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
-  document.body.classList.remove('solo-uca');
+  const el = document.getElementById('seccionUCA');
+  const canvas = await html2canvas(el, {
+    scale: 3,
+    useCORS: true,
+    backgroundColor: '#ffffff',
+    windowWidth: el.scrollWidth,
+    windowHeight: el.scrollHeight
+  });
   const link = document.createElement('a');
-  link.download = 'UCA-PRO-' + new Date().toISOString().slice(0,10) + '.png';
-  link.href = canvas.toDataURL('image/png');
+  link.download = 'UCA-PRO-2026-11-26.png';
+  link.href = canvas.toDataURL('image/png', 1.0);
   link.click();
 }
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.body.classList.contains('modo-cliente'))toggleCaptura();});
