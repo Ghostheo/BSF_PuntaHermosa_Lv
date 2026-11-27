@@ -1020,5 +1020,51 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 </script>
+<script>
+// === PARCHE: Sincroniza TODO el localStorage con Firebase ===
+let subiendo = false;
+let bajando = false;
+
+// 1. Cuando cambia algo en Firebase, lo baja al celular/PC y recarga
+db.ref('sync_total').on('value', snap => {
+  const datosNube = snap.val();
+  if(!datosNube || subiendo) return;
+  bajando = true;
+  for(let k in datosNube){
+    localStorage.setItem(k, datosNube[k]);
+  }
+  bajando = false;
+  // Solo recarga si cambió algo
+  if(JSON.stringify(datosNube) !== JSON.stringify(Object.fromEntries(Object.entries(localStorage)))){
+    location.reload();
+  }
+});
+
+// 2. Cuando cambias algo en esta PC/celular, lo sube a Firebase
+const originalSet = localStorage.setItem.bind(localStorage);
+localStorage.setItem = function(k, v){
+  originalSet(k, v);
+  if(bajando) return;
+  subiendo = true;
+  let todo = {};
+  for(let i=0; i<localStorage.length; i++){
+    let key = localStorage.key(i);
+    todo[key] = localStorage.getItem(key);
+  }
+  db.ref('sync_total').set(todo).then(()=> subiendo = false);
+};
+
+// 3. Al abrir, si esta PC tiene datos y la nube está vacía, la PC los sube
+db.ref('sync_total').once('value').then(snap => {
+  if(!snap.val() && localStorage.length > 0){
+    let todo = {};
+    for(let i=0; i<localStorage.length; i++){
+      let key = localStorage.key(i);
+      todo[key] = localStorage.getItem(key);
+    }
+    db.ref('sync_total').set(todo);
+  }
+});
+</script>
 </body>
 </html>
