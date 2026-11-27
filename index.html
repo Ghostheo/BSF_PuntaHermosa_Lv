@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+1001135<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -1058,6 +1058,84 @@ localStorage.setItem = function(k, v){
   }
   db.ref('sync_total').set(todo);
 };
+</script>
+<script>
+// ===== FIX DEFINITIVO UCA BSF - PEGA AL FINAL, ANTES DE </body> =====
+(function(){
+  // 1. Borra el guardado viejo con llaves malas que causa el undefined
+  try{
+    var viejo = JSON.parse(localStorage.getItem('mb52ParaUCA')||'null');
+    if(viejo && (viejo.ev===undefined && viejo.evap===undefined)){
+      localStorage.removeItem('mb52ParaUCA'); window.__mb52ParaUCA=null;
+    }
+    // Normaliza: si viene como {ev:3939} lo convierte a {evap:3939}
+    if(viejo && viejo.ev!==undefined && viejo.evap===undefined){
+      viejo={evap:viejo.ev, pan:viejo.pan||0};
+      localStorage.setItem('mb52ParaUCA', JSON.stringify(viejo));
+      window.__mb52ParaUCA=viejo;
+    }
+  }catch(e){}
+
+  // 2. Valores CORRECTOS fijos, ya no lee Firebase
+  // 1001135: 80x48=3840 | 1001273: 88x24=2112 | 1001277: 40x48=1920 | 1007119: 40x6=240
+  var POR={'1001135':3840,'1001273':2112,'1001277':1920,'1007119':240};
+  var UPC={'1001135':48,'1001273':24,'1001277':48,'1007119':6};
+  var CODS=['1001135','1001273','1001277','1007119'];
+
+  // 3. Reemplaza calcStockPorGrupo - NUNCA devuelve undefined
+  window.calcStockPorGrupo=function(){
+    var ex=window.__mb52ParaUCA||null;
+    if(ex){
+      var ev=Number(ex.evap!==undefined?ex.evap:ex.ev)||0;
+      var pan=Number(ex.pan)||0;
+      return {ev:ev, pan:pan, total:ev+pan};
+    }
+    // Si no hay MB52, usa inventario como antes, pero con 0 seguro
+    var ev2=0, pan2=0;
+    try{
+      Object.values(window.inventario||{}).forEach(function(it){
+        var p=parseInt(it.pallets)||0;
+        if(['1001135','1001273','1001277'].includes(String(it.codigo))) ev2+=p;
+        if(String(it.codigo)==='1007119') pan2+=p;
+      });
+    }catch(e){}
+    return {ev:ev2, pan:pan2, total:ev2+pan2};
+  };
+
+  // 4. Reemplaza ENVIAR A UCA - lee solo los 4 inputs con data-cod
+  window.enviarAUCAPro=function(){
+    var mb=document.getElementById('mb52Original');
+    if(!mb) return alert('No encontré MB52');
+    var inputs=[...mb.querySelectorAll('input[data-cod]')];
+    if(!inputs.length) inputs=[...mb.querySelectorAll('input')].filter(function(i){return i.type==='number';}).slice(0,4);
+    var evap=0, pan=0;
+    inputs.slice(0,4).forEach(function(inp,i){
+      var cod=inp.getAttribute('data-cod')||CODS[i];
+      var tot=parseInt(inp.value||'0')||0;
+      var por=POR[cod]||1, upc=UPC[cod]||1;
+      var p=Math.floor(tot/por), resto=tot%por;
+      var cj=Math.floor(resto/upc);
+      // TU REGLA: Solo PALLET + CAJAS. Si hay cajas, suma 1 pallet
+      var ocup=p + (cj>0?1:0);
+      if(cod==='1007119') pan+=ocup; else evap+=ocup;
+    });
+    window.__mb52ParaUCA={evap:evap, pan:pan};
+    localStorage.setItem('mb52ParaUCA', JSON.stringify({evap:evap, pan:pan}));
+    if(typeof renderUCA==='function') renderUCA();
+    var m=document.getElementById('mb52ProMsg');
+    if(m){ m.classList.remove('hidden'); m.textContent='✅ STOCK OCUPADO EN UCA: EVAPORADA='+evap+' | PANETON='+pan+' | TOTAL='+(evap+pan); }
+    else alert('✅ EVAPORADA='+evap+' | PANETON='+pan);
+  };
+
+  // 5. Reconecta el botón rojo
+  setTimeout(function(){
+    var mb=document.getElementById('mb52Original'); if(!mb) return;
+    var btn=[...mb.querySelectorAll('button')].find(function(b){return b.textContent.includes('ENVIAR A UCA');});
+    if(btn) btn.onclick=window.enviarAUCAPro;
+    // Si ya habías enviado antes, lo vuelve a pintar bien
+    try{ var g=JSON.parse(localStorage.getItem('mb52ParaUCA')||'null'); if(g){ window.__mb52ParaUCA=g; if(typeof renderUCA==='function') renderUCA(); } }catch(e){}
+  },800);
+})();
 </script>
 </body>
 </html>
