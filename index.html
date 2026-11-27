@@ -1137,5 +1137,130 @@ localStorage.setItem = function(k, v){
   },800);
 })();
 </script>
+<script>
+// ===== BSF - MB52 -> UCA SINCRONIZADO CON FIREBASE PARA TODOS =====
+(function(){
+  // 1. Busca el Firebase que YA tienes en tu archivo, no crea uno nuevo
+  function getDB(){
+    try{
+      if(window.firebaseDB) return window.firebaseDB;
+      if(window.db) return window.db;
+      if(window.firebase && window.firebase.database) return window.firebase.database();
+      if(window.database) return window.database;
+    }catch(e){}
+    return null;
+  }
+  function getRef(){
+    var db = getDB(); if(!db) return null;
+    try{
+      if(db.ref) return db.ref('bsf/mb52ParaUCA');
+      if(db.collection) return null; // es Firestore, no RTDB
+    }catch(e){}
+    return null;
+  }
+
+  var POR={'1001135':3840,'1001273':2112,'1001277':1920,'1007119':240};
+  var UPC={'1001135':48,'1001273':24,'1001277':48,'1007119':6};
+  var CODS=['1001135','1001273','1001277','1007119'];
+
+  window.calcStockPorGrupo = function(){
+    var ex = window.__mb52ParaUCA || null;
+    if(ex){
+      var ev = Number(ex.evap!==undefined?ex.evap:ex.ev)||0;
+      var pan = Number(ex.pan)||0;
+      return {ev:ev, pan:pan, total:ev+pan};
+    }
+    var ev2=0, pan2=0;
+    try{
+      Object.values(window.inventario||{}).forEach(function(it){
+        var p=parseInt(it.pallets)||0;
+        if(['1001135','1001273','1001277'].includes(String(it.codigo))) ev2+=p;
+        if(String(it.codigo)==='1007119') pan2+=p;
+      });
+    }catch(e){}
+    return {ev:ev2, pan:pan2, total:ev2+pan2};
+  };
+
+  // 2. ENVIAR A UCA - AHORA GUARDA EN FIREBASE, NO EN EL CELULAR
+  window.enviarAUCAPro = function(){
+    var mb=document.getElementById('mb52Original');
+    if(!mb) return alert('No encontré MB52');
+    var inputs=[...mb.querySelectorAll('input[data-cod]')];
+    if(!inputs.length) inputs=[...mb.querySelectorAll('input')].filter(function(i){return i.type==='number';}).slice(0,4);
+    var evap=0, pan=0;
+    inputs.slice(0,4).forEach(function(inp,i){
+      var cod=inp.getAttribute('data-cod')||CODS[i];
+      var tot=parseInt(inp.value||'0')||0;
+      var por=POR[cod]||1, upc=UPC[cod]||1;
+      var p=Math.floor(tot/por), resto=tot%por;
+      var cj=Math.floor(resto/upc);
+      var ocup=p + (cj>0?1:0);
+      if(cod==='1007119') pan+=ocup; else evap+=ocup;
+    });
+
+    var data={evap:evap, pan:pan, total:evap+pan, fecha:Date.now(), por: 'Luis Vallejo'};
+
+    // Actualiza en este celular al toque
+    window.__mb52ParaUCA=data;
+    if(typeof renderUCA==='function') renderUCA();
+
+    // Guarda en Firebase para TODOS los dispositivos
+    var ref=getRef();
+    var msg=document.getElementById('mb52ProMsg');
+    if(ref){
+      ref.set(data).then(function(){
+        if(msg){ msg.classList.remove('hidden'); msg.textContent='✅ SINCRONIZADO PARA TODOS: EVAPORADA='+evap+' | PANETON='+pan+' | TOTAL='+(evap+pan); }
+      }).catch(function(e){
+        if(msg){ msg.classList.remove('hidden'); msg.textContent='⚠️ Se guardó solo en este celular, Firebase falló: '+e.message; }
+      });
+    } else {
+      // Si tu Firebase aún no se llama así, guarda local y avisa
+      try{ localStorage.setItem('mb52ParaUCA', JSON.stringify(data)); }catch(e){}
+      if(msg){ msg.classList.remove('hidden'); msg.textContent='⚠️ No encontré Firebase como firebaseDB. Dime cómo se llama tu variable de Firebase y te lo conecto. Se guardó solo en este celular.'; }
+    }
+  };
+
+  // 3. ESCUCHAR EN TODOS LOS DISPOSITIVOS - cuando uno envía, a todos les cambia solo
+  function iniciarEscucha(){
+    var ref=getRef();
+    if(!ref) return false;
+    ref.on('value', function(snap){
+      var g=snap.val(); if(!g) return;
+      // Evita bucle: si es el mismo dato que ya tengo, no repinto
+      if(window.__mb52ParaUCA && window.__mb52ParaUCA.fecha===g.fecha) return;
+      window.__mb52ParaUCA=g;
+      if(typeof renderUCA==='function') renderUCA();
+      // También actualiza el texto de abajo si existe
+      var msg=document.getElementById('mb52ProMsg');
+      if(msg && g.evap!==undefined) msg.textContent='✅ SINCRONIZADO: EVAPORADA='+g.evap+' | PANETON='+g.pan+' | TOTAL='+g.total;
+    });
+    // Migra 1 vez lo que tenías en localStorage a Firebase
+    try{
+      var viejo=JSON.parse(localStorage.getItem('mb52ParaUCA')||'null');
+      if(viejo && viejo.fecha && !viejo.sincronizado){
+        ref.set({evap:viejo.evap||viejo.ev||0, pan:viejo.pan||0, total:(viejo.evap||viejo.ev||0)+(viejo.pan||0), fecha:viejo.fecha, sincronizado:1});
+        localStorage.removeItem('mb52ParaUCA');
+      }
+    }catch(e){}
+    return true;
+  }
+
+  // 4. Reconecta botón y arranca escucha (espera a que Firebase cargue)
+  function arrancar(){
+    var mb=document.getElementById('mb52Original');
+    if(mb){
+      var btn=[...mb.querySelectorAll('button')].find(function(b){return b.textContent.includes('ENVIAR A UCA');});
+      if(btn) btn.onclick=window.enviarAUCAPro;
+    }
+    if(!iniciarEscucha()){
+      // Reintenta 5 veces por si Firebase carga después
+      var intentos=0;
+      var iv=setInterval(function(){ intentos++; if(iniciarEscucha() || intentos>5) clearInterval(iv); }, 1000);
+    }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', arrancar);
+  else setTimeout(arrancar, 500);
+})();
+</script>
 </body>
 </html>
