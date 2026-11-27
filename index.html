@@ -1004,5 +1004,21 @@ document.addEventListener('input', crearEspejos);
   }, 1000);
 })();
 </script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBupXLBBtMtEaOKboV_Iob2AdHWcy-CJs",
+  authDomain: "bsf-puntahermosalv.firebaseapp.com",
+  databaseURL: "https://bsf-puntahermosalv-default-rtdb.firebaseio.com",
+  projectId: "bsf-puntahermosalv",
+  storageBucket: "bsf-puntahermosalv.firebasestorage.app",
+  messagingSenderId: "196629693739",
+  appId: "1:196629693739:web:c6ad3b63c7ddf3fc9ff16e",
+  measurementId: "G-Y9R0PTVR4V"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+</script>
 </body>
 </html>
