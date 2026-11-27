@@ -1021,20 +1021,30 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 </script>
 <script>
-// === PARCHE V4: SIN RECARGA, SOLO GUARDA ===
+// === PARCHE V4.1: Con alias para MB52 ===
 let bajando = false;
 let yaBajo = false;
+
+function ponerConAlias(k, v){
+  localStorage.setItem(k, v);
+  // Si es MB52 o DATA, guárdalo en todas sus versiones
+  if(k === 'mb52ParaUCA') localStorage.setItem('mb52_guardado', v);
+  if(k === 'mb52_guardado') localStorage.setItem('mb52ParaUCA', v);
+  if(k === 'DATA_BSF') localStorage.setItem('data_bsf', v);
+  if(k === 'data_bsf') localStorage.setItem('DATA_BSF', v);
+  if(k === 'bsf_database') localStorage.setItem('bsf_dashboard_db', v);
+  if(k === 'bsf_dashboard_db') localStorage.setItem('bsf_database', v);
+}
 
 db.ref('sync_total').on('value', snap => {
   const nube = snap.val();
   if(!nube) return;
   bajando = true;
   for(let k in nube){
-    localStorage.setItem(k, nube[k]);
+    ponerConAlias(k, nube[k]);
   }
   bajando = false;
   yaBajo = true;
-  console.log("Sincronizado en silencio");
 });
 
 const originalSet = localStorage.setItem.bind(localStorage);
