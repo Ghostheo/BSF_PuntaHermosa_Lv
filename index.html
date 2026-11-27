@@ -1021,32 +1021,20 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 </script>
 <script>
-// === PARCHE V3 FINAL: Sin bucle ===
+// === PARCHE V4: SIN RECARGA, SOLO GUARDA ===
 let bajando = false;
 let yaBajo = false;
-let ultimoHash = "";
-
-function hashDe(obj){
-  return JSON.stringify(obj).length + "_" + JSON.stringify(obj).slice(0,200);
-}
 
 db.ref('sync_total').on('value', snap => {
   const nube = snap.val();
   if(!nube) return;
-  let h = hashDe(nube);
-  if(h === ultimoHash) return; // Ya tengo esto, no hago nada
-  ultimoHash = h;
   bajando = true;
   for(let k in nube){
     localStorage.setItem(k, nube[k]);
   }
   bajando = false;
   yaBajo = true;
-  // Solo recarga UNA vez, y solo si cambió de verdad
-  if(!window.__yaRecargo){
-    window.__yaRecargo = true;
-    location.reload();
-  }
+  console.log("Sincronizado en silencio");
 });
 
 const originalSet = localStorage.setItem.bind(localStorage);
@@ -1058,9 +1046,6 @@ localStorage.setItem = function(k, v){
     let key = localStorage.key(i);
     todo[key] = localStorage.getItem(key);
   }
-  let h2 = hashDe(todo);
-  if(h2 === ultimoHash) return; // No subo lo mismo
-  ultimoHash = h2;
   db.ref('sync_total').set(todo);
 };
 </script>
