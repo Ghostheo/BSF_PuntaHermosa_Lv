@@ -1337,5 +1337,78 @@ localStorage.setItem = function(k, v){
   setTimeout(restaurarInputsBSF, 3500);
 })();
 </script>
+<script>
+// ===== PARCHE TRANSITO BSF - YA NO VUELVE A 358 =====
+(function(){
+  function guardarTransito(){
+    var inp = document.querySelector('input[id*="transito" i], input[placeholder*="transito" i]');
+    // Si tu input de tránsito no tiene id, busca por el texto "TRANSITO:"
+    if(!inp){
+      var todos = [...document.querySelectorAll('input')];
+      // El de tránsito es el que está abajo del TOTAL GENERAL
+      inp = todos.find(i => i.closest('div') && i.closest('div').textContent.includes('TRANSITO')) || todos[todos.length-1];
+    }
+    if(!inp) return;
+    var dato = { valor: inp.value, fecha: Date.now() };
+    localStorage.setItem('bsf_transito', JSON.stringify(dato));
+    try{ if(window.db) window.db.ref('bsf_transito').set(dato); }catch(e){}
+  }
+
+  function restaurarTransito(){
+    var guardado = null;
+    try{ guardado = JSON.parse(localStorage.getItem('bsf_transito')||'null'); }catch(e){}
+    if(!guardado || guardado.valor === undefined) return;
+    var inp = document.querySelector('input[id*="transito" i]');
+    if(!inp){
+      var todos = [...document.querySelectorAll('input')];
+      inp = todos.find(i => i.parentElement && i.parentElement.textContent.includes('TRANSITO'));
+      if(!inp){
+        // último recurso: el input que está justo debajo de TOTAL GENERAL
+        var label = [...document.querySelectorAll('*')].find(el => el.textContent.trim() === 'TRANSITO:');
+        if(label && label.parentElement) inp = label.parentElement.querySelector('input');
+      }
+    }
+    if(inp && String(inp.value) !== String(guardado.valor)){
+      inp.value = guardado.valor;
+      inp.dispatchEvent(new Event('input',{bubbles:true}));
+      inp.dispatchEvent(new Event('change',{bubbles:true}));
+      // Recalcula UCA
+      if(typeof window.enviarAUCAPro === 'function') setTimeout(()=>window.enviarAUCAPro(), 300);
+    }
+  }
+
+  // Escucha Firebase solo si es más nuevo
+  try{
+    if(window.db){
+      window.db.ref('bsf_transito').on('value', snap=>{
+        var nube = snap.val();
+        if(!nube || !nube.fecha) return;
+        var local = null;
+        try{ local = JSON.parse(localStorage.getItem('bsf_transito')||'null'); }catch(e){}
+        if(!local || nube.fecha > local.fecha){
+          localStorage.setItem('bsf_transito', JSON.stringify(nube));
+          restaurarTransito();
+        }
+      });
+    }
+  }catch(e){}
+
+  document.addEventListener('input', (e)=>{
+    if(e.target && e.target.tagName === 'INPUT'){
+      var txt = (e.target.parentElement?.textContent || '') + ' ' + (e.target.placeholder || '') + ' ' + (e.target.id || '');
+      if(txt.toUpperCase().includes('TRANSITO')) guardarTransito();
+    }
+  });
+  document.addEventListener('click', (e)=>{
+    if(e.target && e.target.textContent && e.target.textContent.includes('ENVIAR A UCA')){
+      setTimeout(guardarTransito, 200);
+    }
+  });
+
+  setTimeout(restaurarTransito, 800);
+  setTimeout(restaurarTransito, 2000);
+  setTimeout(restaurarTransito, 3500);
+})();
+</script>
 </body>
 </html>
