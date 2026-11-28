@@ -1262,5 +1262,80 @@ localStorage.setItem = function(k, v){
   else setTimeout(arrancar, 500);
 })();
 </script>
+<script>
+// ===== PARCHE FINAL BSF - YA NO VUELVE A LOS DATOS VIEJOS =====
+(function(){
+  // 1. Guarda los 4 inputs con fecha, no solo el total
+  function guardarInputsBSF(){
+    var mb = document.getElementById('mb52Original');
+    if(!mb) return;
+    var inputs = [...mb.querySelectorAll('input[data-cod]')];
+    if(!inputs.length) inputs = [...mb.querySelectorAll('input')].filter(i=>i.type==='number').slice(0,4);
+    var datos = {};
+    inputs.forEach((inp,i)=>{
+      var cod = inp.getAttribute('data-cod') || ['1001135','1001273','1001277','1007119'][i];
+      datos[cod] = inp.value || '';
+    });
+    datos.fecha = Date.now();
+    localStorage.setItem('bsf_mb52_inputs', JSON.stringify(datos));
+    // Sube a Firebase con fecha, para que gane al dato viejo
+    try{
+      if(window.db) window.db.ref('bsf_mb52_inputs').set(datos);
+    }catch(e){}
+  }
+
+  // 2. Restaura los inputs si son más nuevos que la nube vieja
+  function restaurarInputsBSF(){
+    var mb = document.getElementById('mb52Original');
+    if(!mb) return;
+    var guardado = null;
+    try{ guardado = JSON.parse(localStorage.getItem('bsf_mb52_inputs')||'null'); }catch(e){}
+    if(!guardado) return;
+    var inputs = [...mb.querySelectorAll('input[data-cod]')];
+    if(!inputs.length) inputs = [...mb.querySelectorAll('input')].filter(i=>i.type==='number').slice(0,4);
+    inputs.forEach((inp,i)=>{
+      var cod = inp.getAttribute('data-cod') || ['1001135','1001273','1001277','1007119'][i];
+      if(guardado[cod] !== undefined && guardado[cod] !== ''){
+        inp.value = guardado[cod];
+        inp.dispatchEvent(new Event('input',{bubbles:true}));
+        inp.dispatchEvent(new Event('change',{bubbles:true}));
+      }
+    });
+    // Si ya hay inputs guardados, re-envía a UCA para que el UCA no quede en 0
+    setTimeout(()=>{ if(typeof window.enviarAUCAPro==='function') window.enviarAUCAPro(); }, 500);
+  }
+
+  // 3. Escucha Firebase solo si es MÁS NUEVO que lo que tienes
+  try{
+    if(window.db){
+      window.db.ref('bsf_mb52_inputs').on('value', snap=>{
+        var nube = snap.val();
+        if(!nube || !nube.fecha) return;
+        var local = null;
+        try{ local = JSON.parse(localStorage.getItem('bsf_mb52_inputs')||'null'); }catch(e){}
+        if(!local || nube.fecha > local.fecha){
+          localStorage.setItem('bsf_mb52_inputs', JSON.stringify(nube));
+          restaurarInputsBSF();
+        }
+      });
+    }
+  }catch(e){}
+
+  // 4. Cada vez que escribes, guarda
+  document.addEventListener('input', (e)=>{
+    if(e.target.closest && e.target.closest('#mb52Original')) guardarInputsBSF();
+  });
+  document.addEventListener('click', (e)=>{
+    if(e.target && e.target.textContent && e.target.textContent.includes('ENVIAR A UCA')){
+      setTimeout(guardarInputsBSF, 200);
+    }
+  });
+
+  // 5. Al abrir, restaura con varios intentos porque tu Firebase tarda
+  setTimeout(restaurarInputsBSF, 800);
+  setTimeout(restaurarInputsBSF, 2000);
+  setTimeout(restaurarInputsBSF, 3500);
+})();
+</script>
 </body>
 </html>
